@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Temp 1</title>
+    <script>
+        function myFunction() {
+            const input = document.getElementById("myText");
+            const li = document.createElement("li");
+            const ul = document.querySelector("ul");
+            li.textContent = input.value;
+            input.value = "";
+            ul.appendChild(li);
+            li.onclick = () => myDelete(li);
+
+        }
+
+        function myDelete(item) {
+            let ul = document.querySelector("ul");
+            ul.removeChild(item);
+        }
+
+
+    </script>
+</head>
+<body>
+        <input type="text" id="myText">
+        <button onclick="myFunction()">Add</button>
+        <ul></ul>
+</body>
+</html>

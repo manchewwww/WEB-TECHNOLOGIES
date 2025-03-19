@@ -1,0 +1,3 @@
+callback - starts when something happen
+setTimeout() - използва се най-често когато нещо искаме да се зареди, но все още не е и да се пробва 2ри път
+clearTimeout() - прекъсва time,

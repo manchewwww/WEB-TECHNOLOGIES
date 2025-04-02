@@ -3,7 +3,7 @@ const getTodos = () => {
     .then((res) => res.json())
     .then((todos) => {
         const ul = document.querySelector("#todoList");
-        ul.innerHTML = ""; // Изчистваме старите данни
+        ul.innerHTML = ""; 
         todos.forEach((todo) => {
             const li = document.createElement("li");
             li.textContent = `${todo.id} ${todo.text}`;
@@ -29,7 +29,7 @@ const addTodo = () => {
         },
         body: JSON.stringify({ text: value }),
     })
-    .then(() => getTodos()) // Изчакване на сървъра преди да презаредим списъка
+    .then(() => getTodos()) 
     .catch(error => console.error("Error:", error));
 
     element.value = "";

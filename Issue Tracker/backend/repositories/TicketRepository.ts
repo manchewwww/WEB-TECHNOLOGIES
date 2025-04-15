@@ -40,3 +40,11 @@ function deleteTicket(ticketId: number) {
     return true;
 }
 
+module.exports = {
+    getAllTickets,
+    getTicketById,
+    createTicket,
+    editTicket,
+    deleteTicket,
+};
+

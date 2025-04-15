@@ -6,3 +6,5 @@ class NotFoundError extends Error {
         this.status = 404;
     }
 }
+
+export default NotFoundError;

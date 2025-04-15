@@ -1,9 +1,10 @@
+import NotFoundError from '../exceptions/NotFoundException';
 import { Ticket, TicketData } from '../models/Ticket';
 
 let tickets: Ticket[] = [];
 let id: number = 1;
 
-export const TicketRepository = {
+const TicketRepository = {
     getAllTickets(): Ticket[] {
         return tickets;
     },
@@ -40,3 +41,5 @@ export const TicketRepository = {
         return true;
     }
 };
+
+export default TicketRepository;

@@ -1,6 +1,6 @@
 const ticketRepository = require('../repositories/TicketRepository');
 
-export const TicketService = {
+const TicketService = {
   async getAllTickets() {
     return await ticketRepository.getAllTickets();
   },
@@ -21,3 +21,5 @@ export const TicketService = {
     return await ticketRepository.deleteTicket(id);
   },
 };
+
+export default TicketService;

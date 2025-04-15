@@ -31,7 +31,7 @@ function editTicket(ticketId: number, ticketWithNewData: any): any {
     return tickets[ticketIndex];
 }
 
-function deleteTicket(ticketId: number) {
+function deleteTicket(ticketId: number): boolean {
     const ticketIndex = tickets.findIndex(ticket => ticket.id === ticketId);
     if (ticketIndex === -1) {
         throw new NotFoundError(`Ticket with ID ${ticketId} not found`);

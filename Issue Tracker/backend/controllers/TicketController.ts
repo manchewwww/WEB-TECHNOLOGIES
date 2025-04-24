@@ -1,6 +1,6 @@
 import express, { Request, Response, Router } from 'express';
-import { Ticket } from '../models/Ticket';
 import TicketService from '../services/TicketService';
+import { Ticket, TicketData } from '../models/Ticket';
 
 const router: Router = express.Router();
 
@@ -13,9 +13,9 @@ router.get('/', async (req: Request, res: Response) => {
     }
 });
 
-router.get('/:id', async (req: Request, res: Response) => {
+router.get('/:id', async (req: Request<{ id: number }>, res: Response): Promise<any> => {
     try {
-        const ticket: Ticket = await TicketService.getTicketById(parseInt(req.params.id));
+        const ticket: Ticket = await TicketService.getTicketById(req.params.id);
         res.json(ticket);
     } catch (err: any) {
         if (err.status === 404) {
@@ -25,18 +25,18 @@ router.get('/:id', async (req: Request, res: Response) => {
     }
 });
 
-router.post('/', async (req: Request, res: Response) => {
+router.post('/', async (req: Request<{ ticket: TicketData }>, res: Response): Promise<any> => {
     try {
-        const newTicket: Ticket = await TicketService.createTicket(req.body);
+        const newTicket: Ticket = await TicketService.createTicket(req.body.ticket);
         res.status(201).json(newTicket);
     } catch (err) {
         res.status(500).json({ error: 'Failed to create ticket' });
     }
 });
 
-router.put('/:id', async (req: Request, res: Response) => {
+router.put('/:id', async (req: Request<{ id: number, ticket: TicketData }>, res: Response): Promise<any> => {
     try {
-        const editedTicket: Ticket = await TicketService.editTicket(parseInt(req.params.id), req.body);
+        const editedTicket: Ticket = await TicketService.editTicket(req.params.id, req.body.ticket);
         res.json(editedTicket);
     } catch (err: any) {
         if (err.status === 404) {
@@ -46,9 +46,9 @@ router.put('/:id', async (req: Request, res: Response) => {
     }
 });
 
-router.delete('/:id', async (req: Request, res: Response) => {
+router.delete('/:id', async (req: Request<{ id: number }>, res: Response): Promise<any> => {
     try {
-        await TicketService.deleteTicket(parseInt(req.params.id));
+        await TicketService.deleteTicket(req.params.id);
         res.status(204).send();
     } catch (err: any) {
         if (err.status === 404) {

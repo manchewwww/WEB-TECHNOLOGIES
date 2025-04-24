@@ -1,19 +1,21 @@
-const ticketRepository = require('../repositories/TicketRepository');
+import { Ticket, TicketData } from "../models/Ticket";
+
+import ticketRepository from "../repositories/TicketRepository";
 
 const TicketService = {
-  async getAllTickets() {
+  async getAllTickets(): Promise<Ticket[]>{
     return await ticketRepository.getAllTickets();
   },
 
-  async getTicketById(id: number): Promise<any> {
+  async getTicketById(id: number): Promise<Ticket> {
     return await ticketRepository.getTicketById(id);
   },
 
-  async createTicket(ticketData: any): Promise<any> {
+  async createTicket(ticketData: TicketData): Promise<Ticket> {
     return await ticketRepository.createTicket(ticketData);
   },
 
-  async editTicket(id: number, ticketData: any): Promise<any> {
+  async editTicket(id: number, ticketData: any): Promise<Ticket> {
     return await ticketRepository.editTicket(id, ticketData);
   },
 

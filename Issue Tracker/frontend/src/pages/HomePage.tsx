@@ -1,14 +1,8 @@
+import '../styles/HomePage.css';
+
 function HomePage() {
   return (
     <div className="homepage">
-      <header className="homepage-header">
-        <h1 className="homepage-title">Issue Tracker</h1>
-        <div className="homepage-buttons">
-          <button className="btn">Login</button>
-          <button className="btn">Register</button>
-        </div>
-      </header>
-
       <main className="homepage-content">
         <div className="description-box">
           <h2>Добре дошли в нашия Issue Tracker!</h2>

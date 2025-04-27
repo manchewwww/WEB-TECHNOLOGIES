@@ -1,177 +1,76 @@
-import express, { Request, Response, Router } from 'express';
+import express, { Request, RequestHandler, Response, Router } from 'express';
 import ticketService from '../services/TicketService';
-import { Ticket, TicketData } from '../models/ExampleTicket';
+import { Ticket } from '../models/ExampleTicket';
 
-const router: Router = express.Router();
+class TicketController {
+    public router: Router;
 
-/**
- * @swagger
- * tags:
- *   name: Tickets
- *   description: Ticket management
- */
-
-/**
- * @swagger
- * /ticket:
- *   get:
- *     summary: Get all tickets
- *     tags: [Tickets]
- *     responses:
- *       200:
- *         description: List of all tickets
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Ticket'
- */
-router.get('/ticket', async (req: Request, res: Response) => {
-    try {
-        const tickets: Ticket[] = await ticketService.getAllTickets();
-        res.json(tickets);
-    } catch (err) {
-        res.status(500).json({ error: 'Internal Server Error' });
+    constructor() {
+        this.router = express.Router();
+        this.initializeRoutes();
     }
-});
 
-/**
- * @swagger
- * /ticket/{id}:
- *   get:
- *     summary: Get ticket by ID
- *     tags: [Tickets]
- *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: integer
- *         required: true
- *         description: Ticket ID
- *     responses:
- *       200:
- *         description: Ticket data
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Ticket'
- *       404:
- *         description: Ticket not found
- */
-router.get('/ticket/:id', async (req: Request, res: Response): Promise<any> => {
-    try {
-        const ticket: Ticket = await ticketService.getTicketById(+req.params.id);
-        res.json(ticket);
-    } catch (err: any) {
-        if (err.status === 404) {
-            return res.status(404).json({ error: err.message });
+    private initializeRoutes() {
+        this.router.get('/ticket', this.getAllTickets.bind(this) as RequestHandler);
+        this.router.get('/ticket/:id', this.getTicketById.bind(this) as RequestHandler);
+        this.router.post('/ticket', this.createTicket.bind(this) as RequestHandler);
+        this.router.put('/ticket/:id', this.updateTicket.bind(this) as RequestHandler);
+        this.router.delete('/ticket/:id', this.deleteTicket.bind(this) as RequestHandler);
+    };
+
+    private async getAllTickets(req: Request, res: Response) {
+        try {
+            const tickets: Ticket[] = await ticketService.getAllTickets();
+            res.json(tickets);
+        } catch (err) {
+            res.status(500).json({ error: 'Internal Server Error' });
         }
-        res.status(500).json({ error: 'Internal Server Error' });
     }
-});
 
-/**
- * @swagger
- * /ticket:
- *   post:
- *     summary: Create a new ticket
- *     tags: [Tickets]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/TicketData'
- *     responses:
- *       201:
- *         description: Ticket created
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Ticket'
- *       500:
- *         description: Failed to create ticket
- */
-router.post('/ticket', async (req: Request, res: Response): Promise<any> => {
-    try {
-        const newTicket: Ticket = await ticketService.createTicket(req.body);
-        res.status(201).json(newTicket);
-    } catch (err) {
-        res.status(500).json({ error: 'Failed to create ticket' });
-    }
-});
-
-/**
- * @swagger
- * /ticket/{id}:
- *   put:
- *     summary: Update a ticket
- *     tags: [Tickets]
- *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: integer
- *         required: true
- *         description: Ticket ID
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/TicketData'
- *     responses:
- *       200:
- *         description: Ticket updated
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Ticket'
- *       404:
- *         description: Ticket not found
- */
-router.put('/ticket/:id', async (req: Request, res: Response): Promise<any> => {
-    try {
-        const editedTicket: Ticket = await ticketService.editTicket(+req.params.id, req.body.ticket);
-        res.json(editedTicket);
-    } catch (err: any) {
-        if (err.status === 404) {
-            return res.status(404).json({ error: err.message });
+    private async getTicketById(req: Request, res: Response) {
+        try {
+            const ticket: Ticket = await ticketService.getTicketById(+req.params.id);
+            res.json(ticket);
+        } catch (err: any) {
+            if (err.status === 404) {
+                return res.status(404).json({ error: err.message });
+            }
+            res.status(500).json({ error: 'Internal Server Error' });
         }
-        res.status(500).json({ error: 'Failed to update ticket' });
     }
-});
 
-/**
- * @swagger
- * /ticket/{id}:
- *   delete:
- *     summary: Delete a ticket
- *     tags: [Tickets]
- *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: integer
- *         required: true
- *         description: Ticket ID
- *     responses:
- *       204:
- *         description: Ticket deleted
- *       404:
- *         description: Ticket not found
- */
-router.delete('ticket/:id', async (req: Request, res: Response): Promise<any> => {
-    try {
-        await ticketService.deleteTicket(+req.params.id);
-        res.status(204).send();
-    } catch (err: any) {
-        if (err.status === 404) {
-            return res.status(404).json({ error: err.message });
+    private async createTicket(req: Request, res: Response) {
+        try {
+            const newTicket: Ticket = await ticketService.createTicket(req.body);
+            res.status(201).json(newTicket);
+        } catch (err) {
+            res.status(500).json({ error: 'Failed to create ticket' });
         }
-        res.status(500).json({ error: 'Failed to delete ticket' });
     }
-});
 
-export default router;
+    private async updateTicket(req: Request, res: Response) {
+        try {
+            const updatedTicket: Ticket = await ticketService.editTicket(+req.params.id, req.body.ticket);
+            res.json(updatedTicket);
+        } catch (err: any) {
+            if (err.status === 404) {
+                return res.status(404).json({ error: err.message });
+            }
+            res.status(500).json({ error: 'Failed to update ticket' });
+        }
+    }
+
+    private async deleteTicket(req: Request, res: Response) {
+        try {
+            await ticketService.deleteTicket(+req.params.id);
+            res.status(204).send();
+        } catch (err: any) {
+            if (err.status === 404) {
+                return res.status(404).json({ error: err.message });
+            }
+            res.status(500).json({ error: 'Failed to delete ticket' });
+        }
+    }
+}
+
+export default new TicketController().router;

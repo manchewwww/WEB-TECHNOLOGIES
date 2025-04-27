@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import '../styles/NavBar.css';
+//import '../styles/NavBar.css';
 import mainLogo from '../assets/mainLogo.png';
 import { useAuth } from "../context/AuthContext";
 

@@ -1,21 +1,21 @@
-import { Ticket, TicketData } from "../models/ExampleTicket";
+import { ITicket, ITicketWithID } from "../models/Ticket";
 
 import ticketRepository from "../repositories/TicketRepository";
 
 const TicketService = {
-  async getAllTickets(): Promise<Ticket[]> {
+  async getAllTickets(): Promise<ITicketWithID[]> {
     return ticketRepository.getAllTickets();
   },
 
-  async getTicketById(id: number): Promise<Ticket> {
+  async getTicketById(id: number): Promise<ITicketWithID> {
     return ticketRepository.getTicketById(id);
   },
 
-  async createTicket(ticketData: TicketData): Promise<Ticket> {
+  async createTicket(ticketData: ITicket): Promise<ITicketWithID> {
     return ticketRepository.createTicket(ticketData);
   },
 
-  async editTicket(id: number, ticketData: any): Promise<Ticket> {
+  async editTicket(id: number, ticketData: ITicket): Promise<ITicketWithID> {
     return ticketRepository.editTicket(id, ticketData);
   },
 

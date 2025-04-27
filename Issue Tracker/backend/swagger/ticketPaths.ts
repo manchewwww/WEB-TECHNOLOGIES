@@ -11,7 +11,7 @@ export const ticketPaths = {
                             schema: {
                                 type: 'array',
                                 items: {
-                                    $ref: '#/components/schemas/ITicketWithID'
+                                    $ref: '#/components/schemas/ITicket'
                                 }
                             }
                         }
@@ -38,7 +38,7 @@ export const ticketPaths = {
                     content: {
                         'application/json': {
                             schema: {
-                                $ref: '#/components/schemas/ITicketWithID'
+                                $ref: '#/components/schemas/ITicket'
                             }
                         }
                     }
@@ -53,9 +53,10 @@ export const ticketPaths = {
                 in: 'path',
                 required: true,
                 schema: {
-                    type: 'integer'
+                    type: 'string'
                 },
-                description: 'Ticket ID'
+                description: 'Ticket ID',
+                example: '60d5ec49b3f1f8c8a4e4b0c1'
             }
         ],
         get: {
@@ -67,7 +68,7 @@ export const ticketPaths = {
                     content: {
                         'application/json': {
                             schema: {
-                                $ref: '#/components/schemas/ITicketWithID'
+                                $ref: '#/components/schemas/ITicket'
                             }
                         }
                     }
@@ -96,7 +97,7 @@ export const ticketPaths = {
                     content: {
                         'application/json': {
                             schema: {
-                                $ref: '#/components/schemas/ITicketWithID'
+                                $ref: '#/components/schemas/ITicket'
                             }
                         }
                     }

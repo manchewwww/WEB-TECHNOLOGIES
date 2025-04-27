@@ -1,33 +1,28 @@
-import { ITicket, ITicketWithID } from '../db/models/Ticket';
+import { ITicket } from '../db/models/Ticket';
 import NotFoundError from '../exceptions/NotFoundException';
 
-let tickets: ITicketWithID[] = [];
-let id: number = 1;
+let tickets: ITicket[] = [];
 
 const TicketRepository = {
-    async getAllTickets(): Promise<ITicketWithID[]> {
+    async getAllTickets(): Promise<ITicket[]> {
         return [...tickets];
     },
 
-    async getTicketById(ticketId: number): Promise<ITicketWithID> {
-        const ticket = tickets.find(ticket => ticket.id === ticketId);
+    async getTicketById(ticketId: string): Promise<ITicket> {
+        const ticket = tickets.find(ticket => ticket.id.toString() === ticketId);
         if (!ticket) {
             throw new NotFoundError(`Ticket with ID ${ticketId} not found`);
         }
         return ticket;
     },
 
-    async createTicket(ticketData: ITicket): Promise<ITicketWithID> {
-        const newTicket: ITicketWithID = {
-            ...ticketData,
-            id: id++,
-        } as ITicketWithID;
-        tickets.push(newTicket);
-        return newTicket;
+    async createTicket(ticketData: ITicket): Promise<ITicket> {
+        tickets.push(ticketData);
+        return ticketData;
     },
 
-    async editTicket(ticketId: number, ticketWithNewData: ITicket): Promise<ITicketWithID> {
-        const ticketIndex = tickets.findIndex(ticket => ticket.id === ticketId);
+    async editTicket(ticketId: string, ticketWithNewData: ITicket): Promise<ITicket> {
+        const ticketIndex = tickets.findIndex(ticket => ticket.id.toString() === ticketId);
         if (ticketIndex === -1) {
             throw new NotFoundError(`Ticket with ID ${ticketId} not found`);
         }
@@ -35,8 +30,8 @@ const TicketRepository = {
         return tickets[ticketIndex];
     },
 
-    async deleteTicket(ticketId: number): Promise<boolean> {
-        const ticketIndex = tickets.findIndex(ticket => ticket.id === ticketId);
+    async deleteTicket(ticketId: string): Promise<boolean> {
+        const ticketIndex = tickets.findIndex(ticket => ticket.id.toString() === ticketId);
         if (ticketIndex === -1) {
             throw new NotFoundError(`Ticket with ID ${ticketId} not found`);
         }

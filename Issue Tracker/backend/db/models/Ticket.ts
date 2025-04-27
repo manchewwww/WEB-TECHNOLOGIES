@@ -7,6 +7,7 @@ interface IComment {
 }
 
 export interface ITicket extends Document {
+    id: Types.ObjectId;
     title: string;
     description: string;
     status: "open" | "in_progress" | "review" | "closed";
@@ -16,10 +17,6 @@ export interface ITicket extends Document {
     createdAt?: Date;
     updatedAt?: Date;
     comments?: IComment[];
-}
-
-export interface ITicketWithID extends ITicket {
-    id: number;
 }
 
 const CommentSchema: Schema = new Schema({

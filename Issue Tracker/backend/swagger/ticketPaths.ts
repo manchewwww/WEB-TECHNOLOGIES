@@ -11,7 +11,7 @@ export const ticketPaths = {
                             schema: {
                                 type: 'array',
                                 items: {
-                                    $ref: '#/components/schemas/Ticket'
+                                    $ref: '#/components/schemas/ITicketWithID'
                                 }
                             }
                         }
@@ -27,7 +27,7 @@ export const ticketPaths = {
                 content: {
                     'application/json': {
                         schema: {
-                            $ref: '#/components/schemas/TicketData'
+                            $ref: '#/components/schemas/ITicket'
                         }
                     }
                 }
@@ -38,7 +38,7 @@ export const ticketPaths = {
                     content: {
                         'application/json': {
                             schema: {
-                                $ref: '#/components/schemas/Ticket'
+                                $ref: '#/components/schemas/ITicketWithID'
                             }
                         }
                     }
@@ -67,7 +67,7 @@ export const ticketPaths = {
                     content: {
                         'application/json': {
                             schema: {
-                                $ref: '#/components/schemas/Ticket'
+                                $ref: '#/components/schemas/ITicketWithID'
                             }
                         }
                     }
@@ -85,7 +85,7 @@ export const ticketPaths = {
                 content: {
                     'application/json': {
                         schema: {
-                            $ref: '#/components/schemas/TicketData'
+                            $ref: '#/components/schemas/ITicket'
                         }
                     }
                 }
@@ -96,7 +96,7 @@ export const ticketPaths = {
                     content: {
                         'application/json': {
                             schema: {
-                                $ref: '#/components/schemas/Ticket'
+                                $ref: '#/components/schemas/ITicketWithID'
                             }
                         }
                     }

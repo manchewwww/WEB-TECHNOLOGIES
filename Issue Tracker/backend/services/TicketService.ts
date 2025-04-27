@@ -1,5 +1,5 @@
-import { ITicket, ITicketWithID } from "../models/Ticket";
 
+import { ITicket, ITicketWithID } from "../db/models/Ticket";
 import ticketRepository from "../repositories/TicketRepository";
 
 const TicketService = {

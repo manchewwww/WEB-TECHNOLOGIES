@@ -1,5 +1,5 @@
+import { ITicket, ITicketWithID } from '../db/models/Ticket';
 import NotFoundError from '../exceptions/NotFoundException';
-import { ITicket, ITicketWithID } from '../models/Ticket';
 
 let tickets: ITicketWithID[] = [];
 let id: number = 1;

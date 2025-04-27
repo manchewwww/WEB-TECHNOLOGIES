@@ -9,7 +9,7 @@ const options = {
         },
         servers: [
             {
-                url: 'http://localhost:3000/tickets',
+                url: 'http://localhost:3000',
             },
         ],
         components: {
@@ -39,7 +39,7 @@ const options = {
             },
         },
     },
-    apis: [__dirname + '/../controllers/TicketController.js'],
+    apis: [__dirname + '/../controllers/TicketController.ts', __dirname + '/../controllers/TicketController.js'],
 };
 
 

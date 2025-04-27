@@ -1,6 +1,6 @@
 import express, { Request, RequestHandler, Response, Router } from 'express';
 import ticketService from '../services/TicketService';
-import { Ticket } from '../models/ExampleTicket';
+import { ITicketWithID } from '../models/Ticket';
 
 class TicketController {
     public router: Router;
@@ -20,7 +20,7 @@ class TicketController {
 
     private async getAllTickets(req: Request, res: Response) {
         try {
-            const tickets: Ticket[] = await ticketService.getAllTickets();
+            const tickets: ITicketWithID[] = await ticketService.getAllTickets();
             res.json(tickets);
         } catch (err) {
             res.status(500).json({ error: 'Internal Server Error' });
@@ -29,7 +29,7 @@ class TicketController {
 
     private async getTicketById(req: Request, res: Response) {
         try {
-            const ticket: Ticket = await ticketService.getTicketById(+req.params.id);
+            const ticket: ITicketWithID = await ticketService.getTicketById(+req.params.id);
             res.json(ticket);
         } catch (err: any) {
             if (err.status === 404) {
@@ -41,7 +41,7 @@ class TicketController {
 
     private async createTicket(req: Request, res: Response) {
         try {
-            const newTicket: Ticket = await ticketService.createTicket(req.body);
+            const newTicket: ITicketWithID = await ticketService.createTicket(req.body);
             res.status(201).json(newTicket);
         } catch (err) {
             res.status(500).json({ error: 'Failed to create ticket' });
@@ -50,7 +50,7 @@ class TicketController {
 
     private async updateTicket(req: Request, res: Response) {
         try {
-            const updatedTicket: Ticket = await ticketService.editTicket(+req.params.id, req.body.ticket);
+            const updatedTicket: ITicketWithID = await ticketService.editTicket(+req.params.id, req.body.ticket);
             res.json(updatedTicket);
         } catch (err: any) {
             if (err.status === 404) {

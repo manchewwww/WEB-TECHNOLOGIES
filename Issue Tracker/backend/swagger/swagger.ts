@@ -19,6 +19,7 @@ const options = {
         },
         paths: ticketPaths
     },
+    apis: [], 
 };
 
 const swaggerSpec = swaggerJSDoc(options);

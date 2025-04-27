@@ -1,4 +1,6 @@
-const swaggerJSDoc = require('swagger-jsdoc');
+import swaggerJSDoc from 'swagger-jsdoc';
+import { ticketPaths } from './ticketPaths';
+import { ticketSchemas } from './ticketSchema';
 
 const options = {
     definition: {
@@ -13,36 +15,11 @@ const options = {
             },
         ],
         components: {
-            schemas: {
-                TicketData: {
-                    type: 'object',
-                    required: ['title', 'description', 'price'],
-                    properties: {
-                        title: { type: 'string' },
-                        description: { type: 'string' },
-                        price: { type: 'number' },
-                    },
-                },
-                Ticket: {
-                    allOf: [
-                        {
-                            $ref: '#/components/schemas/TicketData',
-                        },
-                        {
-                            type: 'object',
-                            properties: {
-                                id: { type: 'integer' },
-                            },
-                        },
-                    ],
-                },
-            },
+            schemas: ticketSchemas
         },
+        paths: ticketPaths
     },
-    apis: [__dirname + '/../controllers/TicketController.ts', __dirname + '/../controllers/TicketController.js'],
 };
 
-
 const swaggerSpec = swaggerJSDoc(options);
-
 export default swaggerSpec;

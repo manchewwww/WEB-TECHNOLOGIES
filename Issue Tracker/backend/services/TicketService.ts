@@ -1,9 +1,9 @@
-import { Ticket, TicketData } from "../models/Ticket";
+import { Ticket, TicketData } from "../models/ExampleTicket";
 
 import ticketRepository from "../repositories/TicketRepository";
 
 const TicketService = {
-  async getAllTickets(): Promise<Ticket[]>{
+  async getAllTickets(): Promise<Ticket[]> {
     return ticketRepository.getAllTickets();
   },
 

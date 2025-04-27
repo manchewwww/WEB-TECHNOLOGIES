@@ -1,15 +1,15 @@
 import NotFoundError from '../exceptions/NotFoundException';
-import { Ticket, TicketData } from '../models/ExampleTicket';
+import { ITicket, ITicketWithID } from '../models/Ticket';
 
-let tickets: Ticket[] = [];
+let tickets: ITicketWithID[] = [];
 let id: number = 1;
 
 const TicketRepository = {
-    getAllTickets(): Ticket[] {
-        return tickets;
+    getAllTickets(): ITicketWithID[] {
+        return [...tickets];
     },
 
-    getTicketById(ticketId: number): Ticket {
+    getTicketById(ticketId: number): ITicketWithID {
         const ticket = tickets.find(ticket => ticket.id === ticketId);
         if (!ticket) {
             throw new NotFoundError(`Ticket with ID ${ticketId} not found`);
@@ -17,18 +17,21 @@ const TicketRepository = {
         return ticket;
     },
 
-    createTicket(ticketData: TicketData): Ticket {
-        const newTicket: Ticket = { id: id++, ...ticketData };
+    createTicket(ticketData: ITicket): ITicketWithID {
+        const newTicket: ITicketWithID = {
+            ...ticketData,
+            id: id++,
+        } as ITicketWithID;
         tickets.push(newTicket);
         return newTicket;
     },
 
-    editTicket(ticketId: number, ticketWithNewData: TicketData): Ticket {
+    editTicket(ticketId: number, ticketWithNewData: ITicket): ITicketWithID {
         const ticketIndex = tickets.findIndex(ticket => ticket.id === ticketId);
         if (ticketIndex === -1) {
             throw new NotFoundError(`Ticket with ID ${ticketId} not found`);
         }
-        tickets[ticketIndex] = { ...tickets[ticketIndex], ...ticketWithNewData };
+        Object.assign(tickets[ticketIndex], ticketWithNewData);
         return tickets[ticketIndex];
     },
 

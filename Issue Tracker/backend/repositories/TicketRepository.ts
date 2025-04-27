@@ -1,5 +1,5 @@
 import NotFoundError from '../exceptions/NotFoundException';
-import { Ticket, TicketData } from '../models/Ticket';
+import { Ticket, TicketData } from '../models/ExampleTicket';
 
 let tickets: Ticket[] = [];
 let id: number = 1;

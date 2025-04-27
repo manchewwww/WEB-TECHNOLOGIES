@@ -5,11 +5,11 @@ let tickets: ITicketWithID[] = [];
 let id: number = 1;
 
 const TicketRepository = {
-    getAllTickets(): ITicketWithID[] {
+    async getAllTickets(): Promise<ITicketWithID[]> {
         return [...tickets];
     },
 
-    getTicketById(ticketId: number): ITicketWithID {
+    async getTicketById(ticketId: number): Promise<ITicketWithID> {
         const ticket = tickets.find(ticket => ticket.id === ticketId);
         if (!ticket) {
             throw new NotFoundError(`Ticket with ID ${ticketId} not found`);
@@ -17,7 +17,7 @@ const TicketRepository = {
         return ticket;
     },
 
-    createTicket(ticketData: ITicket): ITicketWithID {
+    async createTicket(ticketData: ITicket): Promise<ITicketWithID> {
         const newTicket: ITicketWithID = {
             ...ticketData,
             id: id++,
@@ -26,7 +26,7 @@ const TicketRepository = {
         return newTicket;
     },
 
-    editTicket(ticketId: number, ticketWithNewData: ITicket): ITicketWithID {
+    async editTicket(ticketId: number, ticketWithNewData: ITicket): Promise<ITicketWithID> {
         const ticketIndex = tickets.findIndex(ticket => ticket.id === ticketId);
         if (ticketIndex === -1) {
             throw new NotFoundError(`Ticket with ID ${ticketId} not found`);
@@ -35,7 +35,7 @@ const TicketRepository = {
         return tickets[ticketIndex];
     },
 
-    deleteTicket(ticketId: number): boolean {
+    async deleteTicket(ticketId: number): Promise<boolean> {
         const ticketIndex = tickets.findIndex(ticket => ticket.id === ticketId);
         if (ticketIndex === -1) {
             throw new NotFoundError(`Ticket with ID ${ticketId} not found`);

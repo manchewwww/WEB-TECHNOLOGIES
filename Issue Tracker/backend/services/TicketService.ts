@@ -4,23 +4,23 @@ import ticketRepository from "../repositories/TicketRepository";
 
 const TicketService = {
   async getAllTickets(): Promise<ITicketWithID[]> {
-    return ticketRepository.getAllTickets();
+    return await ticketRepository.getAllTickets();
   },
 
   async getTicketById(id: number): Promise<ITicketWithID> {
-    return ticketRepository.getTicketById(id);
+    return await ticketRepository.getTicketById(id);
   },
 
   async createTicket(ticketData: ITicket): Promise<ITicketWithID> {
-    return ticketRepository.createTicket(ticketData);
+    return await ticketRepository.createTicket(ticketData);
   },
 
   async editTicket(id: number, ticketData: ITicket): Promise<ITicketWithID> {
-    return ticketRepository.editTicket(id, ticketData);
+    return await ticketRepository.editTicket(id, ticketData);
   },
 
   async deleteTicket(id: number): Promise<boolean> {
-    return ticketRepository.deleteTicket(id);
+    return await ticketRepository.deleteTicket(id);
   },
 };
 

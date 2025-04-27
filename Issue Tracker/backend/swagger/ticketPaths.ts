@@ -1,0 +1,122 @@
+export const ticketPaths = {
+    '/ticket': {
+        get: {
+            tags: ['Tickets'],
+            summary: 'Get all tickets',
+            responses: {
+                200: {
+                    description: 'List of tickets',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'array',
+                                items: {
+                                    $ref: '#/components/schemas/Ticket'
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        post: {
+            tags: ['Tickets'],
+            summary: 'Create a new ticket',
+            requestBody: {
+                required: true,
+                content: {
+                    'application/json': {
+                        schema: {
+                            $ref: '#/components/schemas/TicketData'
+                        }
+                    }
+                }
+            },
+            responses: {
+                201: {
+                    description: 'Ticket created successfully',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                $ref: '#/components/schemas/Ticket'
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    '/ticket/{id}': {
+        parameters: [
+            {
+                name: 'id',
+                in: 'path',
+                required: true,
+                schema: {
+                    type: 'integer'
+                },
+                description: 'Ticket ID'
+            }
+        ],
+        get: {
+            tags: ['Tickets'],
+            summary: 'Get a ticket by ID',
+            responses: {
+                200: {
+                    description: 'Ticket found',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                $ref: '#/components/schemas/Ticket'
+                            }
+                        }
+                    }
+                },
+                404: {
+                    description: 'Ticket not found'
+                }
+            }
+        },
+        put: {
+            tags: ['Tickets'],
+            summary: 'Update a ticket',
+            requestBody: {
+                required: true,
+                content: {
+                    'application/json': {
+                        schema: {
+                            $ref: '#/components/schemas/TicketData'
+                        }
+                    }
+                }
+            },
+            responses: {
+                200: {
+                    description: 'Ticket updated successfully',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                $ref: '#/components/schemas/Ticket'
+                            }
+                        }
+                    }
+                },
+                404: {
+                    description: 'Ticket not found'
+                }
+            }
+        },
+        delete: {
+            tags: ['Tickets'],
+            summary: 'Delete a ticket',
+            responses: {
+                204: {
+                    description: 'Ticket deleted successfully'
+                },
+                404: {
+                    description: 'Ticket not found'
+                }
+            }
+        }
+    }
+};

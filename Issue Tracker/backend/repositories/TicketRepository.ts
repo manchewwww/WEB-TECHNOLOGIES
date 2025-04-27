@@ -1,39 +1,37 @@
+import { ITicket } from '../db/models/Ticket';
 import NotFoundError from '../exceptions/NotFoundException';
-import { Ticket, TicketData } from '../models/ExampleTicket';
 
-let tickets: Ticket[] = [];
-let id: number = 1;
+let tickets: ITicket[] = [];
 
 const TicketRepository = {
-    getAllTickets(): Ticket[] {
-        return tickets;
+    async getAllTickets(): Promise<ITicket[]> {
+        return [...tickets];
     },
 
-    getTicketById(ticketId: number): Ticket {
-        const ticket = tickets.find(ticket => ticket.id === ticketId);
+    async getTicketById(ticketId: string): Promise<ITicket> {
+        const ticket = tickets.find(ticket => ticket.id.toString() === ticketId);
         if (!ticket) {
             throw new NotFoundError(`Ticket with ID ${ticketId} not found`);
         }
         return ticket;
     },
 
-    createTicket(ticketData: TicketData): Ticket {
-        const newTicket: Ticket = { id: id++, ...ticketData };
-        tickets.push(newTicket);
-        return newTicket;
+    async createTicket(ticketData: ITicket): Promise<ITicket> {
+        tickets.push(ticketData);
+        return ticketData;
     },
 
-    editTicket(ticketId: number, ticketWithNewData: TicketData): Ticket {
-        const ticketIndex = tickets.findIndex(ticket => ticket.id === ticketId);
+    async editTicket(ticketId: string, ticketWithNewData: ITicket): Promise<ITicket> {
+        const ticketIndex = tickets.findIndex(ticket => ticket.id.toString() === ticketId);
         if (ticketIndex === -1) {
             throw new NotFoundError(`Ticket with ID ${ticketId} not found`);
         }
-        tickets[ticketIndex] = { ...tickets[ticketIndex], ...ticketWithNewData };
+        Object.assign(tickets[ticketIndex], ticketWithNewData);
         return tickets[ticketIndex];
     },
 
-    deleteTicket(ticketId: number): boolean {
-        const ticketIndex = tickets.findIndex(ticket => ticket.id === ticketId);
+    async deleteTicket(ticketId: string): Promise<boolean> {
+        const ticketIndex = tickets.findIndex(ticket => ticket.id.toString() === ticketId);
         if (ticketIndex === -1) {
             throw new NotFoundError(`Ticket with ID ${ticketId} not found`);
         }

@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document, Types } from "mongoose";
+import mongoose, { Schema, Document, Types, NumberExpression } from "mongoose";
 
 interface IComment {
     userId: Types.ObjectId;
@@ -7,6 +7,7 @@ interface IComment {
 }
 
 export interface ITicket extends Document {
+    id: Types.ObjectId;
     title: string;
     description: string;
     status: "open" | "in_progress" | "review" | "closed";

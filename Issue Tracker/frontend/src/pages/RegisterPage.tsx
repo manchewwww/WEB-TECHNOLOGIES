@@ -9,6 +9,7 @@ function RegisterPage() {
     confirmPassword: "",  
   });
 
+  
   const handleChange = (e) => {
     setFormData(prev => ({
       ...prev,

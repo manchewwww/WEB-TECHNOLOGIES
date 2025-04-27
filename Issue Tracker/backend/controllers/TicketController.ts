@@ -1,6 +1,6 @@
 import express, { Request, Response, Router } from 'express';
 import ticketService from '../services/TicketService';
-import { Ticket, TicketData } from '../models/Ticket';
+import { Ticket, TicketData } from '../models/ExampleTicket';
 
 const router: Router = express.Router();
 
@@ -13,7 +13,7 @@ const router: Router = express.Router();
 
 /**
  * @swagger
- * /:
+ * /ticket:
  *   get:
  *     summary: Get all tickets
  *     tags: [Tickets]
@@ -27,7 +27,7 @@ const router: Router = express.Router();
  *               items:
  *                 $ref: '#/components/schemas/Ticket'
  */
-router.get('/', async (req: Request, res: Response) => {
+router.get('/ticket', async (req: Request, res: Response) => {
     try {
         const tickets: Ticket[] = await ticketService.getAllTickets();
         res.json(tickets);
@@ -38,7 +38,7 @@ router.get('/', async (req: Request, res: Response) => {
 
 /**
  * @swagger
- * /{id}:
+ * /ticket/{id}:
  *   get:
  *     summary: Get ticket by ID
  *     tags: [Tickets]
@@ -59,7 +59,7 @@ router.get('/', async (req: Request, res: Response) => {
  *       404:
  *         description: Ticket not found
  */
-router.get('/:id', async (req: Request, res: Response): Promise<any> => {
+router.get('/ticket/:id', async (req: Request, res: Response): Promise<any> => {
     try {
         const ticket: Ticket = await ticketService.getTicketById(+req.params.id);
         res.json(ticket);
@@ -73,7 +73,7 @@ router.get('/:id', async (req: Request, res: Response): Promise<any> => {
 
 /**
  * @swagger
- * /:
+ * /ticket:
  *   post:
  *     summary: Create a new ticket
  *     tags: [Tickets]
@@ -93,7 +93,7 @@ router.get('/:id', async (req: Request, res: Response): Promise<any> => {
  *       500:
  *         description: Failed to create ticket
  */
-router.post('/', async (req: Request, res: Response): Promise<any> => {
+router.post('/ticket', async (req: Request, res: Response): Promise<any> => {
     try {
         const newTicket: Ticket = await ticketService.createTicket(req.body);
         res.status(201).json(newTicket);
@@ -104,7 +104,7 @@ router.post('/', async (req: Request, res: Response): Promise<any> => {
 
 /**
  * @swagger
- * /{id}:
+ * /ticket/{id}:
  *   put:
  *     summary: Update a ticket
  *     tags: [Tickets]
@@ -131,7 +131,7 @@ router.post('/', async (req: Request, res: Response): Promise<any> => {
  *       404:
  *         description: Ticket not found
  */
-router.put('/:id', async (req: Request, res: Response): Promise<any> => {
+router.put('/ticket/:id', async (req: Request, res: Response): Promise<any> => {
     try {
         const editedTicket: Ticket = await ticketService.editTicket(+req.params.id, req.body.ticket);
         res.json(editedTicket);
@@ -145,7 +145,7 @@ router.put('/:id', async (req: Request, res: Response): Promise<any> => {
 
 /**
  * @swagger
- * /{id}:
+ * /ticket/{id}:
  *   delete:
  *     summary: Delete a ticket
  *     tags: [Tickets]
@@ -162,7 +162,7 @@ router.put('/:id', async (req: Request, res: Response): Promise<any> => {
  *       404:
  *         description: Ticket not found
  */
-router.delete('/:id', async (req: Request, res: Response): Promise<any> => {
+router.delete('ticket/:id', async (req: Request, res: Response): Promise<any> => {
     try {
         await ticketService.deleteTicket(+req.params.id);
         res.status(204).send();

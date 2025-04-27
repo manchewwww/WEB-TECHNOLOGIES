@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document, Types } from "mongoose";
+import mongoose, { Schema, Document, Types, NumberExpression } from "mongoose";
 
 interface IComment {
     userId: Types.ObjectId;
@@ -16,6 +16,10 @@ export interface ITicket extends Document {
     createdAt?: Date;
     updatedAt?: Date;
     comments?: IComment[];
+}
+
+export interface ITicketWithID extends ITicket {
+    id: number;
 }
 
 const CommentSchema: Schema = new Schema({

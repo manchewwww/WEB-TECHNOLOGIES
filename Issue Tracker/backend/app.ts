@@ -4,7 +4,6 @@ import swaggerSpec from './swagger/swagger';
 import cors from 'cors';
 import ticketRouter from './controllers/TicketController';
 
-
 const app = express();
 app.use(cors());
 

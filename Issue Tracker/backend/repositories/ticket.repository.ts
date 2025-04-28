@@ -1,4 +1,4 @@
-import { ITicket } from '../db/models/Ticket';
+import { ITicket } from '../db/interfaces/ticket.interface';
 import NotFoundError from '../exceptions/NotFoundException';
 
 let tickets: ITicket[] = [];

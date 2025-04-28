@@ -1,5 +1,5 @@
 import express, { Request, Response, Router, RequestHandler } from "express";
-import authService from "../services/AuthService";
+import authService from "../services/auth.service";
 import jwt from "jsonwebtoken";
 
 class AuthController {

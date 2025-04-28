@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import UserRepository from "../repositories/UserRepository";
+import UserRepository from "../repositories/user.repository";
 
 class AuthService {
     
@@ -9,7 +9,7 @@ class AuthService {
       throw new Error("Този имейл вече е зает.");
     }
 
-    const newUser = await UserRepository.createUser(username, email, password);
+    const newUser = await UserRepository.createUser(username, email, password, "user");
     return {
       id: newUser._id,
       username: newUser.username,

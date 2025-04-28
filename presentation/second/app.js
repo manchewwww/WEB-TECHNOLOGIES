@@ -3,14 +3,71 @@ const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
 const path = require('path');
 
+let products = [];
 
 const app = express();
 const port = 3000;
+app.use(express.json());
 
 const swaggerDocument = YAML.load('./swagger.yaml');
 
-app.get('/api/hello', (req, res) => {
-    res.json({ message: 'Hello World!' });
+app.get('/api/products', (req, res) => {
+    res.json(products);
+});
+
+app.get('/api/products/:id', (req, res) => {
+    const id = parseInt(req.params.id);
+    const product = products.find(p => p.id === id);
+
+    if (!product) {
+        return res.status(404).json({ error: 'Product not found' });
+    }
+
+    res.json(product);
+});
+
+app.post('/api/products', (req, res) => {
+    const { name, price } = req.body;
+
+    if (!name || !price) {
+        return res.status(400).json({ error: 'Name and price are required' });
+    }
+
+    const newProduct = {
+        id: products.length + 1,
+        name,
+        price
+    };
+
+    products.push(newProduct);
+    res.status(201).json(newProduct);
+});
+
+app.put('/api/products/:id', (req, res) => {
+    const id = parseInt(req.params.id);
+    const { name, price } = req.body;
+    const product = products.find(p => p.id === id);
+
+    if (!product) {
+        return res.status(404).json({ error: 'Product not found' });
+    }
+
+    if (name) product.name = name;
+    if (price) product.price = price;
+
+    res.json(product);
+});
+
+app.delete('/api/products/:id', (req, res) => {
+    const id = parseInt(req.params.id);
+    const index = products.findIndex(p => p.id === id);
+
+    if (index === -1) {
+        return res.status(404).json({ error: 'Product not found' });
+    }
+
+    const deletedProduct = products.splice(index, 1);
+    res.json({ message: 'Product deleted', product: deletedProduct[0] });
 });
 
 app.get('/swagger.yaml', (req, res) => {

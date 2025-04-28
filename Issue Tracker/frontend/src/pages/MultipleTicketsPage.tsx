@@ -1,20 +1,30 @@
 import { useState, useEffect } from 'react';
-import { ITicket } from "../../../backend/db/models/Ticket.ts";
-import TicketRepository from "../../../backend/repositories/TicketRepository.ts" 
+import { ITicket } from "../../../backend/db/interfaces/ticket.interface.ts";
+//import TicketController from "../../../backend/controllers/TicketController.ts" 
 
-//const API_URL = 'http://localhost:3000'; // Your API URL here
+const API_URL = 'http://localhost:3000'; // Adjust the port if needed
 
 function MultipleTicketsPage() {
-  const [tickets, setTickets] = useState<ITicket[]>([]); // Explicitly set the type for tickets
+  const [tickets, setTickets] = useState<ITicket[]>([]);
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState('project');
 
   useEffect(() => {
     async function fetchTickets() {
       try {
-//        const response = await fetch(`${API_URL}/ticket`);
-        const data = await TicketRepository.getAllTickets()
-        console.log('Fetched Tickets:', data); // Debugging log
+        const response = await fetch(`${API_URL}/`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch tickets');
+        }
+
+        const data = await response.json();
+        console.log('Fetched Tickets:', data);
         setTickets(data);
       } catch (error) {
         console.error('Грешка при зареждане на билетите:', error);
@@ -25,6 +35,7 @@ function MultipleTicketsPage() {
 
     fetchTickets();
   }, []);
+
 
   const sortedTickets = [...tickets].sort((a, b) => {
     const getString = (value: any) => {

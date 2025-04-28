@@ -1,6 +1,6 @@
 import express, { Request, RequestHandler, Response, Router } from 'express';
 import ticketService from '../services/TicketService';
-import { ITicket } from "../db/models/Ticket";
+import { ITicket } from "../db/interfaces/ticket.interface";
 
 class TicketController {
     public router: Router;

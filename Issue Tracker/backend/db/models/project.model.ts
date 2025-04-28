@@ -1,11 +1,5 @@
-import mongoose, { Schema, Document, Types } from "mongoose";
-
-export interface IProject extends Document {
-    name: string;
-    description?: string;
-    createdBy: Types.ObjectId;
-    members: Types.ObjectId[];
-}
+import mongoose, { Schema } from "mongoose";
+import { IProject } from "../interfaces/project.interface";
 
 const ProjectSchema: Schema = new Schema({
     name: { type: String, required: true },

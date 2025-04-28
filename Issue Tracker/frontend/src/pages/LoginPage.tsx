@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { use, useEffect, useState } from 'react';
-//import '../styles/LoginPage.css';
+import '../styles/LoginPage.css';
 import { useAuth } from '../context/AuthContext';
 
 function LoginPage() {

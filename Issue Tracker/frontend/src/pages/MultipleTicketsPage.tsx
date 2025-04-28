@@ -1,18 +1,8 @@
 import { useState, useEffect } from 'react';
+import { ITicket } from "../../../backend/db/models/Ticket.ts";
+import TicketRepository from "../../../backend/repositories/TicketRepository.ts" 
 
-interface ITicket {
-  id: string;
-  title: string;
-  description: string;
-  status: 'open' | 'in-progress' | 'review' | 'closed';
-  projectId: string;
-  assignee?: string;
-  createdBy: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-const API_URL = 'http://localhost:3000'; // Your API URL here
+//const API_URL = 'http://localhost:3000'; // Your API URL here
 
 function MultipleTicketsPage() {
   const [tickets, setTickets] = useState<ITicket[]>([]); // Explicitly set the type for tickets
@@ -22,8 +12,9 @@ function MultipleTicketsPage() {
   useEffect(() => {
     async function fetchTickets() {
       try {
-        const response = await fetch(`${API_URL}/ticket`);
-        const data = await response.json();
+//        const response = await fetch(`${API_URL}/ticket`);
+        const data = await TicketRepository.getAllTickets()
+        console.log('Fetched Tickets:', data); // Debugging log
         setTickets(data);
       } catch (error) {
         console.error('Грешка при зареждане на билетите:', error);
@@ -36,12 +27,16 @@ function MultipleTicketsPage() {
   }, []);
 
   const sortedTickets = [...tickets].sort((a, b) => {
+    const getString = (value: any) => {
+      return value || ''; // Treat the value as a string if it's not defined
+    };
+  
     if (sortBy === 'project') {
-      return a.projectId.localeCompare(b.projectId);
+      return getString(a.projectId).localeCompare(getString(b.projectId));
     } else if (sortBy === 'assignee') {
-      return (a.assignee || '').localeCompare(b.assignee || '');
+      return getString(a.assignee).localeCompare(getString(b.assignee));
     } else if (sortBy === 'status') {
-      return a.status.localeCompare(b.status);
+      return getString(a.status).localeCompare(getString(b.status));
     } else {
       return 0;
     }
@@ -66,18 +61,29 @@ function MultipleTicketsPage() {
 
       <div>
         {sortedTickets.map((ticket) => (
-          <div key={ticket.id} style={{ border: '1px solid #ccc', padding: '15px', marginBottom: '10px', borderRadius: '5px' }}>
+          <div
+            key={ticket.id.toString()} // Assuming ticket.id is already a string or ObjectId
+            style={{
+              border: '1px solid #ccc',
+              padding: '15px',
+              marginBottom: '10px',
+              borderRadius: '5px',
+            }}
+          >
             <h3>{ticket.title}</h3>
             <p><strong>Описание:</strong> {ticket.description}</p>
             <p><strong>Статус:</strong> {ticket.status}</p>
-            <p><strong>Проект ID:</strong> {ticket.projectId}</p>
-            <p><strong>Възложен на (ID):</strong> {ticket.assignee || 'Не е зададен'}</p>
-            <p><small>Създаден на: {new Date(ticket.createdAt).toLocaleDateString()}</small></p>
+            {/* Check if projectId exists and handle it */}
+            <p><strong>Проект ID:</strong> {ticket.projectId ? ticket.projectId.toString() : 'Не е зададен'}</p>
+            <p><strong>Възложен на (ID):</strong> {ticket.assignee ? ticket.assignee.toString() : 'Не е зададен'}</p>
+            <p><small>Създаден на: {ticket.createdAt ? new Date(ticket.createdAt).toLocaleDateString() : 'Няма дата'}</small></p>
           </div>
         ))}
       </div>
     </div>
   );
 }
+
+
 
 export default MultipleTicketsPage;

@@ -11,11 +11,11 @@ class TicketController {
     }
 
     private initializeRoutes() {
-        this.router.get('/ticket', this.getAllTickets.bind(this) as RequestHandler);
-        this.router.get('/ticket/:id', this.getTicketById.bind(this) as RequestHandler);
-        this.router.post('/ticket', this.createTicket.bind(this) as RequestHandler);
-        this.router.put('/ticket/:id', this.updateTicket.bind(this) as RequestHandler);
-        this.router.delete('/ticket/:id', this.deleteTicket.bind(this) as RequestHandler);
+        this.router.get('/', this.getAllTickets.bind(this) as RequestHandler);
+        this.router.get('/:id', this.getTicketById.bind(this) as RequestHandler);
+        this.router.post('/', this.createTicket.bind(this) as RequestHandler);
+        this.router.put('/:id', this.updateTicket.bind(this) as RequestHandler);
+        this.router.delete('/:id', this.deleteTicket.bind(this) as RequestHandler);
     };
 
     private async getAllTickets(req: Request, res: Response) {

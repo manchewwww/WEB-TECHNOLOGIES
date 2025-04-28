@@ -1,0 +1,23 @@
+
+.homepage {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+}
+
+.homepage-content {
+  padding: 40px;
+  border-radius: 12px;
+  text-align: center;
+  max-width: 600px;
+  width: 100%;
+}
+
+.main-title {
+  margin-bottom: 20px;
+}
+
+.description-box {
+  margin-top: 20px;
+}

@@ -3,17 +3,21 @@ import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './swagger/swagger';
 import cors from 'cors';
 import ticketRouter from './controllers/TicketController';
-import connectDB from './db/dbConnect'; // <-- Добавяме импорт на connectDB
-import dotenv from 'dotenv';
+import authRouter from './controllers/AuthController';
+import connectDB from './db/dbConnect';
+import dotenv from "dotenv";
+import path from 'path';
 
-dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const app = express();
 app.use(cors());
-
 app.use(express.json());
+
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-app.use(ticketRouter);
+
+app.use('/api/tickets', ticketRouter);
+app.use('/api/auth', authRouter);
 
 const startServer = async () => {
     try {

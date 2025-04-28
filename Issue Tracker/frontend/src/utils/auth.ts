@@ -1,78 +1,70 @@
-
-import { TOKEN_EXPIRATION_TIME } from "../constants";
+import { authApi } from "../services/api";
 
 export type User = {
-  id: number;
-  username: string;
-}
-
-interface Token {
-  username: string;
   id: string;
-  expiresAt: number;
+  username: string;
+  email: string;
+  role?: string;
 }
 
-const dummyUsers = [
-  { username: 'admin', password: 'admin' },
-  { username: 'user', password: 'user' },
-];
+export async function login(email: string, password: string): Promise<boolean> {
+  try {
+    const response = await authApi.login({ email, password });
+    
+    setAuthToken(response.user.accessToken);
+    localStorage.setItem('refreshToken', response.user.refreshToken);
 
-export function login(username: string, password: string): boolean {
-
-  //TODO: Replace with real API call
-  const user = dummyUsers.find(user => user.username === username && user.password === password);
-
-  if (!user) {
+    localStorage.setItem('user', JSON.stringify({
+      id: response.user.id,
+      username: response.user.username,
+      email: response.user.email,
+      role: response.user.role,
+    }));
+    
+    return true;
+  } catch (error) {
+    console.error('Login failed:', error);
     return false;
   }
+}
 
-  const token: Token = {
-    username: user.username,
-    id: user.username, //TODO: Replace with ID
-    expiresAt: Date.now() + TOKEN_EXPIRATION_TIME,
-  };
-
-  localStorage.setItem('token', JSON.stringify(token));
-  return true;
-} 
+export async function register(username: string, email: string, password: string, confirmPassword: string): Promise<boolean> {
+  try {
+    await authApi.register({ username, email, password, confirmPassword });
+    return true;
+  } catch (error) {
+    console.error('Registration failed:', error);
+    return false;
+  }
+}
 
 export function logout(): void {
-  localStorage.removeItem('token');
+  localStorage.removeItem('authToken');
+  localStorage.removeItem('user');
 }
 
 export function isAuthenticated(): boolean {
-  const token = localStorage.getItem('token');
-
-  if (token !== null) {
-    const parsedToken = JSON.parse(token);
-    const currentTime = Date.now();
-
-    if (currentTime > parsedToken.expiresAt) {
-      localStorage.removeItem('token');
-      return false;
-    }
-    
-    return true;
-  }
-
-  return false;
+  const token = localStorage.getItem('authToken');
+  return token !== null;
 }
 
 export function getCurrentUser(): User | null {
-  const tokenStr = localStorage.getItem('token');
-  if (!tokenStr) {
+  const userStr = localStorage.getItem('user');
+  if (!userStr) {
     return null;
   }
-
-  const token = JSON.parse(tokenStr);
-  if (Date.now() > token.expiresAt) {
-    localStorage.removeItem('token');
-    return null;
-  }
-
-  return {
-    id: token.id,
-    username: token.username,
-  };
+  
+  return JSON.parse(userStr);
 }
 
+export function getAuthToken(): string | null {
+  return localStorage.getItem('authToken');
+}
+
+export function getRefreshToken(): string | null {
+  return localStorage.getItem('refreshToken');
+}
+
+export function setAuthToken(token: string): void {
+  localStorage.setItem('authToken', token);
+}

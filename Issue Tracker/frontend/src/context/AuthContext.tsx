@@ -1,10 +1,10 @@
-
 import { createContext, useContext, useState, useEffect } from 'react';
-import { isAuthenticated, login as authLogin, logout as authLogout, getCurrentUser, User } from '../utils/auth';
+import { isAuthenticated, login as authLogin, logout as authLogout, getCurrentUser, User, register as authRegister } from '../utils/auth';
 
 type AuthContextType = {
-  user: string | null;
-  login: (username: string, password: string) => boolean;
+  user: User | null;
+  login: (email: string, password: string) => Promise<boolean>;
+  register: (username: string, email: string, password: string, confirmPassword: string) => Promise<boolean>;
   logout: () => void;
 };
 
@@ -19,12 +19,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const login = (username: string, password: string) => {
-    const success = authLogin(username, password);
-    if (success) {
-      setUser(getCurrentUser());
+  const login = async (email: string, password: string) => {
+    try {
+      const success = await authLogin(email, password);
+      if (success) {
+        setUser(getCurrentUser());
+      }
+      return success;
+    } catch (error) {
+      console.error('Login error:', error);
+      return false;
     }
-    return success;
+  };
+
+  const register = async (username: string, email: string, password: string, confirmPassword: string) => {
+    try {
+      const success = await authRegister(username, email, password, confirmPassword);
+      if (success) {
+        setUser(getCurrentUser());
+      }
+      return success;
+    } catch (error) {
+      console.error('Registration error:', error);
+      return false;
+    }
   };
 
   const logout = () => {
@@ -33,7 +51,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );

@@ -9,18 +9,22 @@ class AuthService {
       throw new Error("Този имейл вече е зает.");
     }
 
-    const newUser = await UserRepository.createUser(username, email, password, "user");
-    return {
-      id: newUser._id,
-      username: newUser.username,
-      email: newUser.email,
-      role: newUser.role,
-    };
+    const newUser = await UserRepository.createUser({
+    username,
+    email,
+    password,
+    role: "user",
+    });
   }
 
   async login(email: string, password: string) {
     const user = await UserRepository.findUserByEmail(email);
-    if (!user || !user.validatePassword(password)) {
+    if (!user) {
+      throw new Error("Грешен имейл или парола.");
+    }
+    
+    const isPasswordValid = await UserRepository.validatePassword(password, user.password);
+    if (!isPasswordValid) {
       throw new Error("Грешен имейл или парола.");
     }
 

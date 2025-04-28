@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import '../styles/NavBar.css';
 import mainLogo from '../assets/mainLogo.png';
 import { useAuth } from "../context/AuthContext";
@@ -17,7 +17,11 @@ function NavBar() {
       <div className="nav-right">
         {user ? (
           <div className="user-info">
-            <span className="username">Hello, {user?.username}</span>
+            {/* <span className="username">Hello, {user?.username}</span> */}
+            <Link to="/projects" className="nav-btn projects-btn">Projects</Link>
+            {user.role == 'admin' && (
+              <Link to="/admin" className="nav-btn admin-btn">Admin Panel</Link>
+            )}
             <button onClick={logout} className="nav-btn logout-btn">Logout</button>
           </div>
         ) : (

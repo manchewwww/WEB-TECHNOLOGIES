@@ -1,23 +1,5 @@
-import mongoose, { Schema, Document, Types, NumberExpression } from "mongoose";
-
-interface IComment {
-    userId: Types.ObjectId;
-    text: string;
-    createdAt: Date;
-}
-
-export interface ITicket extends Document {
-    id: Types.ObjectId;
-    title: string;
-    description: string;
-    status: "open" | "in_progress" | "review" | "closed";
-    projectId: Types.ObjectId;
-    assignee?: Types.ObjectId;
-    createdBy: Types.ObjectId;
-    createdAt?: Date;
-    updatedAt?: Date;
-    comments?: IComment[];
-}
+import mongoose, { Schema } from "mongoose";
+import { ITicket } from "../interfaces/ticket.interface";
 
 const CommentSchema: Schema = new Schema({
     userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
@@ -33,6 +15,11 @@ const TicketSchema: Schema = new Schema(
             type: String,
             enum: ["open", "in_progress", "review", "closed"],
             default: "open",
+        },
+        priority: {
+            type: String,
+            enum: ["low", "medium", "high", "critical"],
+            default: "low",
         },
         projectId: { type: Schema.Types.ObjectId, ref: "Project", required: true },
         assignee: { type: Schema.Types.ObjectId, ref: "User" },

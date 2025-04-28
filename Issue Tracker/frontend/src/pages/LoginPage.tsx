@@ -1,14 +1,15 @@
 import { useNavigate } from 'react-router-dom';
-import { use, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import '../styles/LoginPage.css';
 import { useAuth } from '../context/AuthContext';
 
 function LoginPage() {
   const navigate = useNavigate();
   const { login, user} = useAuth();
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -16,17 +17,23 @@ function LoginPage() {
     }
   }, [user, navigate]);
 
-  const handleLogin = (e: any) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
+    setIsLoading(true);
     
-    const success = login(username, password);
-    if (!success) {
-      setError('Грешно потребителско име или парола!');
-      return;
+    try {
+      const success = await login(email, password);
+      if (!success) {
+        setError('Грешен имейл или парола!');
+        return;
+      }
+      navigate('/');
+    } catch (error) {
+      setError('Възникна грешка при влизането.');
+    } finally {
+      setIsLoading(false);
     }
-
-    alert('Успешно влизане (фиктивно)');
-    navigate('/');
   };
 
   return (
@@ -35,10 +42,10 @@ function LoginPage() {
         <h2>Login</h2>
         <form onSubmit={handleLogin}>
           <input 
-            type="text" 
-            placeholder="Username"
-            value={username}
-            onChange={e => setUsername(e.target.value)} 
+            type="email" 
+            placeholder="Email"
+            value={email}
+            onChange={e => setEmail(e.target.value)} 
             required
           />
           <input 
@@ -49,7 +56,9 @@ function LoginPage() {
             required 
           />
           {error && <p className="error-message">{error}</p>}
-          <button type="submit">Login</button>
+          <button type="submit" disabled={isLoading}>
+            {isLoading ? 'Loading...' : 'Login'}
+          </button>
         </form>
       </div>
     </div>

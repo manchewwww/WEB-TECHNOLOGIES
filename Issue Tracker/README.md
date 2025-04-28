@@ -7,13 +7,13 @@
    ```bash
    npm run install-all
    ```
-   *This will install `jsonwebtoken` (and other deps) for the backend and react/vite deps for the frontend.*
+   *This will install all backend and frontend dependencies.*  
 
 3. Start both servers  
    ```bash
    npm run dev
    ```
-   - Backend 👉 http://localhost:3000  
+   - Backend (swagger) 👉 http://localhost:3000/api-docs  
    - Frontend 👉 http://localhost:3003
 
 4. Build for production  

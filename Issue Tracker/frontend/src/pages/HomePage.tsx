@@ -1,10 +1,14 @@
 import '../styles/HomePage.css';
+import { useAuth } from "../context/AuthContext";
 import { Link } from 'react-router-dom';
 
 function HomePage() {
+  const { user } = useAuth();
+
   return (
     <div className="homepage">
       <main className="homepage-content">
+        {user && <h1 className="main-title">Hello, {user.username}</h1>}
         <div className="description-box">
           <h2>Добре дошли в нашия Issue Tracker!</h2>
           <p>

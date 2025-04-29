@@ -1,9 +1,7 @@
 import UserModel from "../db/models/user.model";
 import { IUser } from "../db/interfaces/user.interface";
 import NotFoundError from "../exceptions/NotFoundException";
-import bcrypt from "bcryptjs";
 
-const SALT_ROUNDS = 10;
 
 const UserRepository = {
   async getAllUsers(): Promise<IUser[]> {
@@ -37,12 +35,7 @@ const UserRepository = {
       throw new Error("Password is required");
     }
 
-    const hashedPassword = await this.hashPassword(userData.password);
-
-    const newUser = new UserModel({
-      ...userData,
-      password: hashedPassword,
-    });
+    const newUser = new UserModel(userData);
 
     const savedUser = await newUser.save();
     return savedUser.toObject();
@@ -62,16 +55,6 @@ const UserRepository = {
       throw new NotFoundError(`User with ID ${id} not found`);
     }
   },
-  
-  async hashPassword(password: string): Promise<string> {
-    const salt = await bcrypt.genSalt(SALT_ROUNDS);
-    const hash = await bcrypt.hash(password, salt);
-    return hash;
-  },
-
-  async validatePassword(plainPassword: string, hashedPassword: string): Promise<boolean> {
-    return bcrypt.compare(plainPassword, hashedPassword);
-  }
 };
 
 export default UserRepository;

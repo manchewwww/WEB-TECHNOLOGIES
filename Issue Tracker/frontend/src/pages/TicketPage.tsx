@@ -9,13 +9,15 @@ const users = [
   { id: 'user789', name: 'Charlie Brown' },
 ];
 
-const TicketPage = ({ initialTicket }) => {
+type error = { title: string, description: string, status: string, assignee: string, priority: string };
+
+const TicketPage = ({ initialTicket }: { initialTicket: Ticket }) => {
   const [ticket, setTicket] = useState(initialTicket);
   const [originalTicket] = useState(initialTicket);
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState({} as error);
   const [successMessage, setSuccessMessage] = useState('');
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setTicket((prev) => ({
       ...prev,
@@ -25,7 +27,7 @@ const TicketPage = ({ initialTicket }) => {
   };
 
   const validate = () => {
-    const newErrors = {};
+    const newErrors = {} as error;
     if (!ticket.title.trim()) {
       newErrors.title = 'Title is required.';
     } else if (ticket.title.length < 5) {
@@ -50,7 +52,7 @@ const TicketPage = ({ initialTicket }) => {
     return newErrors;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
@@ -58,7 +60,7 @@ const TicketPage = ({ initialTicket }) => {
       setSuccessMessage('');
       return;
     }
-    setErrors({});
+    setErrors({} as error);
     const updatedTicket = {
       ...ticket,
       updatedAt: new Date().toISOString(),
@@ -70,30 +72,29 @@ const TicketPage = ({ initialTicket }) => {
 
   const handleReset = () => {
     setTicket(originalTicket);
-    setErrors({});
+    setErrors({} as error);
     setSuccessMessage('');
   };
 
-  const getAssigneeName = (id) => {
+  const getAssigneeName = (id: string) => {
     const user = users.find((u) => u.id === id);
     return user ? user.name : 'Unknown';
   };
 
-  const formatDate = (isoString) => {
-    const options = {
+  const formatDate = (isoString: string) => {
+    return new Intl.DateTimeFormat('en-GB', {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
-    };
-    return new Intl.DateTimeFormat('en-GB', options).format(new Date(isoString));
+    }).format(new Date(isoString));
   };
 
   return (
     <div className="ticket-container">
       <div className="breadcrumb">
-        <Link to="/" className="breadcrumb-link">Home</Link> &gt; 
+        <Link to="/" className="breadcrumb-link">Home</Link> &gt;
         <span className="breadcrumb-current">Edit Ticket</span>
       </div>
       <h1 className="ticket-title">Edit Ticket</h1>
@@ -118,7 +119,7 @@ const TicketPage = ({ initialTicket }) => {
             value={ticket.description}
             onChange={handleChange}
             className={`form-textarea ${errors.description ? 'input-error' : ''}`}
-            rows="4"
+            rows={4}
           />
           {errors.description && <p className="error-message">{errors.description}</p>}
         </div>
@@ -133,10 +134,10 @@ const TicketPage = ({ initialTicket }) => {
             className="form-select"
           >
             <option value="">Select status</option>
-            <option value="open">Open</option>
-            <option value="in-progress">In Progress</option>
-            <option value="review">Review</option>
-            <option value="closed">Closed</option>
+            <option value="Open">Open</option>
+            <option value="In-progress">In Progress</option>
+            <option value="Review">Review</option>
+            <option value="Closed">Closed</option>
           </select>
           {errors.status && <p className="error-message">{errors.status}</p>}
         </div>
@@ -165,12 +166,12 @@ const TicketPage = ({ initialTicket }) => {
             name="priority"
             value={ticket.priority || ''}
             onChange={handleChange}
-            className="form-select"
+
           >
             <option value="">Select priority</option>
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
           </select>
           {errors.priority && <p className="error-message">{errors.priority}</p>}
         </div>
@@ -211,13 +212,13 @@ const TicketPage = ({ initialTicket }) => {
                 <th>Priority:</th>
                 <td
                   className={
-                    ticket.priority === 'low'
+                    ticket.priority === 'Low'
                       ? 'priority-low'
-                      : ticket.priority === 'medium'
-                      ? 'priority-medium'
-                      : ticket.priority === 'high'
-                      ? 'priority-high'
-                      : ''
+                      : ticket.priority === 'Medium'
+                        ? 'priority-medium'
+                        : ticket.priority === 'High'
+                          ? 'priority-high'
+                          : ''
                   }
                 >
                   {ticket.priority}
@@ -250,15 +251,15 @@ const sampleTicket = {
   id: '60d5ec49b3f1f8c8a4e4b0c1',
   title: 'Fix login bug',
   description: 'User cannot login with correct credentials',
-  status: 'open',
+  status: 'Open',
   projectId: 'project123',
   assignee: 'user456',
-  priority: 'medium',
+  priority: 'Medium',
   createdBy: 'user123',
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 };
-
+export type Ticket = typeof sampleTicket;
 export default function App() {
   return <TicketPage initialTicket={sampleTicket} />;
 }

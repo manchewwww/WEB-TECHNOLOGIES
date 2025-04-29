@@ -49,14 +49,18 @@ select {
   word-break: break-word;
   overflow-wrap: break-word;
   white-space: normal;
-  resize: none; /* Prevent resizing for textarea */
-  height: 40px; /* Fixed height for inputs */
+  resize: none;
+  /* Prevent resizing for textarea */
+  height: 40px;
+  /* Fixed height for inputs */
 }
 
 /* Textarea-specific styling */
 textarea {
-  height: 120px; /* Fixed height for the description box */
-  overflow-y: auto; /* Allow vertical scrolling if needed */
+  height: 120px;
+  /* Fixed height for the description box */
+  overflow-y: auto;
+  /* Allow vertical scrolling if needed */
 }
 
 /* Hover effect for inputs, textarea, and select */
@@ -64,7 +68,11 @@ input[type="text"]:hover,
 textarea:hover,
 select:hover {
   border-color: #4a90e2;
-  background-color: #f9fafb;
+  /* Blue border on hover */
+  background-color: #000;
+  /* Black background on hover */
+  color: #fff;
+  /* White text on hover */
 }
 
 /* Focus effect for inputs, textarea, and select */
@@ -72,8 +80,15 @@ input[type="text"]:focus,
 textarea:focus,
 select:focus {
   border-color: #4a90e2;
+  /* Blue border on focus */
   box-shadow: 0 0 5px rgba(74, 144, 226, 0.5);
+  /* Subtle blue glow */
   outline: none;
+  /* Remove default outline */
+  background-color: #000;
+  /* Black background on focus */
+  color: #fff;
+  /* White text on focus */
 }
 
 /* Dropdown menu styling */
@@ -231,21 +246,54 @@ select {
   color: #ffffff;
 }
 
-/* Priority-specific styling */
+/* Default styling for the priority dropdown */
+.priority-default {
+  background-color: #444;
+  /* Default gray background */
+  color: #fff;
+  /* White text */
+}
+
+/* Priority dropdown styling */
 .priority-low {
   background-color: #2ecc71;
+  /* Green for low priority */
   color: #fff;
 }
 
 .priority-medium {
   background-color: #f39c12;
+  /* Orange for medium priority */
   color: #fff;
 }
 
 .priority-high {
   background-color: #e74c3c;
+  /* Red for high priority */
   color: #fff;
 }
+
+select.priority-dropdown {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccd0d5;
+  border-radius: 8px;
+  font-size: 16px;
+  color: #fff;
+  /* Default text color */
+  /*background-color: #444;  Default background color */
+  transition: 0.2s;
+  text-align: center;
+  text-align-last: center;
+}
+
+select.priority-dropdown:focus {
+  border-color: #4a90e2;
+  background-color: #000;
+  box-shadow: 0 0 5px rgba(74, 144, 226, 0.5);
+  outline: none;
+}
+
 
 /* Responsive design for smaller screens */
 @media (max-width: 768px) {

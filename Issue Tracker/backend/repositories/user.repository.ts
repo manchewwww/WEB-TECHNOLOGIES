@@ -48,6 +48,21 @@ const UserRepository = {
     return savedUser.toObject();
   },
 
+  async updateUser(id: string, updates: Partial<IUser>): Promise<IUser> {
+    const user = await UserModel.findByIdAndUpdate(id, updates, { new: true, lean: true });
+    if (!user) {
+      throw new NotFoundError(`User with ID ${id} not found`);
+    }
+    return user;
+  },
+  
+  async deleteUser(id: string): Promise<void> {
+    const result = await UserModel.findByIdAndDelete(id);
+    if (!result) {
+      throw new NotFoundError(`User with ID ${id} not found`);
+    }
+  },
+  
   async hashPassword(password: string): Promise<string> {
     const salt = await bcrypt.genSalt(SALT_ROUNDS);
     const hash = await bcrypt.hash(password, salt);

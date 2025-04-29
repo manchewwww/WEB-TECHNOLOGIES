@@ -1,43 +1,74 @@
 import { ITicket } from '../db/interfaces/ticket.interface';
+import TicketModel from '../db/models/ticket.model';
 import NotFoundError from '../exceptions/NotFoundException';
-
-let tickets: ITicket[] = [];
 
 const TicketRepository = {
     async getAllTickets(): Promise<ITicket[]> {
-        return [...tickets];
+        const projects = await TicketModel.find().lean();
+      return projects;
     },
 
     async getTicketById(ticketId: string): Promise<ITicket> {
-        const ticket = tickets.find(ticket => ticket.id.toString() === ticketId);
+        const ticket = await TicketModel.findById(ticketId).lean();
         if (!ticket) {
-            throw new NotFoundError(`Ticket with ID ${ticketId} not found`);
+          throw new NotFoundError(`Ticket with ID ${ticketId} not found`);
         }
         return ticket;
-    },
-
-    async createTicket(ticketData: ITicket): Promise<ITicket> {
-        tickets.push(ticketData);
-        return ticketData;
-    },
-
-    async editTicket(ticketId: string, ticketWithNewData: ITicket): Promise<ITicket> {
-        const ticketIndex = tickets.findIndex(ticket => ticket.id.toString() === ticketId);
-        if (ticketIndex === -1) {
-            throw new NotFoundError(`Ticket with ID ${ticketId} not found`);
+      },
+    
+      async createTicket(ticketData: Partial<ITicket>): Promise<ITicket> {
+        const newTicket = new TicketModel(ticketData);
+        const saved = await newTicket.save();
+        return saved.toObject();
+      },
+    
+      async editTicket(ticketId: string, ticketWithNewData: Partial<ITicket>): Promise<ITicket> {
+        const updatedTicket = await TicketModel.findByIdAndUpdate(
+          ticketId,
+          ticketWithNewData,
+          { new: true, lean: true }
+        );
+        if (!updatedTicket) {
+          throw new NotFoundError(`Ticket with ID ${ticketId} not found`);
         }
-        Object.assign(tickets[ticketIndex], ticketWithNewData);
-        return tickets[ticketIndex];
-    },
-
-    async deleteTicket(ticketId: string): Promise<boolean> {
-        const ticketIndex = tickets.findIndex(ticket => ticket.id.toString() === ticketId);
-        if (ticketIndex === -1) {
-            throw new NotFoundError(`Ticket with ID ${ticketId} not found`);
+        return updatedTicket;
+      },
+    
+      async deleteTicket(ticketId: string): Promise<boolean> {
+        const deleted = await TicketModel.findByIdAndDelete(ticketId);
+        if (!deleted) {
+          throw new NotFoundError(`Ticket with ID ${ticketId} not found`);
         }
-        tickets.splice(ticketIndex, 1);
         return true;
-    }
+      },
+
+      async addComment(ticketId: string, comment: { userId: string, text: string }): Promise<ITicket> {
+        const updatedTicket = await TicketModel.findByIdAndUpdate(
+          ticketId,
+          { $push: { comments: comment } },
+          { new: true, lean: true }
+        );
+        if (!updatedTicket) {
+          throw new NotFoundError(`Ticket with ID ${ticketId} not found`);
+        }
+        return updatedTicket;
+      },
+      
+      async updateStatus(ticketId: string, newStatus: string): Promise<ITicket> {
+        const updated = await TicketModel.findByIdAndUpdate(
+          ticketId,
+          { status: newStatus },
+          { new: true, lean: true }
+        );
+        if (!updated) {
+          throw new NotFoundError(`Ticket with ID ${ticketId} not found`);
+        }
+        return updated;
+      },
+
+      async getTicketsByProject(projectId: string): Promise<ITicket[]> {
+        return TicketModel.find({ projectId }).lean();
+      }      
 };
 
 export default TicketRepository;

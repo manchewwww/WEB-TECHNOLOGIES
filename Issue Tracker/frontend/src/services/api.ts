@@ -1,11 +1,6 @@
-import { getAuthToken, getRefreshToken, setAuthToken } from '../utils/auth';
+import { getRefreshToken, setAuthToken } from '../utils/auth';
 
 const API_URL = 'http://localhost:3000/api';
-
-const getAuthHeaders = () => {
-  const token = getAuthToken();
-  return token ? { 'Authorization': `Bearer ${token}` } : {};
-}
 
 interface LoginParams {
   email: string;
@@ -96,7 +91,6 @@ export const api = {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        ...getAuthHeaders(),
       },
     });
 
@@ -126,7 +120,6 @@ export const api = {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        ...getAuthHeaders(),
       },
       body: data ? JSON.stringify(data) : undefined,
     });
@@ -158,7 +151,6 @@ export const api = {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        ...getAuthHeaders(),
       },
       body: JSON.stringify(data),
     });
@@ -190,7 +182,6 @@ export const api = {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
-        ...getAuthHeaders(),
       },
     });
 

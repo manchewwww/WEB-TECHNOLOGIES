@@ -16,6 +16,9 @@ class TicketController {
         this.router.post('/', this.createTicket.bind(this) as RequestHandler);
         this.router.put('/:id', this.updateTicket.bind(this) as RequestHandler);
         this.router.delete('/:id', this.deleteTicket.bind(this) as RequestHandler);
+        this.router.post('/add-comment', this.addComment.bind(this) as RequestHandler);
+        this.router.put('/update-status', this.updateStatus.bind(this) as RequestHandler);
+        this.router.get('/project/tickets', this.getTicketsByProject.bind(this) as RequestHandler);
     };
 
     private async getAllTickets(req: Request, res: Response) {
@@ -69,6 +72,33 @@ class TicketController {
                 return res.status(404).json({ error: err.message });
             }
             res.status(500).json({ error: 'Failed to delete ticket' });
+        }
+    }
+
+    private async addComment(req: Request, res: Response) {
+        try {
+            const updatedTicket: ITicket = await ticketService.addComment(req.params.id, req.body.comment);
+            res.json(updatedTicket);
+        } catch (err) {
+            res.status(500).json({ error: 'Failed to add comment' });
+        }
+    }
+
+    private async updateStatus(req: Request, res: Response) {
+        try {
+            const updatedTicket: ITicket = await ticketService.updateStatus(req.params.id, req.body.status);
+            res.json(updatedTicket);
+        } catch (err) {
+            res.status(500).json({ error: 'Failed to update status' });
+        }
+    }
+
+    private async getTicketsByProject(req: Request, res: Response) {
+        try {
+            const tickets: ITicket[] = await ticketService.getTicketsByProject(req.params.projectId);
+            res.json(tickets);
+        } catch (err) {
+            res.status(500).json({ error: 'Failed to get tickets by project' });
         }
     }
 }

@@ -1,6 +1,6 @@
 
-import { ITicket } from "../db/models/Ticket";
-import ticketRepository from "../repositories/TicketRepository";
+import { ITicket } from "../db/interfaces/ticket.interface";
+import ticketRepository from "../repositories/ticket.repository";
 
 const TicketService = {
   async getAllTickets(): Promise<ITicket[]> {
@@ -22,6 +22,18 @@ const TicketService = {
   async deleteTicket(id: string): Promise<boolean> {
     return await ticketRepository.deleteTicket(id);
   },
+
+  async addComment(ticketId: string, comment: { userId: string, text: string }): Promise<ITicket> {
+    return await ticketRepository.addComment(ticketId, comment);
+  },
+
+  async updateStatus(ticketId: string, newStatus: string): Promise<ITicket> {
+    return await ticketRepository.updateStatus(ticketId, newStatus);
+  },
+
+  async getTicketsByProject(projectId: string): Promise<ITicket[]> {
+    return await ticketRepository.getTicketsByProject(projectId);
+  }
 };
 
 export default TicketService;

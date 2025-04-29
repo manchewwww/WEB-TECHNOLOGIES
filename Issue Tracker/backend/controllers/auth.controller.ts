@@ -18,12 +18,12 @@ class AuthController {
 
   private async register(req: Request, res: Response): Promise<void> {
     try {
-      const { username, email, password, confirmPassword } = req.body;
+      const { username, firstname, lastname, email, password, confirmPassword } = req.body;
       if (password !== confirmPassword) {
         res.status(400).json({ message: "Паролите не съвпадат." });
         return;
       }
-      const user = await authService.register(username, email, password);
+      const user = await authService.register(username, firstname, lastname, email, password);
       res.status(201).json({ message: "Успешна регистрация.", user });
     } catch (error: any) {
       res.status(400).json({ message: error.message });

@@ -13,6 +13,8 @@ interface LoginParams {
 }
 
 interface RegisterParams {
+  firstname: string;
+  lastname: string;
   username: string;
   email: string;
   password: string;

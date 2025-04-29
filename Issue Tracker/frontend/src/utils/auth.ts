@@ -28,9 +28,16 @@ export async function login(email: string, password: string): Promise<boolean> {
   }
 }
 
-export async function register(username: string, email: string, password: string, confirmPassword: string): Promise<boolean> {
+export async function register(
+  username: string,
+  firstname: string,
+  lastname: string,
+  email: string,
+  password: string,
+  confirmPassword: string
+): Promise<boolean> {
   try {
-    await authApi.register({ username, email, password, confirmPassword });
+    await authApi.register({ username, firstname, lastname, email, password, confirmPassword });
     return true;
   } catch (error) {
     console.error('Registration failed:', error);

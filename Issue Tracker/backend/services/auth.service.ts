@@ -1,20 +1,25 @@
 import jwt from "jsonwebtoken";
 import UserRepository from "../repositories/user.repository";
+import bcrypt from "bcryptjs";
+
+const SALT_ROUNDS = 10;
 
 class AuthService {
-    
+
   async register(username: string, firstname: string, lastname: string, email: string, password: string) {
     const existingUser = await UserRepository.findUserByEmail(email);
     if (existingUser) {
       throw new Error("Този имейл вече е зает.");
     }
 
+    const hashedPassword = await this.hashPassword(password);
+
     const newUser = await UserRepository.createUser({
       username,
       firstname,
       lastname,
       email,
-      password,
+      password: hashedPassword,
       role: "user",
     });
 
@@ -31,8 +36,8 @@ class AuthService {
     if (!user) {
       throw new Error("Грешен имейл или парола.");
     }
-    
-    const isPasswordValid = await UserRepository.validatePassword(password, user.password);
+
+    const isPasswordValid = await this.validatePassword(password, user.password);
     if (!isPasswordValid) {
       throw new Error("Грешен имейл или парола.");
     }
@@ -52,19 +57,29 @@ class AuthService {
 
   private generateAccessToken(user: any) {
     return jwt.sign(
-        { id: user._id, role: user.role },
-        process.env.ACCESS_TOKEN_SECRET as string,
-        { expiresIn: "15m" }
+      { id: user._id, role: user.role },
+      process.env.ACCESS_TOKEN_SECRET as string,
+      { expiresIn: "15m" }
     );
- }
+  }
 
-    private generateRefreshToken(user: any) {
-        return jwt.sign(
-            { id: user._id, role: user.role },
-            process.env.REFRESH_TOKEN_SECRET as string,
-            { expiresIn: "1d" }
-        );
-    }
+  private generateRefreshToken(user: any) {
+    return jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.REFRESH_TOKEN_SECRET as string,
+      { expiresIn: "1d" }
+    );
+  }
+
+  private async hashPassword(password: string): Promise<string> {
+    const salt = await bcrypt.genSalt(SALT_ROUNDS);
+    const hash = await bcrypt.hash(password, salt);
+    return hash;
+  }
+
+  private async validatePassword(plainPassword: string, hashedPassword: string): Promise<boolean> {
+    return bcrypt.compare(plainPassword, hashedPassword);
+  }
 
 }
 

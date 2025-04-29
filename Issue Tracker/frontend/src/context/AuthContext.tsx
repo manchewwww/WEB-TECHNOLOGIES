@@ -4,7 +4,7 @@ import { isAuthenticated, login as authLogin, logout as authLogout, getCurrentUs
 type AuthContextType = {
   user: User | null;
   login: (email: string, password: string) => Promise<boolean>;
-  register: (username: string, email: string, password: string, confirmPassword: string) => Promise<boolean>;
+  register: (username: string, firstname: string, lastname: string, email: string, password: string, confirmPassword: string) => Promise<boolean>;
   logout: () => void;
 };
 
@@ -32,9 +32,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const register = async (username: string, email: string, password: string, confirmPassword: string) => {
+  const register = async (username: string, firstname: string, lastname: string, email: string, password: string, confirmPassword: string) => {
     try {
-      const success = await authRegister(username, email, password, confirmPassword);
+      const success = await authRegister(username, firstname, lastname, email, password, confirmPassword);
       if (success) {
         setUser(getCurrentUser());
       }

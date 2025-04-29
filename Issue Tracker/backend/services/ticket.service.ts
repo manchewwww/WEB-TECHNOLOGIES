@@ -1,6 +1,6 @@
 
-import { ITicket } from "../db/models/Ticket";
-import ticketRepository from "../repositories/TicketRepository";
+import { ITicket } from "../db/interfaces/ticket.interface";
+import ticketRepository from "../repositories/ticket.repository";
 
 const TicketService = {
   async getAllTickets(): Promise<ITicket[]> {

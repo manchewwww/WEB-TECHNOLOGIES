@@ -8,6 +8,10 @@ import connectDB from './db/dbConnect';
 import dotenv from "dotenv";
 import path from 'path';
 
+import UserRepository from './repositories/user.repository';
+import ProjectRepository from './repositories/project.repository';
+import TicketRepository from './repositories/ticket.repository';
+
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const app = express();
@@ -22,6 +26,17 @@ app.use('/api/auth', authRouter);
 const startServer = async () => {
     try {
         await connectDB();
+
+        //////////////////////////////////////////////////////////
+        const users = await UserRepository.getAllUsers();
+        console.log("📦 All users:", users);
+
+        const projects = await ProjectRepository.getAllProjects();
+        console.log("📦 All projects:", projects);
+
+        const tickets = await TicketRepository.getAllTickets();
+        console.log("📦 All tickets:", tickets);
+        //////////////////////////////////////////////////////////
 
         app.listen(3000, () => {
             console.log('Server is running on http://localhost:3000');

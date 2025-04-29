@@ -1,12 +1,24 @@
 import { ITicket } from '../db/interfaces/ticket.interface';
+import TicketModel from "../db/models/ticket.model";
 import NotFoundError from '../exceptions/NotFoundException';
 
 let tickets: ITicket[] = [];
 
 const TicketRepository = {
-    async getAllTickets(): Promise<ITicket[]> {
-        return [...tickets];
-    },
+
+      async getAllTickets(): Promise<ITicket[]> {
+        const projects = await TicketModel.find()
+        .populate('projectId')
+        .populate('assignee')
+        .populate('createdBy')
+        .populate('comments.userId') // Попълване на коментарите с пълни потребителски данни
+        .lean();
+      return projects;
+      },
+
+    // async getAllTickets(): Promise<ITicket[]> {
+    //     return [...tickets];
+    // },
 
     async getTicketById(ticketId: string): Promise<ITicket> {
         const ticket = tickets.find(ticket => ticket.id.toString() === ticketId);

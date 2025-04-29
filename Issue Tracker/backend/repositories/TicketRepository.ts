@@ -1,15 +1,16 @@
 import { ITicket } from '../db/interfaces/ticket.interface';
+import TicketSchema from '../db/models/ticket.model';
 import NotFoundError from '../exceptions/NotFoundException';
 
 let tickets: ITicket[] = [];
 
 const TicketRepository = {
     async getAllTickets(): Promise<ITicket[]> {
-        return [...tickets];
+        return await TicketSchema.find();
     },
 
     async getTicketById(ticketId: string): Promise<ITicket> {
-        const ticket = tickets.find(ticket => ticket.id.toString() === ticketId);
+        const ticket = tickets.find(ticket => ticket._id.toString() === ticketId);
         if (!ticket) {
             throw new NotFoundError(`Ticket with ID ${ticketId} not found`);
         }
@@ -22,7 +23,7 @@ const TicketRepository = {
     },
 
     async editTicket(ticketId: string, ticketWithNewData: ITicket): Promise<ITicket> {
-        const ticketIndex = tickets.findIndex(ticket => ticket.id.toString() === ticketId);
+        const ticketIndex = tickets.findIndex(ticket => ticket._id.toString() === ticketId);
         if (ticketIndex === -1) {
             throw new NotFoundError(`Ticket with ID ${ticketId} not found`);
         }
@@ -31,7 +32,7 @@ const TicketRepository = {
     },
 
     async deleteTicket(ticketId: string): Promise<boolean> {
-        const ticketIndex = tickets.findIndex(ticket => ticket.id.toString() === ticketId);
+        const ticketIndex = tickets.findIndex(ticket => ticket._id.toString() === ticketId);
         if (ticketIndex === -1) {
             throw new NotFoundError(`Ticket with ID ${ticketId} not found`);
         }

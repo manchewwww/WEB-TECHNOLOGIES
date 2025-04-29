@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ITicket } from "../../../backend/db/interfaces/ticket.interface.ts";
-//import TicketController from "../../../backend/controllers/TicketController.ts" 
-
-const API_URL = 'http://localhost:3000'; // Adjust the port if needed
+import '../styles/MultipleTicketsPage.css';
+const API_URL = 'http://localhost:3000/api/tickets'; // Make sure this matches the backend route
 
 function MultipleTicketsPage() {
   const [tickets, setTickets] = useState<ITicket[]>([]);
@@ -12,7 +11,7 @@ function MultipleTicketsPage() {
   useEffect(() => {
     async function fetchTickets() {
       try {
-        const response = await fetch(`${API_URL}/`, {
+        const response = await fetch(API_URL, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -36,6 +35,9 @@ function MultipleTicketsPage() {
     fetchTickets();
   }, []);
 
+  if (loading) {
+    return <div>Зареждане на билети...</div>;
+  }
 
   const sortedTickets = [...tickets].sort((a, b) => {
     const getString = (value: any) => {
@@ -53,15 +55,12 @@ function MultipleTicketsPage() {
     }
   });
 
-  if (loading) {
-    return <div>Зареждане на билети...</div>;
-  }
 
   return (
-    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
-      <h1>Списък с билети</h1>
-
-      <div style={{ marginBottom: '20px' }}>
+    <div className="page-container">
+      <h1 className="page-title">Списък с билети</h1>
+  
+      <div className="sorting-controls">
         <label>Сортирай по: </label>
         <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
           <option value="project">Проект</option>
@@ -69,22 +68,13 @@ function MultipleTicketsPage() {
           <option value="status">Статус</option>
         </select>
       </div>
-
+  
       <div>
         {sortedTickets.map((ticket) => (
-          <div
-            key={ticket.id.toString()} // Assuming ticket.id is already a string or ObjectId
-            style={{
-              border: '1px solid #ccc',
-              padding: '15px',
-              marginBottom: '10px',
-              borderRadius: '5px',
-            }}
-          >
+          <div className="ticket-card" key={String(ticket._id)}>
             <h3>{ticket.title}</h3>
             <p><strong>Описание:</strong> {ticket.description}</p>
             <p><strong>Статус:</strong> {ticket.status}</p>
-            {/* Check if projectId exists and handle it */}
             <p><strong>Проект ID:</strong> {ticket.projectId ? ticket.projectId.toString() : 'Не е зададен'}</p>
             <p><strong>Възложен на (ID):</strong> {ticket.assignee ? ticket.assignee.toString() : 'Не е зададен'}</p>
             <p><small>Създаден на: {ticket.createdAt ? new Date(ticket.createdAt).toLocaleDateString() : 'Няма дата'}</small></p>

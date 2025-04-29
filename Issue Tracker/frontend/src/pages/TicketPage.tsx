@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/TicketPage.css';
 
-// Фиктивен списък с потребители
+// Dummy list of users
 const users = [
   { id: 'user123', name: 'Alice Johnson' },
   { id: 'user456', name: 'Bob Smith' },
@@ -91,46 +91,46 @@ const TicketPage = ({ initialTicket }) => {
   };
 
   return (
-    <div className="max-w-xl mx-auto p-4">
+    <div className="ticket-container">
       <div className="breadcrumb">
         <Link to="/" className="breadcrumb-link">Home</Link> &gt; 
         <span className="breadcrumb-current">Edit Ticket</span>
       </div>
-      <h1 className="text-2xl font-bold mb-4">Edit Ticket</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <h1 className="ticket-title">Edit Ticket</h1>
+      <form onSubmit={handleSubmit} className="ticket-form">
         <h2 className="form-section-title">Ticket Details</h2>
-        <div>
-          <label className="block mb-1 font-semibold">Title</label>
+        <div className="form-group">
+          <label>Title</label>
           <input
             type="text"
             name="title"
             value={ticket.title}
             onChange={handleChange}
-            className={`w-full p-2 border rounded ${errors.title ? 'border-red-500' : ''}`}
+            className={`form-input ${errors.title ? 'input-error' : ''}`}
           />
-          {errors.title && <p className="text-red-500">{errors.title}</p>}
+          {errors.title && <p className="error-message">{errors.title}</p>}
         </div>
 
-        <div>
-          <label className="block mb-1 font-semibold">Description</label>
+        <div className="form-group">
+          <label>Description</label>
           <textarea
             name="description"
             value={ticket.description}
             onChange={handleChange}
-            className="w-full p-2 border rounded"
+            className={`form-textarea ${errors.description ? 'input-error' : ''}`}
             rows="4"
           />
-          {errors.description && <p className="text-red-500">{errors.description}</p>}
+          {errors.description && <p className="error-message">{errors.description}</p>}
         </div>
 
         <h2 className="form-section-title">Assignment</h2>
-        <div>
-          <label className="block mb-1 font-semibold">Status</label>
+        <div className="form-group">
+          <label>Status</label>
           <select
             name="status"
             value={ticket.status}
             onChange={handleChange}
-            className="w-full p-2 border rounded"
+            className="form-select"
           >
             <option value="">Select status</option>
             <option value="open">Open</option>
@@ -138,16 +138,16 @@ const TicketPage = ({ initialTicket }) => {
             <option value="review">Review</option>
             <option value="closed">Closed</option>
           </select>
-          {errors.status && <p className="text-red-500">{errors.status}</p>}
+          {errors.status && <p className="error-message">{errors.status}</p>}
         </div>
 
-        <div>
-          <label className="block mb-1 font-semibold">Assignee</label>
+        <div className="form-group">
+          <label>Assignee</label>
           <select
             name="assignee"
             value={ticket.assignee || ''}
             onChange={handleChange}
-            className="w-full p-2 border rounded"
+            className="form-select"
           >
             <option value="">Select assignee</option>
             {users.map((user) => (
@@ -156,27 +156,27 @@ const TicketPage = ({ initialTicket }) => {
               </option>
             ))}
           </select>
-          {errors.assignee && <p className="text-red-500">{errors.assignee}</p>}
+          {errors.assignee && <p className="error-message">{errors.assignee}</p>}
         </div>
 
-        <div>
-          <label className="block mb-1 font-semibold">Priority</label>
+        <div className="form-group">
+          <label>Priority</label>
           <select
             name="priority"
             value={ticket.priority || ''}
             onChange={handleChange}
-            className="w-full p-2 border rounded"
+            className="form-select"
           >
             <option value="">Select priority</option>
             <option value="low">Low</option>
             <option value="medium">Medium</option>
             <option value="high">High</option>
           </select>
-          {errors.priority && <p className="text-red-500">{errors.priority}</p>}
+          {errors.priority && <p className="error-message">{errors.priority}</p>}
         </div>
 
         <div className="ticket-preview">
-          <h2 className="text-xl font-bold">Ticket Preview</h2>
+          <h2 className="preview-title">Ticket Preview</h2>
           <table className="ticket-preview-table">
             <tbody>
               <tr>
@@ -236,29 +236,16 @@ const TicketPage = ({ initialTicket }) => {
         </div>
 
         <div className="form-buttons">
-          <button
-            type="submit"
-            className="btn-primary"
-          >
-            Save
-          </button>
-          <button
-            type="button"
-            onClick={handleReset}
-            className="btn-secondary"
-          >
-            Reset Changes
-          </button>
-          {successMessage && (
-            <span className="success-message">{successMessage}</span>
-          )}
+          <button type="submit" className="btn-primary">Save</button>
+          <button type="button" onClick={handleReset} className="btn-secondary">Reset Changes</button>
+          {successMessage && <span className="success-message">{successMessage}</span>}
         </div>
       </form>
     </div>
   );
 };
 
-// Примерен тестов билет
+// Sample ticket for testing
 const sampleTicket = {
   id: '60d5ec49b3f1f8c8a4e4b0c1',
   title: 'Fix login bug',

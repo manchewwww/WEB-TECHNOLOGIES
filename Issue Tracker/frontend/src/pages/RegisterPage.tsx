@@ -23,12 +23,7 @@ function RegisterPage() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-<<<<<<< HEAD
-  
-  const handleChange = (e) => {
-=======
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
->>>>>>> develop
     setFormData(prev => ({
       ...prev,
       [e.target.name]: e.target.value

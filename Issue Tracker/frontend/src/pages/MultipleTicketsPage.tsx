@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ITicket } from "../../../backend/db/interfaces/ticket.interface.ts";
 import '../styles/MultipleTicketsPage.css';
-const API_URL = 'http://localhost:3000/api/tickets'; // Make sure this matches the backend route
+const API_URL = 'http://localhost:3000/api/tickets';
 
 function MultipleTicketsPage() {
   const [tickets, setTickets] = useState<ITicket[]>([]);
@@ -41,7 +41,7 @@ function MultipleTicketsPage() {
 
   const sortedTickets = [...tickets].sort((a, b) => {
     const getString = (value: any) => {
-      return value || ''; // Treat the value as a string if it's not defined
+      return value || '';
     };
   
     if (sortBy === 'project') {

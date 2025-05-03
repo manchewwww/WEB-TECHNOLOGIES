@@ -1,5 +1,5 @@
 export const ticketPaths = {
-    '/tickets': {
+    '/api/tickets': {
         get: {
             tags: ['Tickets'],
             summary: 'Get all tickets',
@@ -46,7 +46,7 @@ export const ticketPaths = {
             }
         }
     },
-    '/tickets/{id}': {
+    '/api/tickets/{id}': {
         parameters: [
             {
                 name: 'id',

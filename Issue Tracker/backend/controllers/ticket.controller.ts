@@ -11,16 +11,16 @@ class TicketController {
     }
 
     private initializeRoutes() {
-        this.router.get('/', this.getAllTickets.bind(this) as RequestHandler);
-        this.router.get('/:id', this.getTicketById.bind(this) as RequestHandler);
         this.router.post('/', this.createTicket.bind(this) as RequestHandler);
-        this.router.put('/update-status', this.updateStatus.bind(this) as RequestHandler);
-        this.router.put('/:id', this.editTicket.bind(this) as RequestHandler);
-        this.router.delete('/:id', this.deleteTicket.bind(this) as RequestHandler);
         this.router.post('/add-comment', this.addComment.bind(this) as RequestHandler);
+        this.router.get('/', this.getAllTickets.bind(this) as RequestHandler);
         this.router.get('/project/tickets', this.getTicketsByProject.bind(this) as RequestHandler);
         this.router.get('/user/:userId/created-tickets', this.getTicketsCreatedByUser.bind(this) as RequestHandler);
         this.router.get('/user/:userId/assigned-tickets', this.getTicketsAssignedToUserID.bind(this) as RequestHandler);
+        this.router.get('/:id', this.getTicketById.bind(this) as RequestHandler);
+        this.router.put('/update-status', this.updateStatus.bind(this) as RequestHandler);
+        this.router.put('/:id', this.editTicket.bind(this) as RequestHandler);
+        this.router.delete('/:id', this.deleteTicket.bind(this) as RequestHandler);
     };
 
     private async getAllTickets(req: Request, res: Response) {

@@ -19,6 +19,8 @@ class TicketController {
         this.router.post('/add-comment', this.addComment.bind(this) as RequestHandler);
         this.router.put('/update-status', this.updateStatus.bind(this) as RequestHandler);
         this.router.get('/project/tickets', this.getTicketsByProject.bind(this) as RequestHandler);
+        this.router.get('/user/:userId/created-tickets', this.getTicketsCreatedByUser.bind(this) as RequestHandler);
+        this.router.get('/user/:userId/assigned-tickets', this.getTicketsAssignedToUserID.bind(this) as RequestHandler);
     };
 
     private async getAllTickets(req: Request, res: Response) {
@@ -99,6 +101,26 @@ class TicketController {
             res.json(tickets);
         } catch (err) {
             res.status(500).json({ error: 'Failed to get tickets by project' });
+        }
+    }
+
+    private async getTicketsCreatedByUser(req: Request, res: Response): Promise<void> {
+        try {
+            const { userId } = req.params;
+            const tickets = await ticketService.getTicketsCreatedByUser(userId);
+            res.status(200).json(tickets);
+        } catch (error) {
+            res.status(404).json({ message: "Tickets not found for user" });
+        }
+    }
+
+    private async getTicketsAssignedToUserID(req: Request, res: Response): Promise<void> {
+        try {
+            const { userId } = req.params;
+            const tickets = await ticketService.getTicketsAssignedToUserID(userId);
+            res.status(200).json(tickets);
+        } catch (error) {
+            res.status(404).json({ message: "Tickets not found for user" });
         }
     }
 }

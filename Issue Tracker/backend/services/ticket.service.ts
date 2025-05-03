@@ -1,6 +1,7 @@
 import { StatusType } from "../constants/StatusType";
 import { ITicket } from "../db/interfaces/ticket.interface";
 import ticketRepository from "../repositories/ticket.repository";
+import { updateWorkflow } from "./workflow.service";
 
 class TicketService {
   async getAllTickets(): Promise<ITicket[]> {
@@ -27,11 +28,11 @@ class TicketService {
     return await ticketRepository.addComment(ticketId, comment);
   }
 
-  async updateStatus(ticketId: string, newStatus: StatusType): Promise<ITicket> {
-    const ticket = await ticketRepository.getTicketById(ticketId);
-    
+  async updateStatus(id: string, newStatus: StatusType): Promise<ITicket> {
+    let ticket = await ticketRepository.getTicketById(id);
+    ticket = updateWorkflow(ticket, newStatus);
+    this.editTicket(id, ticket);
     return ticket;
-    //  ticketRepository.updateStatus(ticketId, newStatus);
   }
 
   async getTicketsByProject(projectId: string): Promise<ITicket[]> {

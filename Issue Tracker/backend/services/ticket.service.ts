@@ -2,6 +2,7 @@ import { StatusType } from "../constants/StatusType";
 import { ITicket } from "../db/interfaces/ticket.interface";
 import ticketRepository from "../repositories/ticket.repository";
 import { updateWorkflow } from "./workflow.service";
+import { Types } from 'mongoose';
 
 class TicketService {
   async getAllTickets(): Promise<ITicket[]> {
@@ -32,6 +33,13 @@ class TicketService {
     let ticket = await ticketRepository.getTicketById(id);
     ticket = updateWorkflow(ticket, newStatus);
     this.editTicket(id, ticket);
+    return ticket;
+  }
+  
+  async assignedTickectToUserID(ticketId: string, userId: string): Promise<ITicket> {
+    let ticket = await ticketRepository.getTicketById(ticketId);
+    ticket.assignee = new Types.ObjectId(userId);
+    this.editTicket(ticketId, ticket);
     return ticket;
   }
 

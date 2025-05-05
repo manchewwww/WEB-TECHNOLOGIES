@@ -19,6 +19,7 @@ class TicketController {
         this.router.get('/user/:userId/assigned-tickets', this.getTicketsAssignedToUserID.bind(this) as RequestHandler);
         this.router.get('/:id', this.getTicketById.bind(this) as RequestHandler);
         this.router.put('/update-status', this.updateStatus.bind(this) as RequestHandler);
+        this.router.put('/assigned/:ticketId/user/:userId', this.assignedTickectToUserID.bind(this) as RequestHandler);
         this.router.put('/:id', this.editTicket.bind(this) as RequestHandler);
         this.router.delete('/:id', this.deleteTicket.bind(this) as RequestHandler);
     };
@@ -89,6 +90,15 @@ class TicketController {
     private async updateStatus(req: Request, res: Response) {
         try {
             const updatedTicket: ITicket = await ticketService.updateStatus(req.body.id, req.body.status);
+            res.json(updatedTicket);
+        } catch (err) {
+            res.status(500).json({ error: 'Failed to update status' });
+        }
+    }
+
+    private async assignedTickectToUserID(req: Request, res: Response) {
+        try {
+            const updatedTicket: ITicket = await ticketService.assignedTickectToUserID(req.body.ticketId, req.body.userId);
             res.json(updatedTicket);
         } catch (err) {
             res.status(500).json({ error: 'Failed to update status' });

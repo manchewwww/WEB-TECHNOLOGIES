@@ -2,14 +2,17 @@ const express = require('express');
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
 const path = require('path');
-
+const cors = require('cors');
 let products = [];
+let id = 1;
 
 const app = express();
 const port = 3000;
 app.use(express.json());
+app.use(cors());
 
 const swaggerDocument = YAML.load('./swagger.yaml');
+app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.get('/api/products', (req, res) => {
     res.json(products);
@@ -34,7 +37,7 @@ app.post('/api/products', (req, res) => {
     }
 
     const newProduct = {
-        id: products.length + 1,
+        id: id++,
         name,
         price
     };
@@ -74,9 +77,8 @@ app.get('/swagger.yaml', (req, res) => {
     res.sendFile(path.join(__dirname, '/swagger.yaml'));
 });
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.listen(port, () => {
     console.log(`Server listening at http://localhost:${port}`);
-    console.log(`Swagger docs at http://localhost:${port}/api-docs`);
+    console.log(`Swagger docs at http://localhost:${port}/swagger`);
 });

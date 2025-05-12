@@ -39,8 +39,8 @@ class ProjectController {
 
     async getAllProjects(req: Request, res: Response): Promise<void> {
         try {
-            const project = await ProjectService.getAllProjects();
-            res.status(200).json(project);
+            const projects = await ProjectService.getAllProjects();
+            res.status(200).json(projects);
         } catch (error) {
             res.status(404).json({ message: "Can not get all projects" });
         }

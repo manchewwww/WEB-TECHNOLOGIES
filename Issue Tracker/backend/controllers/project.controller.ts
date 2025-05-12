@@ -11,10 +11,10 @@ class ProjectController {
     }
 
     private initializeRoutes() {
-        this.router.post("/projects", this.createProject.bind(this) as RequestHandler);
-        this.router.get("/projects/:id", this.getProjectById.bind(this) as RequestHandler);
-        this.router.get("/projects", this.getAllProjects.bind(this) as RequestHandler);
-        this.router.get("/user/:userId/projects", this.getProjectsByUser.bind(this) as RequestHandler);
+        this.router.post("", this.createProject.bind(this) as RequestHandler);
+        this.router.get("/:id", this.getProjectById.bind(this) as RequestHandler);
+        this.router.get("", this.getAllProjects.bind(this) as RequestHandler);
+        this.router.get("/user/:userId", this.getProjectsByUser.bind(this) as RequestHandler);
     }
 
     async createProject(req: Request, res: Response): Promise<void> {

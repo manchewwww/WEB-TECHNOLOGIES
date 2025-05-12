@@ -10,6 +10,10 @@ class ProjectService {
         return await ProjectRepository.getProjectById(id);
     }
 
+    async getAllProjects(): Promise<IProject[]> {
+        return await ProjectRepository.getAllProjects();
+    }
+
     async getProjectsByUser(userId: string): Promise<IProject[]> {
         return await ProjectRepository.getProjectsByUser(userId);
     }

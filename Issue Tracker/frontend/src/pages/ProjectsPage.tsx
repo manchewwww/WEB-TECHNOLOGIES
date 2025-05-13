@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
+import Select from "react-select";
 import '../styles/ProjectsPage.css';
+
+interface IUserOption {
+  value: string;
+  label: string;
+}
 
 interface IProject {
   _id: string;
@@ -15,22 +21,34 @@ function ProjectsPage() {
   const { user } = useAuth();
   const [projects, setProjects] = useState<IProject[]>([]);
   const [showModal, setShowModal] = useState(false);
+  const [userOptions, setUserOptions] = useState<IUserOption[]>([]);
   const [form, setForm] = useState({
     name: "",
     description: "",
-    members: ""
+    members: [] as IUserOption[],
   });
 
   useEffect(() => {
     axios.get("/api/projects").then(res => setProjects(res.data));
   }, []);
 
+  useEffect(() => {
+    axios.get("/api/users").then(res => {
+      const options = res.data.map((user: any) => ({
+        value: user._id,
+        label: user.username
+      }));
+      setUserOptions(options);
+    });
+  }, []);
+
+
   const handleCreate = async () => {
     const payload = {
       name: form.name,
       description: form.description,
       createdBy: user?.id,
-      members: form.members.split(",").map(id => id.trim())
+      members: form.members.map((m) => m.value)
     };
 
     try {
@@ -87,12 +105,17 @@ function ProjectsPage() {
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
             />
-            <input
-              type="text"
-              placeholder="Members (comma-separated User IDs)"
-              className="form-input w-full"
+            <Select
+              isMulti
+              options={userOptions}
               value={form.members}
-              onChange={(e) => setForm({ ...form, members: e.target.value })}
+              onChange={(selected) => setForm({ ...form, members: selected as IUserOption[] })}
+              className="basic-multi-select"
+              classNamePrefix="select"
+              placeholder="Select members..."
+              getOptionValue={(option) => option.value}
+              getOptionLabel={(option) => option.label}
+              filterOption={() => true}
             />
             <div className="form-buttons flex justify-between">
               <button className="btn-secondary" onClick={() => setShowModal(false)}>

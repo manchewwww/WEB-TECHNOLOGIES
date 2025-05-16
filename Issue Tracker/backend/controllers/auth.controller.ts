@@ -43,20 +43,20 @@ class AuthController {
   async refresh(req: Request, res: Response): Promise<void> {
     const { refreshToken } = req.body;
     if (!refreshToken) {
-        res.status(401).json({ message: "Refresh Token липсва" });
-        return;
+      res.status(401).json({ message: "Refresh Token липсва" });
+      return;
     }
 
     try {
-        const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET as string) as { id: string; role: string };
-        const accessToken = jwt.sign(
-            { id: decoded.id, role: decoded.role },
-            process.env.ACCESS_TOKEN_SECRET as string,
-            { expiresIn: "15m" }
-        );
-        res.json({ accessToken });
+      const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET as string) as { id: string; role: string };
+      const accessToken = jwt.sign(
+        { id: decoded.id, role: decoded.role },
+        process.env.ACCESS_TOKEN_SECRET as string,
+        { expiresIn: "15m" }
+      );
+      res.json({ accessToken });
     } catch (error) {
-        res.status(401).json({ message: "Невалиден refresh токен" });
+      res.status(401).json({ message: "Невалиден refresh токен" });
     }
   }
 

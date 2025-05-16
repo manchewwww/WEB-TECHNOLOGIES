@@ -1,5 +1,6 @@
 import express, { Request, RequestHandler, Response, Router } from 'express';
 import ProjectService from '../services/project.service';
+import { IProject } from '../db/interfaces/project.interface';
 
 class ProjectController {
     public router: Router;
@@ -10,15 +11,15 @@ class ProjectController {
     }
 
     private initializeRoutes() {
-        this.router.post("/projects", this.createProject.bind(this) as RequestHandler);
-        this.router.get("/projects/:id", this.getProjectById.bind(this) as RequestHandler);
-        this.router.get("/projects", this.getAllProjects.bind(this) as RequestHandler);
-        this.router.get("/user/:userId/projects", this.getProjectsByUser.bind(this) as RequestHandler);
+        this.router.post("", this.createProject.bind(this) as RequestHandler);
+        this.router.get("/:id", this.getProjectById.bind(this) as RequestHandler);
+        this.router.get("", this.getAllProjects.bind(this) as RequestHandler);
+        this.router.get("/user/:userId", this.getProjectsByUser.bind(this) as RequestHandler);
     }
 
     async createProject(req: Request, res: Response): Promise<void> {
         try {
-            const projectData = req.body;
+            const projectData: IProject = req.body;
             const newProject = await ProjectService.createProject(projectData);
             res.status(201).json(newProject);
         } catch (error) {
@@ -38,11 +39,10 @@ class ProjectController {
 
     async getAllProjects(req: Request, res: Response): Promise<void> {
         try {
-            const { id } = req.params;
-            const project = await ProjectService.getAllProjects();
-            res.status(200).json(project);
+            const projects = await ProjectService.getAllProjects();
+            res.status(200).json(projects);
         } catch (error) {
-            res.status(404).json({ message: "Project not found" });
+            res.status(404).json({ message: "Can not get all projects" });
         }
     }
 
@@ -57,4 +57,4 @@ class ProjectController {
     }
 }
 
-export default new ProjectController();
+export default new ProjectController().router;

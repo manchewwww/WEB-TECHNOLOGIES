@@ -2,7 +2,7 @@ import ProjectRepository from '../repositories/project.repository';
 import { IProject } from '../db/interfaces/project.interface';
 
 class ProjectService {
-    async createProject(projectData: Partial<IProject>): Promise<IProject> {
+    async createProject(projectData: IProject): Promise<IProject> {
         return await ProjectRepository.createProject(projectData);
     }
 

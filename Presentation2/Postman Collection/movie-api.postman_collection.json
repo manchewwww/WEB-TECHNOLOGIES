@@ -1,0 +1,49 @@
+{
+    "info": {
+      "name": "Movie API",
+      "description": "Demo collection for GET and POST on /movies",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Get all movies",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": {
+            "raw": "http://localhost:3000/movies",
+            "protocol": "http",
+            "host": ["localhost"],
+            "port": "3000",
+            "path": ["movies"]
+          }
+        },
+        "response": []
+      },
+      {
+        "name": "Add new movie",
+        "request": {
+          "method": "POST",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"title\": \"The Godfather\",\n  \"director\": \"Francis Ford Coppola\",\n  \"year\": 1972\n}"
+          },
+          "url": {
+            "raw": "http://localhost:3000/movies",
+            "protocol": "http",
+            "host": ["localhost"],
+            "port": "3000",
+            "path": ["movies"]
+          }
+        },
+        "response": []
+      }
+    ]
+  }
+  

@@ -1,0 +1,76 @@
+#%RAML 1.0                          
+title: Movie API                    # Заглавие на API-то — ще се показва в генерираната документация.
+version: v1                         # Версия на API-то — полезно при управление на различни версии.
+baseUri: http://localhost:3000      # Базовият URL, на който е достъпно API-то локално. Всички пътища (endpoints) се добавят след това.
+
+/movies:                                    # Основен ресурс / маршрут. Това е пътят "/movies", т.е. localhost:3000/movies
+  get:                                      # HTTP GET заявка към /movies — използва се за взимане на всички филми
+    description: Get list of all movies     # Кратко описание на заявката
+    responses:                              
+      200:                                  # Очакваният HTTP статус код за успешен отговор.
+        body:                               
+          application/json:                 # Типът на отговора – тук JSON формат
+            example: |                     
+              [
+                {
+                  "id": 1,
+                  "title": "Inception",
+                  "director": "Christopher Nolan",
+                  "year": 2010
+                },
+                {
+                  "id": 2,
+                  "title": "The Matrix",
+                  "director": "The Wachowskis",
+                  "year": 1999
+                },
+                {
+                  "id": 3,
+                  "title": "The Day After Tomorrow",
+                  "director": "Roland Emmerich",
+                  "year": 2004
+                },
+                {
+                  "id": 4,
+                  "title": "Grown Ups",
+                  "director": "Dennis Dugan",
+                  "year": 2010
+                }
+              ]
+      404:                          # Очакваният HTTP статус код за неуспешен отговор.
+        description: Movies not found
+        body:
+          application/json:
+            example: |
+              {
+                "error": "No movies found"
+              }
+  post:                                      # HTTP POST заявка към /movies – използва се за добавяне на нов филм
+    description: Add a new movie             # Кратко описание на заявката
+    body:
+      application/json:
+        example: |
+          {
+            "title": "The Godfather",
+            "director": "Francis Ford Coppola",
+            "year": 1972
+          }
+    responses:
+      201:                                     # Успешно създаден ресурс
+        body:
+          application/json:
+            example: |
+              {
+                "id": 5,
+                "title": "The Godfather",
+                "director": "Francis Ford Coppola",
+                "year": 1972
+              }
+      400:                                # Грешен вход от клиента (Bad Request)
+        description: Invalid input
+        body:
+          application/json:
+            example: |
+              {
+                "error": "Missing required field: title"
+              }

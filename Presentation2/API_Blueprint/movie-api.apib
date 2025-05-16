@@ -1,0 +1,86 @@
+FORMAT: 1A
+HOST: http://localhost:3000
+
+# Movie API
+API за управление на колекция от филми. Позволява получаване на списък с филми и добавяне на нови.
+
+## /movies
+Основният endpoint за работа с филми.
+
+### Получаване на списък с всички филми [GET]
+
++ Response 200 (application/json)
+    Успешно извличане на филми.
+
+    + Body
+
+            [
+              {
+                "id": 1,
+                "title": "Inception",
+                "director": "Christopher Nolan",
+                "year": 2010
+              },
+              {
+                "id": 2,
+                "title": "The Matrix",
+                "director": "The Wachowskis",
+                "year": 1999
+              },
+              {
+                "id": 3,
+                "title": "The Day After Tomorrow",
+                "director": "Roland Emmerich",
+                "year": 2004
+              },
+              {
+                "id": 4,
+                "title": "Grown Ups",
+                "director": "Dennis Dugan",
+                "year": 2010
+              }
+            ]
+
++ Response 404 (application/json)
+    Възникна грешка – ресурсът не е намерен.
+
+    + Body
+
+            {
+              "error": "Movies not found"
+            }
+
+
+### Добавяне на нов филм [POST]
+
++ Request (application/json)
+    Изпрати данни за нов филм.
+
+    + Body
+
+            {
+              "title": "The Godfather",
+              "director": "Francis Ford Coppola",
+              "year": 1972
+            }
+
++ Response 201 (application/json)
+    Филмът е добавен успешно.
+
+    + Body
+
+            {
+              "id": 5,
+              "title": "The Godfather",
+              "director": "Francis Ford Coppola",
+              "year": 1972
+            }
+
++ Response 400 (application/json)
+    Възникна грешка – липсват задължителни полета или данните са невалидни.
+
+    + Body
+
+            {
+              "error": "Missing or invalid movie data"
+            }

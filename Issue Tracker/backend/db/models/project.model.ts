@@ -6,6 +6,8 @@ const ProjectSchema: Schema = new Schema({
     description: { type: String },
     createdBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
     members: [{ type: Schema.Types.ObjectId, ref: "User" }],
+}, {
+    versionKey: false
 });
 
 export default mongoose.model<IProject>("Project", ProjectSchema);

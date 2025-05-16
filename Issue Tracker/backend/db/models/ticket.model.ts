@@ -5,7 +5,7 @@ const CommentSchema: Schema = new Schema({
     userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     text: { type: String, required: true },
     createdAt: { type: Date, default: Date.now },
-});
+}, { versionKey: false });
 
 const TicketSchema: Schema = new Schema(
     {
@@ -26,7 +26,10 @@ const TicketSchema: Schema = new Schema(
         createdBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
         comments: [CommentSchema],
     },
-    { timestamps: true }
+    {
+        timestamps: true,
+        versionKey: false
+    }
 );
 
 export default mongoose.model<ITicket>("Ticket", TicketSchema);

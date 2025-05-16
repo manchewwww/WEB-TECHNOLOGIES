@@ -9,6 +9,11 @@ interface IUserOption {
   label: string;
 }
 
+interface IUser {
+  id: string;
+  username: string;
+}
+
 interface IProject {
   _id: string;
   name: string;
@@ -22,6 +27,7 @@ function ProjectsPage() {
   const [projects, setProjects] = useState<IProject[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [userOptions, setUserOptions] = useState<IUserOption[]>([]);
+  const [userIdToName, setUserIdToName] = useState<Record<string, string>>({});
   const [form, setForm] = useState({
     name: "",
     description: "",
@@ -34,14 +40,21 @@ function ProjectsPage() {
 
   useEffect(() => {
     axios.get("/api/users").then(res => {
-      const options = res.data.map((user: any) => ({
-        value: user._id,
-        label: user.username
-      }));
+      const options: IUserOption[] = [];
+      const mapping: Record<string, string> = {};
+
+      res.data.forEach((user: IUser) => {
+        options.push({
+          value: user.id,
+          label: user.username
+        });
+        mapping[user.id] = user.username;
+      });
+
       setUserOptions(options);
+      setUserIdToName(mapping);
     });
   }, []);
-
 
   const handleCreate = async () => {
     const payload = {
@@ -56,79 +69,81 @@ function ProjectsPage() {
       const res = await axios.get("/api/projects");
       setProjects(res.data);
       setShowModal(false);
+      setForm({ name: "", description: "", members: [] });
     } catch (err) {
       alert("Failed to create project.");
     }
   };
-
   return (
-    <div className="projects-container p-6">
-      <div className="header flex justify-between items-center mb-4">
-        <h1 className="page-title text-2xl font-bold">Projects</h1>
+    <div className="projects-container">
+      <div className="header">
+        <h1 className="page-title">Projects</h1>
         <button onClick={() => setShowModal(true)} className="btn-primary">
-          + Create Project
+          Create Project
         </button>
       </div>
 
-      <ul className="project-list space-y-4">
+      <ul className="project-list">
         {projects.map((project) => (
-          <li key={project._id} className="project-card border p-4 rounded">
-            <h2 className="font-semibold">Name: {project.name}</h2>
-            <p className="font-semibold">Description: {project.description}</p>
-            <p className="text-sm text-gray-500">Created by: {project.createdBy}</p>
-            <p className="text-sm text-gray-500">Members:
-              {project.members.map((member, index) => (
-                <span key={index}>
+          <button className="project-card">
+            <h2 className="name">{project.name}</h2>
+            <p className="description">{project.description}</p>
+            <p className="members">Members:
+              {project.members.map((memberId, index) => (
+                < span key={index} >
                   <br />
-                  {member}
+                  {userIdToName[memberId]}
                 </span>
               ))}</p>
-          </li>
+            <p className="created-by">Created by: {userIdToName[project.createdBy]}</p>
+          </button>
         ))}
       </ul>
 
-      {showModal && (
-        <div className="modal-overlay fixed inset-0 bg-black/40 flex items-center justify-center">
-          <div className="modal-container bg-white p-6 rounded w-96 space-y-4 shadow-lg">
-            <h2 className="modal-title text-xl font-bold">Create Project</h2>
-            <input
-              type="text"
-              placeholder="Name"
-              className="form-input w-full"
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-            />
-            <input
-              type="text"
-              placeholder="Description"
-              className="form-input w-full"
-              value={form.description}
-              onChange={(e) => setForm({ ...form, description: e.target.value })}
-            />
-            <Select
-              isMulti
-              options={userOptions}
-              value={form.members}
-              onChange={(selected) => setForm({ ...form, members: selected as IUserOption[] })}
-              className="basic-multi-select"
-              classNamePrefix="select"
-              placeholder="Select members..."
-              getOptionValue={(option) => option.value}
-              getOptionLabel={(option) => option.label}
-              filterOption={() => true}
-            />
-            <div className="form-buttons flex justify-between">
-              <button className="btn-secondary" onClick={() => setShowModal(false)}>
-                Cancel
-              </button>
-              <button className="btn-primary" onClick={handleCreate}>
-                Create
-              </button>
+      {
+        showModal && (
+          <div className="modal-overlay">
+            <div className="modal-container">
+              <h2 className="modal-title">Create Project</h2>
+              <input
+                type="text"
+                placeholder="Name"
+                className="form-input"
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+              />
+              <input
+                type="text"
+                placeholder="Description"
+                className="form-input"
+                value={form.description}
+                onChange={(e) => setForm({ ...form, description: e.target.value })}
+              />
+              <Select
+                isMulti
+                options={userOptions}
+                value={form.members}
+                onChange={(selected) =>
+                  setForm({ ...form, members: Array.from(selected ?? []) })
+                }
+                className="basic-multi-select"
+                classNamePrefix="select"
+                placeholder="Choose users"
+              />
+
+              <div className="form-buttons">
+                <button className="btn-secondary" onClick={() => setShowModal(false)}>
+                  Cancel
+                </button>
+                <button className="btn-primary" onClick={handleCreate}>
+                  Create
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )
+      }
+    </div >
   );
 }
 

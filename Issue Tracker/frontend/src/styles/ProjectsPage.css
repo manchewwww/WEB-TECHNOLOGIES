@@ -1,5 +1,5 @@
 .projects-container {
-    padding: 4rem 2rem;
+    padding-top: 4rem;
     width: 100%;
 }
 
@@ -32,7 +32,7 @@
 .project-list {
     display: flex;
     flex-wrap: wrap;
-    justify-content: flex-start;
+    justify-content: space-between;
     gap: 1.5rem;
     list-style: none;
     padding: 0;
@@ -41,8 +41,6 @@
 
 .project-card {
     background-color: white;
-    border: 1px solid #ddd;
-    border-radius: 12px;
     padding: 1.5rem;
     width: 300px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
@@ -60,23 +58,36 @@
 }
 
 .name {
+    color: #333;
+    flex-grow: 1;
     font-size: 1.2rem;
     font-weight: 600;
     margin-bottom: 0.5rem;
 }
 
 .description {
+    color: #333;
     font-size: 0.95rem;
     margin-bottom: 1rem;
     color: #333;
+    flex-grow: 2;
+    word-wrap: break-word;
+    overflow: auto;
+    height: 4rem;
+    scrollbar-width: thin;
+    scrollbar-color: #444444 #e0e0e0;
+    padding-right: 10px
 }
 
 .members {
+    color: #333;
     font-size: 0.85rem;
     color: #444;
+    flex-grow: 4;
 }
 
 .created-by {
+    color: #333;
     font-size: 0.85rem;
     color: #666;
     text-align: right;

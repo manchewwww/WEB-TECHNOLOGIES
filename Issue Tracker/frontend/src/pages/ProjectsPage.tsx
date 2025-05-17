@@ -35,7 +35,7 @@ function ProjectsPage() {
   });
 
   useEffect(() => {
-    axios.get("/api/projects").then(res => setProjects(res.data));
+    axios.get(`/api/projects/user/${user?.id}`).then(res => setProjects(res.data));
   }, []);
 
   useEffect(() => {
@@ -57,11 +57,15 @@ function ProjectsPage() {
   }, []);
 
   const handleCreate = async () => {
+    let values: string[] = form.members.map((m) => m.value)
+    if (user?.id) {
+      values.push(user?.id)
+    }
     const payload = {
       name: form.name,
       description: form.description,
       createdBy: user?.id,
-      members: form.members.map((m) => m.value)
+      members: values
     };
 
     try {

@@ -28,9 +28,16 @@ function ProjectsPage() {
   const { user } = useAuth();
   const [projects, setProjects] = useState<IProject[]>([]);
   const [showModal, setShowModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [userOptions, setUserOptions] = useState<IUserOption[]>([]);
   const [userIdToName, setUserIdToName] = useState<Record<string, string>>({});
   const [form, setForm] = useState({
+    name: "",
+    description: "",
+    members: [] as IUserOption[],
+  });
+  const [editForm, setEditForm] = useState({
+    _id: "",
     name: "",
     description: "",
     members: [] as IUserOption[],
@@ -61,9 +68,9 @@ function ProjectsPage() {
   }, []);
 
   const handleCreate = async () => {
-    let values: string[] = form.members.map((m) => m.value)
+    let values: string[] = form.members.map((m) => m.value);
     if (user?.id) {
-      values.push(user?.id)
+      values.push(user?.id);
     }
     const payload = {
       name: form.name,
@@ -83,6 +90,30 @@ function ProjectsPage() {
     }
   };
 
+  const handleEdit = async () => {
+    const values: string[] = editForm.members.map((m) => m.value);
+    if (user?.id && !values.includes(user.id)) {
+      values.push(user.id);
+    }
+
+    const payload = {
+      _id: editForm._id,
+      name: editForm.name,
+      description: editForm.description,
+      members: values,
+    };
+
+    try {
+      await axios.put(`/api/projects`, payload);
+      const res = await axios.get(`/api/projects/user/${user?.id}`);
+      setProjects(res.data);
+      setShowEditModal(false);
+      setEditForm({ _id: "", name: "", description: "", members: [] });
+    } catch (err) {
+      alert("Failed to update project.");
+    }
+  };
+
   return (
     <div className="projects-container">
       <div className="header">
@@ -98,7 +129,6 @@ function ProjectsPage() {
             key={project._id}
             onClick={() => navigate(`/${project._id}/tickets`)}
           >
-
             <h2 className="name">{project.name}</h2>
             <p className="description">{project.description}</p>
 
@@ -111,6 +141,22 @@ function ProjectsPage() {
               }}
             >
               View Members
+            </button>
+
+            <button
+              className="btn-secondary"
+              onClick={(e) => {
+                e.stopPropagation();
+                setEditForm({
+                  _id: project._id,
+                  name: project.name,
+                  description: project.description || "",
+                  members: userOptions.filter((u) => project.members.includes(u.value))
+                });
+                setShowEditModal(true);
+              }}
+            >
+              Edit project
             </button>
 
             <p className="created-by mt-2">Created by: {userIdToName[project.createdBy]}</p>
@@ -160,12 +206,53 @@ function ProjectsPage() {
         </div>
       )}
 
+      {showEditModal && (
+        <div className="modal-overlay">
+          <div className="modal-container">
+            <h2 className="modal-title">Edit Project</h2>
+            <input
+              type="text"
+              placeholder="Name"
+              className="form-input"
+              value={editForm.name}
+              onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+            />
+            <input
+              type="text"
+              placeholder="Description"
+              className="form-input"
+              value={editForm.description}
+              onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+            />
+            <Select
+              isMulti
+              options={userOptions}
+              value={editForm.members}
+              onChange={(selected) =>
+                setEditForm({ ...editForm, members: Array.from(selected ?? []) })
+              }
+              className="basic-multi-select"
+              classNamePrefix="select"
+              placeholder="Choose users"
+            />
+            <div className="form-buttons">
+              <button className="btn-secondary" onClick={() => setShowEditModal(false)}>
+                Cancel
+              </button>
+              <button className="btn-primary" onClick={handleEdit}>
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {showMembersModal && selectedProject && (
         <div className="modal-overlay">
           <div className="modal-container">
             <h2 className="modal-title">{selectedProject.name}</h2>
             {selectedProject.members.map((memberId, _) => (
-              <p>{userIdToName[memberId]}</p>
+              <p key={memberId}>{userIdToName[memberId]}</p>
             ))}
             <button
               className="btn-primary"

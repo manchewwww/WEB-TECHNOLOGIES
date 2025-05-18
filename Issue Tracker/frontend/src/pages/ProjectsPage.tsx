@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import Select from "react-select";
+import { useNavigate } from "react-router-dom";
 import '../styles/ProjectsPage.css';
 
 interface IUserOption {
@@ -23,6 +24,7 @@ interface IProject {
 }
 
 function ProjectsPage() {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [projects, setProjects] = useState<IProject[]>([]);
   const [showModal, setShowModal] = useState(false);
@@ -92,13 +94,18 @@ function ProjectsPage() {
 
       <ul className="project-list">
         {projects.map((project) => (
-          <button className="project-card" key={project._id}>
+          <button className="project-card"
+            key={project._id}
+            onClick={() => navigate(`/${project._id}/tickets`)}
+          >
+
             <h2 className="name">{project.name}</h2>
             <p className="description">{project.description}</p>
 
             <button
               className="btn-secondary"
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
                 setSelectedProject(project);
                 setShowMembersModal(true);
               }}

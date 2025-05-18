@@ -16,6 +16,7 @@ class ProjectController {
         this.router.get("", this.getAllProjects.bind(this) as RequestHandler);
         //TODO: FIX
         this.router.get("/user/:userId", this.getAllProjects.bind(this) as RequestHandler);
+        this.router.put("", this.editProject.bind(this) as RequestHandler);
     }
 
     async createProject(req: Request, res: Response): Promise<void> {
@@ -52,6 +53,16 @@ class ProjectController {
             const { userId } = req.params;
             const projects = await ProjectService.getProjectsByUser(userId);
             res.status(200).json(projects);
+        } catch (error) {
+            res.status(404).json({ message: "Projects not found for user" });
+        }
+    }
+
+    async editProject(req: Request, res: Response): Promise<void> {
+        try {
+            const projectData: IProject = req.body;
+            const updatedProject = await ProjectService.editProject(projectData);
+            res.status(200).json(updatedProject);
         } catch (error) {
             res.status(404).json({ message: "Projects not found for user" });
         }

@@ -32,11 +32,6 @@ function ProjectsPage() {
   const [userOptions, setUserOptions] = useState<IUserOption[]>([]);
   const [userIdToName, setUserIdToName] = useState<Record<string, string>>({});
   const [form, setForm] = useState({
-    name: "",
-    description: "",
-    members: [] as IUserOption[],
-  });
-  const [editForm, setEditForm] = useState({
     _id: "",
     name: "",
     description: "",
@@ -84,22 +79,22 @@ function ProjectsPage() {
       const res = await axios.get(`/api/projects/user/${user?.id}`);
       setProjects(res.data);
       setShowModal(false);
-      setForm({ name: "", description: "", members: [] });
+      setForm({ _id: "", name: "", description: "", members: [] });
     } catch (err) {
       alert("Failed to create project.");
     }
   };
 
   const handleEdit = async () => {
-    const values: string[] = editForm.members.map((m) => m.value);
+    const values: string[] = form.members.map((m) => m.value);
     if (user?.id && !values.includes(user.id)) {
       values.push(user.id);
     }
 
     const payload = {
-      _id: editForm._id,
-      name: editForm.name,
-      description: editForm.description,
+      _id: form._id,
+      name: form.name,
+      description: form.description,
       members: values,
     };
 
@@ -108,7 +103,7 @@ function ProjectsPage() {
       const res = await axios.get(`/api/projects/user/${user?.id}`);
       setProjects(res.data);
       setShowEditModal(false);
-      setEditForm({ _id: "", name: "", description: "", members: [] });
+      setForm({ _id: "", name: "", description: "", members: [] });
     } catch (err) {
       alert("Failed to update project.");
     }
@@ -147,7 +142,7 @@ function ProjectsPage() {
               className="btn-secondary"
               onClick={(e) => {
                 e.stopPropagation();
-                setEditForm({
+                setForm({
                   _id: project._id,
                   name: project.name,
                   description: project.description || "",
@@ -214,22 +209,22 @@ function ProjectsPage() {
               type="text"
               placeholder="Name"
               className="form-input"
-              value={editForm.name}
-              onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
             />
             <input
               type="text"
               placeholder="Description"
               className="form-input"
-              value={editForm.description}
-              onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+              value={form.description}
+              onChange={(e) => setForm({ ...form, description: e.target.value })}
             />
             <Select
               isMulti
               options={userOptions}
-              value={editForm.members}
+              value={form.members}
               onChange={(selected) =>
-                setEditForm({ ...editForm, members: Array.from(selected ?? []) })
+                setForm({ ...form, members: Array.from(selected ?? []) })
               }
               className="basic-multi-select"
               classNamePrefix="select"

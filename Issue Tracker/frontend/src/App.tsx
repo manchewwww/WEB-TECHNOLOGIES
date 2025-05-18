@@ -18,7 +18,7 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/projects" element={<ProjectsPage />} />
-          //TODO: ADD CORECT PAGE
+          //TODO: ADD CORRECT PAGE
           <Route path="/:projectID/tickets" element={<AdminPage />} />
           <Route path="/admin" element={<AdminPage />} />
         </Routes>

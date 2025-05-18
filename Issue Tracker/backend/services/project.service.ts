@@ -17,6 +17,10 @@ class ProjectService {
     async getProjectsByUser(userId: string): Promise<IProject[]> {
         return await ProjectRepository.getProjectsByUser(userId);
     }
+    
+    async editProject(projectData: IProject): Promise<IProject> {
+        return await ProjectRepository.updateProject(projectData);
+    }
 }
 
 export default new ProjectService();

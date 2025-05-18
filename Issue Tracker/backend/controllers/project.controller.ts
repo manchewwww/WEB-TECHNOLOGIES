@@ -14,7 +14,8 @@ class ProjectController {
         this.router.post("", this.createProject.bind(this) as RequestHandler);
         this.router.get("/:id", this.getProjectById.bind(this) as RequestHandler);
         this.router.get("", this.getAllProjects.bind(this) as RequestHandler);
-        this.router.get("/user/:userId", this.getProjectsByUser.bind(this) as RequestHandler);
+        //TODO: FIX
+        this.router.get("/user/:userId", this.getAllProjects.bind(this) as RequestHandler);
     }
 
     async createProject(req: Request, res: Response): Promise<void> {

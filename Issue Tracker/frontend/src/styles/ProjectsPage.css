@@ -1,7 +1,6 @@
 .projects-container {
     padding-top: 4rem;
     width: 100%;
-    margin: 0 auto;
 }
 
 .header {
@@ -34,25 +33,21 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    gap: 1rem;
+    gap: 1.5rem;
     list-style: none;
     padding: 0;
-    margin: 0 auto;
-    max-width: 1280px;
-    width: 100%;
+    margin: 0;
 }
 
 .project-card {
     background-color: white;
-    border-radius: 1rem;
     padding: 1.5rem;
     width: 300px;
-    /* min-height: 340px; */
-    margin-bottom: 2rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     text-align: left;
     cursor: pointer;
 }
@@ -62,65 +57,41 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.card-content {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-}
-
 .name {
     color: #333;
+    flex-grow: 1;
     font-size: 1.2rem;
     font-weight: 600;
     margin-bottom: 0.5rem;
-    flex-grow: 1;
 }
 
 .description {
+    color: #333;
     font-size: 0.95rem;
     margin-bottom: 1rem;
     color: #333;
     flex-grow: 2;
-    overflow: hidden;
     word-wrap: break-word;
-    max-height: 4rem;
     overflow: auto;
     height: 4rem;
     scrollbar-width: thin;
     scrollbar-color: #444444 #e0e0e0;
-    padding-right: 10px; /* Add space for scrollbar */
-}
-
-.description::-webkit-scrollbar {
-    width: 8px;
-    background: transparent;
-    border-radius: 16px;
-}
-
-.description::-webkit-scrollbar-thumb {
-    background: #444444;
-    border-radius: 16px;
-    margin: 2px;
+    padding-right: 10px
 }
 
 .members {
+    color: #333;
     font-size: 0.85rem;
     color: #444;
     flex-grow: 4;
-    padding: 0.5rem 0;
 }
 
 .created-by {
+    color: #333;
     font-size: 0.85rem;
     color: #666;
     text-align: right;
     margin-top: 1rem;
-    flex-grow: 1;
-    align-self: flex-end;
-    justify-self: flex-end;
-    display: flex;
-    align-items: flex-end;
-    justify-content: flex-end;
 }
 
 .modal-overlay {

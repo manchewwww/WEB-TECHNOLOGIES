@@ -16,6 +16,7 @@
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.8",
     "concurrently": "^7.6.0",
+    "prettier": "^3.5.3",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.8.3"
   },
@@ -37,6 +38,7 @@
     "build": "npm run build:backend && npm run build:frontend",
     "start:backend": "npm --prefix backend start",
     "preview:frontend": "npm --prefix frontend run preview",
-    "install-all": "npm install && npm --prefix backend install && npm --prefix frontend install"
+    "install-all": "npm install && npm --prefix backend install && npm --prefix frontend install",
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,scss,md}\""
   }
 }

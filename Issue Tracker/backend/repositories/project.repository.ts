@@ -32,6 +32,19 @@ const ProjectRepository = {
 
   async getProjectsByUser(userId: string): Promise<IProject[]> {
     return ProjectModel.find({ createdBy: userId }).lean();
+  }, 
+
+  async getProjectsByMember(userId: string): Promise<IProject[]> {
+  return ProjectModel.find({ members: userId }).lean();
+  },
+
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  //TODO: user stats
+  //get user's all project count(userId)
+  async getUserProjectCount(userId: string): Promise<number> {
+  return ProjectModel.countDocuments({ members: userId });
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
   }
 };
 

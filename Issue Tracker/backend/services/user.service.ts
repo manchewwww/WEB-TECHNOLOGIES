@@ -7,6 +7,15 @@ class UserService {
             return { id: user._id, username: user.username }
         })
     }
+
+    async getUserById(id: string) {
+        const user = await UserRepository.getUserById(id);
+        return {
+            id: user._id,
+            username: user.username,
+            email: user.email, 
+        };
+    }
 }
 
 export default new UserService();

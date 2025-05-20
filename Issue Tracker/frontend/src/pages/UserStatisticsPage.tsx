@@ -6,6 +6,7 @@ interface Ticket {
   _id: string;
   title: string;
   status: string;
+  priority : string;
 }
 
 interface Project {
@@ -14,22 +15,37 @@ interface Project {
 }
 
 interface UserStats {
+  _id : string;
   username: string;
-  tickets: Ticket[];
-  projects: Project[];
+  tikets : Ticket[];
+  projects : Project[];
 }
+
+interface ProjectStats {
+  _id: string;
+  name: string;
+  createdTickets: number;
+  assignedTickets: number;
+  statusCounts: Record<string, number>;
+  priorityCounts: Record<string, number>;
+}
+
+
 
 function UserStatisticsPage() {
   const { userId } = useParams();
   const [stats, setStats] = useState<UserStats | null>(null);
   const [loading, setLoading] = useState(true);
-
+  
   const [projectCount, setProjectCount] = useState<number>(0);
   const [createdTicketsCount, setCreatedTicketsCount] = useState<number>(0);
   const [assignedTicketsCount, setAssignedTicketsCount] = useState<number>(0);
+  
   const [ticketsByStatus, setTicketsByStatus] = useState<Record<string, number>>({});
   const [ticketsByPriority, setTicketsByPriority] = useState<Record<string, number>>({});
-
+  
+  const [projectStats, setProjectStats] = useState<ProjectStats[]>([]);
+  
   useEffect(() => {
     async function fetchStats() {
       try {
@@ -54,11 +70,11 @@ function UserStatisticsPage() {
           statusRes,
           priorityRes,
         ] = await Promise.all([
-          fetch(`http://localhost:3000/api/statistics/projects/count/${userId}`),
-          fetch(`http://localhost:3000/api/statistics/tickets/created/${userId}`),
-          fetch(`http://localhost:3000/api/statistics/tickets/assigned/${userId}`),
+          fetch(`http://localhost:3000/api/statistics/projects/count/${userId}`), 
+          fetch(`http://localhost:3000/api/statistics/tickets/created/${userId}`),  
+          fetch(`http://localhost:3000/api/statistics/tickets/assigned/${userId}`), 
           fetch(`http://localhost:3000/api/statistics/tickets/assigned/status/${userId}`),
-          fetch(`http://localhost:3000/api/statistics/tickets/assigned/priority/${userId}`),
+          fetch(`http://localhost:3000/api/statistics/tickets/assigned/priority/${userId}`), 
         ]);
 
         const projectCountData = await projectCountRes.json();
@@ -77,8 +93,53 @@ function UserStatisticsPage() {
       }
     }
 
+    async function fetchProjectDetails() {
+  if (!userId) return;
+
+  try {
+    const projectsRes = await fetch(`http://localhost:3000/api/statistics/projects/${userId}`);
+    const projects = await projectsRes.json();
+
+    const projectStatsPromises = projects.map(async (project: { _id: string; name: string }) => {
+      const [
+        createdRes,
+        assignedRes,
+        statusRes,
+        priorityRes
+      ] = await Promise.all([
+        fetch(`http://localhost:3000/api/statistics/tickets/created/${userId}/project/${project._id}`),
+        fetch(`http://localhost:3000/api/statistics/tickets/assigned/${userId}/project/${project._id}`),
+        fetch(`http://localhost:3000/api/statistics/tickets/assigned/status/${userId}/project/${project._id}`),
+        fetch(`http://localhost:3000/api/statistics/tickets/assigned/priority/${userId}/project/${project._id}`)
+      ]);
+
+      const createdData = await createdRes.json();
+      const assignedData = await assignedRes.json();
+      const statusData = await statusRes.json();
+      const priorityData = await priorityRes.json();
+
+      return {
+        _id: project._id,
+        name: project.name,
+        createdTickets: createdData.count ?? 0,
+        assignedTickets: assignedData.count ?? 0,
+        statusCounts: statusData ?? {},
+        priorityCounts: priorityData ?? {}
+      };
+    });
+
+    const detailedStats = await Promise.all(projectStatsPromises);
+    setProjectStats(detailedStats);
+  } catch (err) {
+    console.error("Error fetching project-level stats", err);
+  }
+}
+
+
     fetchStats();
     fetchExtraStats();
+    fetchProjectDetails();
+
   }, [userId]);
 
   if (loading) return <p>Loading statistics...</p>;
@@ -86,60 +147,87 @@ function UserStatisticsPage() {
 
   return (
     <div className="stats-container">
-      <h2>Statistics for: {stats.username}</h2>
+      <h2>{stats.username}</h2>
 
       <div className="stat-section">
-        <h3>Projects ({stats.projects?.length ?? 0})</h3>
         <p>Total Projects: {projectCount}</p>
-        <ul>
-          {stats.projects?.map((project) => (
-            <li key={project._id}>{project.name}</li>
-          ))}
-        </ul>
-      </div>
-
-      <div className="stat-section">
-        <h3>Tickets ({stats.tickets?.length ?? 0})</h3>
         <p>Created Tickets: {createdTicketsCount}</p>
         <p>Assigned Tickets: {assignedTicketsCount}</p>
+      </div>
+
+<div className="stat-section">
+  <h3>Assigned Tickets by Status</h3>
+  {Object.keys(ticketsByStatus).length > 0 ? (
+    <ul>
+      {["open", "in_progress", "review", "closed"].map((status) =>
+        ticketsByStatus[status] !== undefined ? (
+          <li key={status}>
+            {status}: {ticketsByStatus[status]}
+          </li>
+        ) : null
+      )}
+    </ul>
+  ) : (
+    <p>No status data available.</p>
+  )}
+</div>
+
+
+<div className="stat-section">
+  <h3>Assigned Tickets by Priority</h3>
+  {Object.keys(ticketsByPriority).length > 0 ? (
+    <ul>
+      {["low", "medium", "high", "critical"].map((priority) =>
+        ticketsByPriority[priority] !== undefined ? (
+          <li key={priority}>
+            {priority}: {ticketsByPriority[priority]}
+          </li>
+        ) : null
+      )}
+    </ul>
+  ) : (
+    <p>No priority data available.</p>
+  )}
+</div>
+<div className="stat-section">
+  <h3>Project Statistics</h3>
+  {projectStats.length > 0 ? (
+    projectStats.map((project) => (
+      <div key={project._id} className="project-box">
+        <h4>{project.name}</h4>
         <ul>
-          {stats.tickets?.map((ticket) => (
-            <li key={ticket._id}>
-              {ticket.title} - <strong>{ticket.status}</strong>
-            </li>
-          ))}
+          <li>Created Tickets: {project.createdTickets}</li>
+          <li>Assigned Tickets: {project.assignedTickets}</li>
+        </ul>
+
+        <strong>Status Counts:</strong>
+        <ul>
+          {["open", "in_progress", "review", "closed"].map((status) =>
+            project.statusCounts[status] !== undefined ? (
+              <li key={status}>
+                {status}: {project.statusCounts[status]}
+              </li>
+            ) : null
+          )}
+        </ul>
+
+        <strong>Priority Counts:</strong>
+        <ul>
+          {["low", "medium", "high", "critical"].map((priority) =>
+            project.priorityCounts[priority] !== undefined ? (
+              <li key={priority}>
+                {priority}: {project.priorityCounts[priority]}
+              </li>
+            ) : null
+          )}
         </ul>
       </div>
+    ))
+  ) : (
+    <p>No project details available.</p>
+  )}
+</div>
 
-      <div className="stat-section">
-        <h3>Assigned Tickets by Status</h3>
-        {Object.keys(ticketsByStatus).length > 0 ? (
-          <ul>
-            {Object.entries(ticketsByStatus).map(([status, count]) => (
-              <li key={status}>
-                {status}: {count}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p>No status data available.</p>
-        )}
-      </div>
-
-      <div className="stat-section">
-        <h3>Assigned Tickets by Priority</h3>
-        {Object.keys(ticketsByPriority).length > 0 ? (
-          <ul>
-            {Object.entries(ticketsByPriority).map(([priority, count]) => (
-              <li key={priority}>
-                {priority}: {count}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p>No priority data available.</p>
-        )}
-      </div>
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import express, { Request, Response, Router, RequestHandler } from "express";
-import authService from "../services/AuthService";
+import authService from "../services/auth.service";
 import jwt from "jsonwebtoken";
 
 class AuthController {
@@ -18,12 +18,12 @@ class AuthController {
 
   private async register(req: Request, res: Response): Promise<void> {
     try {
-      const { username, email, password, confirmPassword } = req.body;
+      const { username, firstname, lastname, email, password, confirmPassword } = req.body;
       if (password !== confirmPassword) {
         res.status(400).json({ message: "Паролите не съвпадат." });
         return;
       }
-      const user = await authService.register(username, email, password);
+      const user = await authService.register(username, firstname, lastname, email, password);
       res.status(201).json({ message: "Успешна регистрация.", user });
     } catch (error: any) {
       res.status(400).json({ message: error.message });
@@ -43,20 +43,20 @@ class AuthController {
   async refresh(req: Request, res: Response): Promise<void> {
     const { refreshToken } = req.body;
     if (!refreshToken) {
-        res.status(401).json({ message: "Refresh Token липсва" });
-        return;
+      res.status(401).json({ message: "Refresh Token липсва" });
+      return;
     }
 
     try {
-        const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET as string) as { id: string; role: string };
-        const accessToken = jwt.sign(
-            { id: decoded.id, role: decoded.role },
-            process.env.ACCESS_TOKEN_SECRET as string,
-            { expiresIn: "15m" }
-        );
-        res.json({ accessToken });
+      const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET as string) as { id: string; role: string };
+      const accessToken = jwt.sign(
+        { id: decoded.id, role: decoded.role },
+        process.env.ACCESS_TOKEN_SECRET as string,
+        { expiresIn: "15m" }
+      );
+      res.json({ accessToken });
     } catch (error) {
-        res.status(401).json({ message: "Невалиден refresh токен" });
+      res.status(401).json({ message: "Невалиден refresh токен" });
     }
   }
 

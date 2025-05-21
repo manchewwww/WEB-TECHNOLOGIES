@@ -1,4 +1,5 @@
 import { Types } from "mongoose";
+import { StatusType } from "../../constants/StatusType";
 
 interface IComment {
     userId: Types.ObjectId;
@@ -10,7 +11,7 @@ export interface ITicket {
     _id: Types.ObjectId;
     title: string;
     description: string;
-    status: "open" | "in_progress" | "review" | "closed";
+    status: StatusType;
     priority: "low" | "medium" | "high" | "critical";
     projectId: Types.ObjectId;
     assignee?: Types.ObjectId;

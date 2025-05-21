@@ -16,6 +16,8 @@ function RegisterPage() {
   const { register } = useAuth();
   const [formData, setFormData] = useState({
     username: "",
+    firstname: "",
+    lastname: "",
     email: "",
     password: "",
     confirmPassword: "",  
@@ -44,6 +46,8 @@ function RegisterPage() {
     try {
       const success = await register(
         formData.username,
+        formData.firstname,
+        formData.lastname,
         formData.email,
         formData.password,
         formData.confirmPassword
@@ -65,6 +69,22 @@ function RegisterPage() {
     <div className="register-container">
       <form onSubmit={handleSubmit} className="register-form">
         <h2>Register</h2>
+        <input
+          type="text"
+          name="firstname"
+          placeholder="First Name"
+          value={formData.firstname}
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="text"
+          name="lastname"
+          placeholder="Last Name"
+          value={formData.lastname}
+          onChange={handleChange}
+          required
+        />
         <input
           type="text"
           name="username"

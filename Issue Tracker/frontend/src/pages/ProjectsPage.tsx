@@ -41,8 +41,8 @@ function ProjectsPage() {
   const [showMembersModal, setShowMembersModal] = useState(false);
 
   useEffect(() => {
-    axios.get(`/api/projects/user/${user?.id}`).then(res => setProjects(res.data));
-  }, [user]);
+    axios.get(`/api/projects`).then(res => setProjects(res.data));
+  }, []);
 
   useEffect(() => {
     axios.get("/api/users").then(res => {
@@ -76,7 +76,7 @@ function ProjectsPage() {
 
     try {
       await axios.post("/api/projects", payload);
-      const res = await axios.get(`/api/projects/user/${user?.id}`);
+      const res = await axios.get(`/api/projects`);
       setProjects(res.data);
       setShowModal(false);
       setForm({ _id: "", name: "", description: "", members: [] });
@@ -100,7 +100,7 @@ function ProjectsPage() {
 
     try {
       await axios.put(`/api/projects`, payload);
-      const res = await axios.get(`/api/projects/user/${user?.id}`);
+      const res = await axios.get(`/api/projects`);
       setProjects(res.data);
       setShowEditModal(false);
       setForm({ _id: "", name: "", description: "", members: [] });
@@ -138,21 +138,23 @@ function ProjectsPage() {
               View Members
             </button>
 
-            <button
-              className="btn-secondary"
-              onClick={(e) => {
-                e.stopPropagation();
-                setForm({
-                  _id: project._id,
-                  name: project.name,
-                  description: project.description || "",
-                  members: userOptions.filter((u) => project.members.includes(u.value))
-                });
-                setShowEditModal(true);
-              }}
-            >
-              Edit project
-            </button>
+            {project.createdBy === user?.id && (
+              <button
+                className="btn-secondary"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setForm({
+                    _id: project._id,
+                    name: project.name,
+                    description: project.description || "",
+                    members: userOptions.filter((u) => project.members.includes(u.value))
+                  });
+                  setShowEditModal(true);
+                }}
+              >
+                Edit project
+              </button>
+            )}
 
             <p className="created-by mt-2">Created by: {userIdToName[project.createdBy]}</p>
           </button>
@@ -246,7 +248,7 @@ function ProjectsPage() {
         <div className="modal-overlay">
           <div className="modal-container">
             <h2 className="modal-title">{selectedProject.name}</h2>
-            {selectedProject.members.map((memberId, _) => (
+            {selectedProject.members.map((memberId) => (
               <p key={memberId}>{userIdToName[memberId]}</p>
             ))}
             <button

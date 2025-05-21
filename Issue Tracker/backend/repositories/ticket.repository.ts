@@ -1,6 +1,7 @@
 import { ITicket } from '../db/interfaces/ticket.interface';
 import TicketModel from '../db/models/ticket.model';
 import NotFoundError from '../exceptions/NotFoundException';
+import { Types } from "mongoose";
 
 class TicketRepository {
   async getAllTickets(): Promise<ITicket[]> {
@@ -77,6 +78,81 @@ class TicketRepository {
   async getTicketsAssignedToUserID(userId: string): Promise<ITicket[]> {
     return TicketModel.find({ assignee: userId }).lean();
   }
+
+  async getTicketsCountCreatedByUser(userId: string): Promise<number> {
+    return TicketModel.countDocuments({ createdBy: userId });
+  }
+
+  async getTicketsCountAssignedToUser(userId: string): Promise<number> {
+    return TicketModel.countDocuments({ assignee: userId });
+  }
+
+  async getTicketsCountCreatedByUserInProject(userId: string, projectId: string): Promise<number> {
+    return TicketModel.countDocuments({ createdBy: userId, projectId });
+  }
+
+  async getTicketsCountAssignedToUserInProject(userId: string, projectId: string): Promise<number> {
+    return TicketModel.countDocuments({ assignee: userId, projectId });
+  }
+
+
+async getAssignedTicketsCountByStatus(userId: string): Promise<Record<string, number>> {
+  const objectId = new Types.ObjectId(userId);
+
+  const result = await TicketModel.aggregate([
+    { $match: { assignee: objectId } },
+    { $group: { _id: "$status", count: { $sum: 1 } } }
+  ]);
+
+  return result.reduce((acc, curr) => {
+    acc[curr._id] = curr.count;
+    return acc;
+  }, {} as Record<string, number>);
+}
+
+async getAssignedTicketsCountByPriority(userId: string): Promise<Record<string, number>> {
+  const objectId = new Types.ObjectId(userId);
+  const result = await TicketModel.aggregate([
+    { $match: { assignee: objectId } },
+    { $group: { _id: "$priority", count: { $sum: 1 } } }
+  ]);
+
+  return result.reduce((acc, curr) => {
+    acc[curr._id] = curr.count;
+    return acc;
+  }, {} as Record<string, number>);
+}
+
+async getAssignedTicketsCountByStatusInProject(userId: string, projectId: string): Promise<Record<string, number>> {
+  const userObjectId = new Types.ObjectId(userId);
+  const projectObjectId = new Types.ObjectId(projectId);
+
+  const result = await TicketModel.aggregate([
+    { $match: { assignee: userObjectId, projectId: projectObjectId } },
+    { $group: { _id: "$status", count: { $sum: 1 } } }
+  ]);
+
+  return result.reduce((acc, curr) => {
+    acc[curr._id] = curr.count;
+    return acc;
+  }, {} as Record<string, number>);
+}
+
+async getAssignedTicketsCountByPriorityInProject(userId: string, projectId: string): Promise<Record<string, number>> {
+  const userObjectId = new Types.ObjectId(userId);
+  const projectObjectId = new Types.ObjectId(projectId);
+
+  const result = await TicketModel.aggregate([
+    { $match: { assignee: userObjectId, projectId: projectObjectId } },
+    { $group: { _id: "$priority", count: { $sum: 1 } } }
+  ]);
+
+  return result.reduce((acc, curr) => {
+    acc[curr._id] = curr.count;
+    return acc;
+  }, {} as Record<string, number>);
+}
+
 };
 
 export default new TicketRepository();

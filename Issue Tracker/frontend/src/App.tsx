@@ -6,6 +6,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ProjectsPage from './pages/ProjectsPage';
 import AdminPage from './pages/AdminPage';
+import UserStatisticsPage from './pages/UserStatisticsPage';
 import { AuthProvider } from './context/AuthContext';
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
           //TODO: ADD CORRECT PAGE
           <Route path="/:projectID/tickets" element={<AdminPage />} />
           <Route path="/admin" element={<AdminPage />} />
+          <Route path="/statistics/:userId" element={<UserStatisticsPage />} />
         </Routes>
       </Router>
     </AuthProvider>

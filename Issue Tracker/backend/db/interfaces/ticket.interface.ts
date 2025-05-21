@@ -9,7 +9,7 @@ interface IComment {
 }
 
 export interface ITicket {
-    id: Types.ObjectId;
+    _id: Types.ObjectId;
     title: string;
     description: string;
     status: StatusType;

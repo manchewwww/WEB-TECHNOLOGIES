@@ -66,3 +66,18 @@
     margin-right: 10px;
     font-size: 16px;
 }
+
+.nav-user-select {
+    margin-left: 20px;
+    background-color: #2b2b2b;
+    color: white;
+    border: 1px solid #555;
+    border-radius: 5px;
+    padding: 8px 12px;
+    font-size: 16px;
+}
+
+.nav-user-select:hover {
+    cursor: pointer;
+    background-color: #3b3b3b;
+}

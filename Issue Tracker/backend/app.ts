@@ -4,6 +4,7 @@ import ticketRouter from './controllers/ticket.controller';
 import projectRouter from './controllers/project.controller';
 import authRouter from './controllers/auth.controller';
 import userRouter from './controllers/user.controller';
+import userStatisticsRouter from './controllers/userStatistics.controller';
 import connectDB from './db/dbConnect';
 import dotenv from "dotenv";
 import path from 'path';
@@ -18,6 +19,7 @@ app.use('/api/tickets', ticketRouter);
 app.use('/api/projects', projectRouter);
 app.use('/api/users', userRouter);
 app.use('/api/auth', authRouter);
+app.use('/api/statistics', userStatisticsRouter);
 
 const startServer = async () => {
     try {

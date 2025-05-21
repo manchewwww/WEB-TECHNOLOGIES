@@ -7,6 +7,7 @@ import RegisterPage from './pages/RegisterPage';
 import ProjectsPage from './pages/ProjectsPage';
 import AdminPage from './pages/AdminPage';
 import MultipleTicketsPage from './pages/MultipleTicketsPage';
+import UserStatisticsPage from './pages/UserStatisticsPage';
 import { AuthProvider } from './context/AuthContext';
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
           <Route path="/:projectID/tickets" element={<AdminPage />} />
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/tickets" element={<MultipleTicketsPage/>}/>
+          <Route path="/statistics/:userId" element={<UserStatisticsPage />} />
         </Routes>
       </Router>
     </AuthProvider>

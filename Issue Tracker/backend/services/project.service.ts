@@ -19,10 +19,9 @@ class ProjectService {
     }
 
     async getProjectsMemberOfUser(userId: string): Promise<IProject[]> {
-        //TODO: return await ProjectRepository.getProjectsMemberOfUser(userId);
-        return await ProjectRepository.getProjectsCreatedByUser(userId);
+        return await ProjectRepository.getProjectsByMember(userId);
     }
-    
+
     async editProject(projectData: IProject): Promise<IProject> {
         return await ProjectRepository.updateProject(projectData);
     }

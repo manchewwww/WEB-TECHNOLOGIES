@@ -66,44 +66,11 @@
   justify-content: space-between;
 }
 
-.project-card {
-  background-color: white;
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  width: 100%;
-  max-width: 500px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.project-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
 .project-title {
   font-size: 1.3rem;
   font-weight: bold;
   margin-bottom: 1rem;
   text-align: center;
-}
-
-.project-card ul {
-  padding-left: 0;
-  list-style: none;
-}
-
-.project-card li {
-  padding: 0.3rem 0;
-  color: #333;
-}
-
-.project-card {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  flex-wrap: wrap; /* за responsiveness */
-  gap: 2rem;
 }
 
 .project-left {

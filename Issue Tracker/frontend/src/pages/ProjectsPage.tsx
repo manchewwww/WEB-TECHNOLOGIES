@@ -41,8 +41,8 @@ function ProjectsPage() {
   const [showMembersModal, setShowMembersModal] = useState(false);
 
   useEffect(() => {
-    axios.get(`/api/projects`).then(res => setProjects(res.data));
-  }, []);
+    axios.get(`/api/projects/member-of/${user?.id}`).then(res => setProjects(res.data));
+  }, [user]);
 
   useEffect(() => {
     axios.get("/api/users").then(res => {

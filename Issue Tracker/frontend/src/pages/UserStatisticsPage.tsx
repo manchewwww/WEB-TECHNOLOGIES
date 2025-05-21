@@ -2,6 +2,71 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import "../styles/UserStatisticsPage.css";
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+import {
+  PieChart,
+  Pie,
+  Cell,
+  Legend,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
+
+// Цветове за статуси и приоритети
+const STATUS_COLORS: Record<string, string> = {
+  open: "#2ecc71",
+  in_progress: "#f1c40f",
+  review: "#9b59b6",
+  closed: "#3498db",
+};
+
+const PRIORITY_COLORS: Record<string, string> = {
+  low: "#2ecc71",
+  medium: "#f39c12",
+  high: "#e74c3c",
+  critical: "#34495e",
+};
+
+// Мини-компонент за кръгова диаграма
+const PieChartBlock = ({
+  title,
+  data,
+  colorMap,
+}: {
+  title: string;
+  data: Record<string, number>;
+  colorMap: Record<string, string>;
+}) => {
+  const chartData = Object.keys(colorMap).map((key) => ({
+    name: key,
+    value: data[key] ?? 0,
+  }));
+
+  return (
+    <div style={{ width: "100%", maxWidth: "400px", margin: "1rem auto" }}>
+      <h4 style={{ textAlign: "center", marginBottom: "0.5rem" }}>{title}</h4>
+      <ResponsiveContainer width="100%" height={250}>
+        <PieChart>
+          <Pie
+            data={chartData}
+            dataKey="value"
+            nameKey="name"
+            outerRadius={80}
+            label
+          >
+            {chartData.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={colorMap[entry.name]} />
+            ))}
+          </Pie>
+          <Tooltip />
+          <Legend verticalAlign="bottom" />
+        </PieChart>
+      </ResponsiveContainer>
+    </div>
+  );
+};
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
 interface Ticket {
   _id: string;
   title: string;
@@ -147,85 +212,97 @@ function UserStatisticsPage() {
 
   return (
     <div className="stats-container">
-      <h2>{stats.username}</h2>
+      <h2 className="page-title">{stats.username}'s Statistics</h2>
 
-      <div className="stat-section">
-        <p>Total Projects: {projectCount}</p>
-        <p>Created Tickets: {createdTicketsCount}</p>
-        <p>Assigned Tickets: {assignedTicketsCount}</p>
-      </div>
-
-<div className="stat-section">
-  <h3>Assigned Tickets by Status</h3>
-  {Object.keys(ticketsByStatus).length > 0 ? (
-    <ul>
-      {["open", "in_progress", "review", "closed"].map((status) =>
-        ticketsByStatus[status] !== undefined ? (
-          <li key={status}>
-            {status}: {ticketsByStatus[status]}
-          </li>
-        ) : null
-      )}
-    </ul>
-  ) : (
-    <p>No status data available.</p>
-  )}
+<div className="summary-row">
+  <div className="summary-card">
+    <p>Total Projects</p>
+    <h3>{projectCount}</h3>
+  </div>
+  <div className="summary-card">
+    <p>Created Tickets</p>
+    <h3>{createdTicketsCount}</h3>
+  </div>
+  <div className="summary-card">
+    <p>Assigned Tickets</p>
+    <h3>{assignedTicketsCount}</h3>
+  </div>
 </div>
 
+<div
+  style={{
+    display: "flex",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    gap: "2rem",
+    marginTop: "2rem",
+  }}
+>
+  <div className="stat-section" style={{ width: "100%", maxWidth: "500px" }}>
+    <PieChartBlock
+      title="Assigned Tickets by Status"
+      data={{
+        open: ticketsByStatus["open"] ?? 0,
+        in_progress: ticketsByStatus["in_progress"] ?? 0,
+        review: ticketsByStatus["review"] ?? 0,
+        closed: ticketsByStatus["closed"] ?? 0,
+      }}
+      colorMap={STATUS_COLORS}
+    />
+  </div>
 
-<div className="stat-section">
-  <h3>Assigned Tickets by Priority</h3>
-  {Object.keys(ticketsByPriority).length > 0 ? (
-    <ul>
-      {["low", "medium", "high", "critical"].map((priority) =>
-        ticketsByPriority[priority] !== undefined ? (
-          <li key={priority}>
-            {priority}: {ticketsByPriority[priority]}
-          </li>
-        ) : null
-      )}
-    </ul>
-  ) : (
-    <p>No priority data available.</p>
-  )}
+  <div className="stat-section" style={{ width: "100%", maxWidth: "500px" }}>
+    <PieChartBlock
+      title="Assigned Tickets by Priority"
+      data={{
+        low: ticketsByPriority["low"] ?? 0,
+        medium: ticketsByPriority["medium"] ?? 0,
+        high: ticketsByPriority["high"] ?? 0,
+        critical: ticketsByPriority["critical"] ?? 0,
+      }}
+      colorMap={PRIORITY_COLORS}
+    />
+  </div>
 </div>
+
 <div className="stat-section">
   <h3>Project Statistics</h3>
-  {projectStats.length > 0 ? (
-    projectStats.map((project) => (
-      <div key={project._id} className="project-box">
-        <h4>{project.name}</h4>
-        <ul>
-          <li>Created Tickets: {project.createdTickets}</li>
-          <li>Assigned Tickets: {project.assignedTickets}</li>
-        </ul>
+  <div className="project-stats">
+    {projectStats.length > 0 ? (
+      projectStats.map((project) => (
+        <div key={project._id} className="project-card">
+          <h4 className="project-title">{project.name}</h4>
+          <ul>
+            <li>Created Tickets: {project.createdTickets}</li>
+            <li>Assigned Tickets: {project.assignedTickets}</li>
+          </ul>
+<PieChartBlock
+  title="Status Counts"
+  data={{
+    open: project.statusCounts["open"] ?? 0,
+    in_progress: project.statusCounts["in_progress"] ?? 0,
+    review: project.statusCounts["review"] ?? 0,
+    closed: project.statusCounts["closed"] ?? 0,
+  }}
+  colorMap={STATUS_COLORS}
+/>
 
-        <strong>Status Counts:</strong>
-        <ul>
-          {["open", "in_progress", "review", "closed"].map((status) =>
-            project.statusCounts[status] !== undefined ? (
-              <li key={status}>
-                {status}: {project.statusCounts[status]}
-              </li>
-            ) : null
-          )}
-        </ul>
-
-        <strong>Priority Counts:</strong>
-        <ul>
-          {["low", "medium", "high", "critical"].map((priority) =>
-            project.priorityCounts[priority] !== undefined ? (
-              <li key={priority}>
-                {priority}: {project.priorityCounts[priority]}
-              </li>
-            ) : null
-          )}
-        </ul>
-      </div>
-    ))
-  ) : (
-    <p>No project details available.</p>
-  )}
+<PieChartBlock
+  title="Priority Counts"
+  data={{
+    low: project.priorityCounts["low"] ?? 0,
+    medium: project.priorityCounts["medium"] ?? 0,
+    high: project.priorityCounts["high"] ?? 0,
+    critical: project.priorityCounts["critical"] ?? 0,
+  }}
+  colorMap={PRIORITY_COLORS}
+/>
+        </div>
+      ))
+    ) : (
+      <p>No project details available.</p>
+    )}
+  </div>
 </div>
 
     </div>

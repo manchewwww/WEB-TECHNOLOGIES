@@ -79,35 +79,23 @@ class TicketRepository {
     return TicketModel.find({ assignee: userId }).lean();
   }
 
-  ////////////////////////////////////////////////////////////////////////////////////////////////////
-  //TODO: user stats
-  //get user's all tickets count(userId)
-  //get user's project tickets count(userId, projectID)
-  //get ticket status(ticketId)
-  //get ticket priority(ticketId)
-  //get tickets count by cryterior(userId, status?, pririty?, projectID) //moje i na otdelni funkcii
-
-    // ✅ Връща броя на всички тикети, създадени от даден потребител
   async getTicketsCountCreatedByUser(userId: string): Promise<number> {
     return TicketModel.countDocuments({ createdBy: userId });
   }
 
-      // ✅ Връща броя на всички тикети, начислени на даден потребител
   async getTicketsCountAssignedToUser(userId: string): Promise<number> {
     return TicketModel.countDocuments({ assignee: userId });
   }
 
-  // ✅ Връща броя на тикетите в даден проект, създадени от даден потребител
   async getTicketsCountCreatedByUserInProject(userId: string, projectId: string): Promise<number> {
     return TicketModel.countDocuments({ createdBy: userId, projectId });
   }
 
-    // ✅ Връща броя на тикетите в даден проект, създадени от даден потребител
   async getTicketsCountAssignedToUserInProject(userId: string, projectId: string): Promise<number> {
     return TicketModel.countDocuments({ assignee: userId, projectId });
   }
 
-  // Групира тикети по статус за даден потребител
+
 async getAssignedTicketsCountByStatus(userId: string): Promise<Record<string, number>> {
   const objectId = new Types.ObjectId(userId);
 
@@ -122,7 +110,6 @@ async getAssignedTicketsCountByStatus(userId: string): Promise<Record<string, nu
   }, {} as Record<string, number>);
 }
 
-  // Групира тикети по приоритет за даден потребител
 async getAssignedTicketsCountByPriority(userId: string): Promise<Record<string, number>> {
   const objectId = new Types.ObjectId(userId);
   const result = await TicketModel.aggregate([
@@ -135,44 +122,6 @@ async getAssignedTicketsCountByPriority(userId: string): Promise<Record<string, 
     return acc;
   }, {} as Record<string, number>);
 }
-
-
-  // // ✅ Връща статуса на конкретен тикет
-  // async getTicketStatus(ticketId: string): Promise<string> {
-  //   const ticket = await TicketModel.findById(ticketId, 'status').lean();
-  //   if (!ticket) {
-  //     throw new NotFoundError(`Ticket with ID ${ticketId} not found`);
-  //   }
-  //   return ticket.status;
-  // }
-
-  // // ✅ Връща приоритета на конкретен тикет
-  // async getTicketPriority(ticketId: string): Promise<string> {
-  //   const ticket = await TicketModel.findById(ticketId, 'priority').lean();
-  //   if (!ticket) {
-  //     throw new NotFoundError(`Ticket with ID ${ticketId} not found`);
-  //   }
-  //   return ticket.priority;
-  // }
-
-// // ✅ Връща броя тикети, начислени на потребителя за даден проект,
-// // като статус и приоритет са опционални филтри
-// async getTicketsCountByCriteria(
-//   userId: string,
-//   projectId: string,
-//   status?: string,
-//   priority?: string
-// ): Promise<number> {
-//   const query: any = {
-//     assignee: userId,
-//     projectId: projectId
-//   };
-
-//   if (status) query.status = status;
-//   if (priority) query.priority = priority;
-
-//   return TicketModel.countDocuments(query);
-// }
 
 async getAssignedTicketsCountByStatusInProject(userId: string, projectId: string): Promise<Record<string, number>> {
   const userObjectId = new Types.ObjectId(userId);
@@ -204,7 +153,6 @@ async getAssignedTicketsCountByPriorityInProject(userId: string, projectId: stri
   }, {} as Record<string, number>);
 }
 
-  ///////////////////////////////////////////////////////////////////////////////////////////////////////
 };
 
 export default new TicketRepository();

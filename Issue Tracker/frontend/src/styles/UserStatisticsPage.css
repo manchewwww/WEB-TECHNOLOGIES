@@ -1,42 +1,18 @@
-.stats-container {
+.stats-container {                                                       /*///////////////////////// Space from the begining /////////////////////*/
   padding-top: 4rem;
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
 }
 
-.page-title {
-  font-size: 2rem;
+.page-title {                                                             /*///////////////////////// Username /////////////////////*/
+  font-size: 3rem;
   font-weight: bold;
   margin-bottom: 2rem;
   text-align: center;
 }
 
-.stat-section {
-  background-color: white;
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  margin-bottom: 2rem;
-}
-
-.stat-section h3 {
-  font-size: 1.2rem;
-  font-weight: bold;
-  margin-bottom: 1rem;
-}
-
-.stat-section ul {
-  list-style: none;
-  padding-left: 0;
-}
-
-.stat-section li {
-  padding: 0.3rem 0;
-  color: #333;
-}
-
-.summary-row {
+.summary-row {                                                         /*///////////////////////// Cards with stats /////////////////////*/      
   display: flex;
   flex-wrap: wrap;
   gap: 1.5rem;
@@ -47,58 +23,98 @@
   background: white;
   padding: 1.5rem;
   border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.30);
   flex: 1;
   min-width: 200px;
   text-align: center;
 }
 
 .summary-card p {
-  font-size: 1.1rem;
+  font-size: 1.5rem;
   font-weight: 600;
   margin: 0;
 }
 
-.project-stats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.5rem;
-  justify-content: space-between;
+.summary-card h3 {
+  font-size: 4rem; 
+  font-weight: bold;
+  margin: 0.5rem 0;
 }
 
-.project-card {
+.chart-container {                                                         /*///////////////////////// Cards with pie /////////////////////*/      
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 3rem;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+.stat-section {                                                        /*///////////////////////// Cards with charts /////////////////////*/  
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.30);
+  margin-bottom: 2rem;
+}
+
+.stat-section h3 {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+/* .stat-section ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.stat-section li {
+  padding: 0.3rem 0;
+  color: #333;
+} */
+
+
+.project-stats {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 1.5rem;
+  justify-content: flex-start; 
+  overflow-x: auto; 
+}
+
+.project-item {
   background-color: white;
   padding: 1.5rem;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  width: 100%;
+  /* За да се подредят хоризонтално, премахваме width: 100%; */
+  width: auto;
   max-width: 500px;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  /* Ако е необходимо малко отстояние между проектите: */
+  margin-right: 1.5rem;
 }
 
-.project-card:hover {
+.project-item:hover {
   transform: translateY(-4px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.project-title {
-  font-size: 1.3rem;
-  font-weight: bold;
-  margin-bottom: 1rem;
-  text-align: center;
-}
-
-.project-card ul {
+.project-item ul {
   padding-left: 0;
   list-style: none;
 }
 
-.project-card li {
+.project-item li {
   padding: 0.3rem 0;
   color: #333;
 }
 
-.project-card {
+/* Ако този блок е нужен за подреждането вътре в всеки проект, го оставяме, 
+   но ако пречи на дизайна – го настрой или премахни според нуждите.
+   Може да си го запазиш, ако вътрешното съдържание трябва да бъде flex подредено: */
+.project-item {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -120,4 +136,3 @@
   flex-direction: row;
   gap: 2rem;
 }
-

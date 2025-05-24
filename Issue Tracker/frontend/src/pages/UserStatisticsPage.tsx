@@ -229,18 +229,11 @@ function UserStatisticsPage() {
   </div>
 </div>
 
-<div
-  style={{
-    display: "flex",
-    flexWrap: "wrap",
-    justifyContent: "center",
-    gap: "2rem",
-    marginTop: "2rem",
-  }}
->
-  <div className="stat-section" style={{ width: "100%", maxWidth: "500px" }}>
+<div className="chart-container">
+  <div className="summary-card">
+    <p>Assigned Tickets by Status</p>
     <PieChartBlock
-      title="Assigned Tickets by Status"
+      title=""
       data={{
         open: ticketsByStatus["open"] ?? 0,
         in_progress: ticketsByStatus["in_progress"] ?? 0,
@@ -251,9 +244,10 @@ function UserStatisticsPage() {
     />
   </div>
 
-  <div className="stat-section" style={{ width: "100%", maxWidth: "500px" }}>
+  <div className="summary-card">
+    <p>Assigned Tickets by Priority</p>
     <PieChartBlock
-      title="Assigned Tickets by Priority"
+      title=""
       data={{
         low: ticketsByPriority["low"] ?? 0,
         medium: ticketsByPriority["medium"] ?? 0,
@@ -270,12 +264,8 @@ function UserStatisticsPage() {
   <div className="project-stats">
     {projectStats.length > 0 ? (
       projectStats.map((project) => (
-        <div key={project._id} className="project-card">
+        <div key={project._id} className="project-item">
           <h4 className="project-title">{project.name}</h4>
-          <ul>
-            <li>Created Tickets: {project.createdTickets}</li>
-            <li>Assigned Tickets: {project.assignedTickets}</li>
-          </ul>
 <PieChartBlock
   title="Status Counts"
   data={{
@@ -286,6 +276,11 @@ function UserStatisticsPage() {
   }}
   colorMap={STATUS_COLORS}
 />
+          <ul>
+            <li>Created Tickets: {project.createdTickets}</li>
+            <li>Assigned Tickets: {project.assignedTickets}</li>
+            <li>Assigned Tickets: {project._id}</li>  {/*tuk da se napravi prenapisvane na koda za da moga tuk da lsova opisanie na proekta */}
+          </ul>
 
 <PieChartBlock
   title="Priority Counts"

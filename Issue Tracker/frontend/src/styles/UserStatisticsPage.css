@@ -64,37 +64,57 @@
   margin-bottom: 1rem;
 }
 
-/* .stat-section ul {
-  list-style: none;
-  padding-left: 0;
-}
-
-.stat-section li {
-  padding: 0.3rem 0;
-  color: #333;
-} */
-
 
 .project-stats {
   display: flex;
-  flex-wrap: nowrap;
-  gap: 1.5rem;
-  justify-content: flex-start; 
-  overflow-x: auto; 
+  flex-direction: column; /* Вертикална подредба */
+  gap: 2rem;
 }
 
 .project-item {
+  display: flex;
+  flex-direction: column; /* Вертикална структура: заглавие отгоре, съдържание отдолу */
   background-color: white;
   padding: 1.5rem;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  /* За да се подредят хоризонтално, премахваме width: 100%; */
-  width: auto;
-  max-width: 500px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  /* Ако е необходимо малко отстояние между проектите: */
-  margin-right: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  gap: 1rem;
 }
+
+.project-title {
+  font-size: 2rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+/* Съдържанието под заглавието */
+.project-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr; /* Три равни колони */
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.project-description {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  gap: 1rem;
+}
+
+.project-description p {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.project-description .ticket-counts {
+  display: flex;
+  justify-content: space-around;
+  font-weight: 600;
+}
+
 
 .project-item:hover {
   transform: translateY(-4px);
@@ -111,28 +131,11 @@
   color: #333;
 }
 
-/* Ако този блок е нужен за подреждането вътре в всеки проект, го оставяме, 
-   но ако пречи на дизайна – го настрой или премахни според нуждите.
-   Може да си го запазиш, ако вътрешното съдържание трябва да бъде flex подредено: */
+
 .project-item {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  flex-wrap: wrap; /* за responsiveness */
-  gap: 2rem;
-}
-
-.project-left {
-  flex: 1 1 250px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 0.5rem;
-}
-
-.project-right {
-  flex: 2 1 400px;
-  display: flex;
-  flex-direction: row;
+  flex-wrap: wrap;
   gap: 2rem;
 }

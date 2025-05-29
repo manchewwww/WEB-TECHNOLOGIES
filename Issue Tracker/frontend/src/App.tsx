@@ -20,10 +20,9 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/projects" element={<ProjectsPage />} />
-          //TODO: ADD CORRECT PAGE
-          <Route path="/:projectID/tickets" element={<AdminPage />} />
+          <Route path="/:projectID/tickets" element={<MultipleTicketsPage />} />
           <Route path="/admin" element={<AdminPage />} />
-          <Route path="/tickets" element={<MultipleTicketsPage/>}/>
+          <Route path="/tickets" element={<MultipleTicketsPage />} />
           <Route path="/statistics/:userId" element={<UserStatisticsPage />} />
         </Routes>
       </Router>

@@ -9,6 +9,11 @@ class TicketRepository {
     return projects;
   }
 
+  async getAllTicketsByProjectID(projectId: string): Promise<ITicket[]> {
+    const projects = await TicketModel.find({ projectId: projectId }).lean();
+    return projects;
+  }
+
   async getTicketById(ticketId: string): Promise<ITicket> {
     const ticket = await TicketModel.findById(ticketId).lean();
     if (!ticket) {
@@ -96,62 +101,62 @@ class TicketRepository {
   }
 
 
-async getAssignedTicketsCountByStatus(userId: string): Promise<Record<string, number>> {
-  const objectId = new Types.ObjectId(userId);
+  async getAssignedTicketsCountByStatus(userId: string): Promise<Record<string, number>> {
+    const objectId = new Types.ObjectId(userId);
 
-  const result = await TicketModel.aggregate([
-    { $match: { assignee: objectId } },
-    { $group: { _id: "$status", count: { $sum: 1 } } }
-  ]);
+    const result = await TicketModel.aggregate([
+      { $match: { assignee: objectId } },
+      { $group: { _id: "$status", count: { $sum: 1 } } }
+    ]);
 
-  return result.reduce((acc, curr) => {
-    acc[curr._id] = curr.count;
-    return acc;
-  }, {} as Record<string, number>);
-}
+    return result.reduce((acc, curr) => {
+      acc[curr._id] = curr.count;
+      return acc;
+    }, {} as Record<string, number>);
+  }
 
-async getAssignedTicketsCountByPriority(userId: string): Promise<Record<string, number>> {
-  const objectId = new Types.ObjectId(userId);
-  const result = await TicketModel.aggregate([
-    { $match: { assignee: objectId } },
-    { $group: { _id: "$priority", count: { $sum: 1 } } }
-  ]);
+  async getAssignedTicketsCountByPriority(userId: string): Promise<Record<string, number>> {
+    const objectId = new Types.ObjectId(userId);
+    const result = await TicketModel.aggregate([
+      { $match: { assignee: objectId } },
+      { $group: { _id: "$priority", count: { $sum: 1 } } }
+    ]);
 
-  return result.reduce((acc, curr) => {
-    acc[curr._id] = curr.count;
-    return acc;
-  }, {} as Record<string, number>);
-}
+    return result.reduce((acc, curr) => {
+      acc[curr._id] = curr.count;
+      return acc;
+    }, {} as Record<string, number>);
+  }
 
-async getAssignedTicketsCountByStatusInProject(userId: string, projectId: string): Promise<Record<string, number>> {
-  const userObjectId = new Types.ObjectId(userId);
-  const projectObjectId = new Types.ObjectId(projectId);
+  async getAssignedTicketsCountByStatusInProject(userId: string, projectId: string): Promise<Record<string, number>> {
+    const userObjectId = new Types.ObjectId(userId);
+    const projectObjectId = new Types.ObjectId(projectId);
 
-  const result = await TicketModel.aggregate([
-    { $match: { assignee: userObjectId, projectId: projectObjectId } },
-    { $group: { _id: "$status", count: { $sum: 1 } } }
-  ]);
+    const result = await TicketModel.aggregate([
+      { $match: { assignee: userObjectId, projectId: projectObjectId } },
+      { $group: { _id: "$status", count: { $sum: 1 } } }
+    ]);
 
-  return result.reduce((acc, curr) => {
-    acc[curr._id] = curr.count;
-    return acc;
-  }, {} as Record<string, number>);
-}
+    return result.reduce((acc, curr) => {
+      acc[curr._id] = curr.count;
+      return acc;
+    }, {} as Record<string, number>);
+  }
 
-async getAssignedTicketsCountByPriorityInProject(userId: string, projectId: string): Promise<Record<string, number>> {
-  const userObjectId = new Types.ObjectId(userId);
-  const projectObjectId = new Types.ObjectId(projectId);
+  async getAssignedTicketsCountByPriorityInProject(userId: string, projectId: string): Promise<Record<string, number>> {
+    const userObjectId = new Types.ObjectId(userId);
+    const projectObjectId = new Types.ObjectId(projectId);
 
-  const result = await TicketModel.aggregate([
-    { $match: { assignee: userObjectId, projectId: projectObjectId } },
-    { $group: { _id: "$priority", count: { $sum: 1 } } }
-  ]);
+    const result = await TicketModel.aggregate([
+      { $match: { assignee: userObjectId, projectId: projectObjectId } },
+      { $group: { _id: "$priority", count: { $sum: 1 } } }
+    ]);
 
-  return result.reduce((acc, curr) => {
-    acc[curr._id] = curr.count;
-    return acc;
-  }, {} as Record<string, number>);
-}
+    return result.reduce((acc, curr) => {
+      acc[curr._id] = curr.count;
+      return acc;
+    }, {} as Record<string, number>);
+  }
 
 };
 

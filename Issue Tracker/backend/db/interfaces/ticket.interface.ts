@@ -3,13 +3,14 @@ import { StatusType } from "../../constants/StatusType";
 import { PriorityType } from "../../constants/PriorityType";
 
 interface IComment {
+    _id: Types.ObjectId;
     userId: Types.ObjectId;
     text: string;
     createdAt: Date;
 }
 
 export interface ITicket {
-    id: Types.ObjectId;
+    _id: Types.ObjectId;
     title: string;
     description: string;
     status: StatusType;

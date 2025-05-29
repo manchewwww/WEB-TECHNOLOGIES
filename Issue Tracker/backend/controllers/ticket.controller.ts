@@ -11,10 +11,11 @@ class TicketController {
     }
 
     private initializeRoutes() {
-        this.router.post('/', this.createTicket.bind(this) as RequestHandler);
+        this.router.post('', this.createTicket.bind(this) as RequestHandler);
         this.router.post('/add-comment', this.addComment.bind(this) as RequestHandler);
-        this.router.get('/', this.getAllTickets.bind(this) as RequestHandler);
+        this.router.get('', this.getAllTickets.bind(this) as RequestHandler);
         this.router.get('/project/tickets', this.getTicketsByProject.bind(this) as RequestHandler);
+        this.router.get('/:projectId/tickets', this.getAllTicketsByProjectID.bind(this) as RequestHandler);
         this.router.get('/user/:userId/created-tickets', this.getTicketsCreatedByUser.bind(this) as RequestHandler);
         this.router.get('/user/:userId/assigned-tickets', this.getTicketsAssignedToUserID.bind(this) as RequestHandler);
         this.router.get('/:id', this.getTicketById.bind(this) as RequestHandler);
@@ -27,6 +28,15 @@ class TicketController {
     private async getAllTickets(req: Request, res: Response) {
         try {
             const tickets: ITicket[] = await ticketService.getAllTickets();
+            res.json(tickets);
+        } catch (err) {
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    }
+
+    private async getAllTicketsByProjectID(req: Request, res: Response) {
+        try {
+            const tickets: ITicket[] = await ticketService.getAllTicketsByProjectID(req.params.projectId);
             res.json(tickets);
         } catch (err) {
             res.status(500).json({ error: 'Internal Server Error' });
@@ -48,8 +58,12 @@ class TicketController {
     private async createTicket(req: Request, res: Response) {
         try {
             const newTicket: ITicket = await ticketService.createTicket(req.body);
+            console.log(req.body);
+
             res.status(201).json(newTicket);
         } catch (err) {
+            console.error("Create ticket error:", err);
+
             res.status(500).json({ error: 'Failed to create ticket' });
         }
     }

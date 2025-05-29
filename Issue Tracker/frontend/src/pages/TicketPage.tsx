@@ -1,84 +1,265 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import axios from 'axios';
+import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import '../styles/TicketPage.css';
 
-// Dummy list of users
-const users = [
-  { id: 'user123', name: 'Alice Johnson' },
-  { id: 'user456', name: 'Bob Smith' },
-  { id: 'user789', name: 'Charlie Brown' },
-];
+interface User {
+  id: string;
+  username: string;
+}
 
-type error = { title: string, description: string, status: string, assignee: string, priority: string };
+type ErrorType = { [key: string]: string };
 
-const TicketPage = ({ initialTicket }: { initialTicket: Ticket }) => {
-  const [ticket, setTicket] = useState(initialTicket);
-  const [originalTicket] = useState(initialTicket);
-  const [errors, setErrors] = useState({} as error);
+const TicketPage = () => {
+  const { id } = useParams<{ id: string }>();
+  const [users, setUsers] = useState<User[]>([]);
+  const [ticket, setTicket] = useState<Ticket | null>(null);
+  const [originalTicket, setOriginalTicket] = useState<Ticket | null>(null);
+  const [editField, setEditField] = useState<string | null>(null);
+  const [errors, setErrors] = useState<ErrorType>({});
   const [successMessage, setSuccessMessage] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState('');
+  const [hasChanges, setHasChanges] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setTicket((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+  useEffect(() => {
+    axios.get(`/api/tickets/${id}`)
+      .then(({ data }) => {
+        setTicket(data);
+        setOriginalTicket(data);
+      })
+      .catch(() => setFetchError('Failed to load ticket'))
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  useEffect(() => {
+    axios.get('/api/users')
+      .then(({ data }) => {
+        setUsers(data);
+      })
+      .catch(() => setFetchError('Failed to load users'));
+  }, []);
+
+  useEffect(() => {
+    if (ticket && originalTicket) {
+      const changed = JSON.stringify(ticket) !== JSON.stringify(originalTicket);
+      setHasChanges(changed);
+    }
+  }, [ticket, originalTicket]);
+
+  if (loading) return <div className="loading-container">Loading...</div>;
+  if (fetchError || !ticket) return <div className="error-container">{fetchError || 'No ticket found'}</div>;
+
+  const handleChange = (name: string, value: string) => {
+    setTicket((prev) => prev ? { ...prev, [name]: value } : null);
     setSuccessMessage('');
+    
+    let error = '';
+    if (name === 'title') {
+      if (!value.trim()) error = 'Title is required.';
+      else if (value.length < 5) error = 'Title must be at least 5 characters long.';
+    } else if (name === 'description') {
+      if (!value.trim()) error = 'Description is required.';
+      else if (value.length < 10) error = 'Description must be at least 10 characters long.';
+    } else if (name === 'status' || name === 'assignee' || name === 'priority') {
+      if (!value) error = `${name.charAt(0).toUpperCase() + name.slice(1)} is required.`;
+    }
+    
+    setErrors(prev => ({ ...prev, [name]: error }));
   };
 
-  const validate = () => {
-    const newErrors = {} as error;
-    if (!ticket.title.trim()) {
-      newErrors.title = 'Title is required.';
+  const handleSave = () => {
+    const validationErrors: ErrorType = {};
+    if (!ticket?.title.trim()) {
+      validationErrors.title = 'Title is required.';
     } else if (ticket.title.length < 5) {
-      newErrors.title = 'Title must be at least 5 characters long.';
+      validationErrors.title = 'Title must be at least 5 characters long.';
     }
 
-    if (!ticket.description.trim()) {
-      newErrors.description = 'Description is required.';
+    if (!ticket?.description.trim()) {
+      validationErrors.description = 'Description is required.';
     } else if (ticket.description.length < 10) {
-      newErrors.description = 'Description must be at least 10 characters long.';
+      validationErrors.description = 'Description must be at least 10 characters long.';
     }
 
-    if (!ticket.status) {
-      newErrors.status = 'Status is required.';
-    }
-    if (!ticket.assignee) {
-      newErrors.assignee = 'Assignee is required.';
-    }
-    if (!ticket.priority) {
-      newErrors.priority = 'Priority is required.';
-    }
-    return newErrors;
-  };
+    if (!ticket?.status) validationErrors.status = 'Status is required.';
+    if (!ticket?.assignee) validationErrors.assignee = 'Assignee is required.';
+    if (!ticket?.priority) validationErrors.priority = 'Priority is required.';
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
-      setSuccessMessage('');
       return;
     }
-    setErrors({} as error);
+
     const updatedTicket = {
       ...ticket,
       updatedAt: new Date().toISOString(),
     };
-    setTicket(updatedTicket);
-    setSuccessMessage('Saved successfully!');
-    alert('Ticket saved locally:\n' + JSON.stringify(updatedTicket, null, 2));
+
+    axios.put(`/api/tickets/${id}`, { ticket: updatedTicket })
+      .then(({ data }) => {
+        setTicket(data);
+        setOriginalTicket(data);
+        setSuccessMessage('Ticket updated successfully');
+        setEditField(null);
+        setErrors({});
+      })
+      .catch(error => {
+        setFetchError(`Failed to update ticket: ${error.message}`);
+      });
   };
 
   const handleReset = () => {
     setTicket(originalTicket);
-    setErrors({} as error);
+    setErrors({});
     setSuccessMessage('');
+    setEditField(null);
   };
 
-  const getAssigneeName = (id: string) => {
-    const user = users.find((u) => u.id === id);
-    return user ? user.name : 'Unknown';
+  const handleFieldClick = (fieldName: string) => {
+    if (['id', 'projectId', 'createdBy', 'createdAt', 'updatedAt'].includes(fieldName)) {
+      return;
+    }
+    setEditField(fieldName);
+  };
+
+  const renderEditableField = (fieldName: string, currentValue: string) => {
+    if (editField !== fieldName) {
+      if (fieldName === 'priority') {
+        return (
+          <span
+            className={`priority-${currentValue?.toLowerCase()}`}
+            onClick={() => handleFieldClick(fieldName)}
+          >
+            {currentValue}
+            <span className="edit-indicator">✏️</span>
+          </span>
+        );
+      }
+      
+      if (fieldName === 'assignee') {
+        return (
+          <span onClick={() => handleFieldClick(fieldName)}>
+            {getAssigneeName(currentValue)}
+            <span className="edit-indicator">✏️</span>
+          </span>
+        );
+      }
+      
+      if (fieldName === 'description') {
+        return (
+          <div onClick={() => handleFieldClick(fieldName)} className="description-field">
+            {currentValue}
+            <span className="edit-indicator">✏️</span>
+          </div>
+        );
+      }
+      
+      return (
+        <span onClick={() => handleFieldClick(fieldName)}>
+          {currentValue}
+          <span className="edit-indicator">✏️</span>
+        </span>
+      );
+    }
+    
+    if (fieldName === 'status') {
+      return (
+        <div className="inline-edit-field">
+          <select
+            value={currentValue}
+            onChange={(e) => handleChange(fieldName, e.target.value)}
+            className={`inline-select ${errors[fieldName] ? 'input-error' : ''}`}
+            autoFocus
+            onBlur={() => setEditField(null)}
+          >
+            <option value="">Select status</option>
+            <option value="Open">Open</option>
+            <option value="In-progress">In Progress</option>
+            <option value="Review">Review</option>
+            <option value="Closed">Closed</option>
+          </select>
+          {errors[fieldName] && <div className="error-message">{errors[fieldName]}</div>}
+        </div>
+      );
+    }
+    
+    if (fieldName === 'assignee') {
+      return (
+        <div className="inline-edit-field">
+          <select
+            value={currentValue}
+            onChange={(e) => handleChange(fieldName, e.target.value)}
+            className={`inline-select ${errors[fieldName] ? 'input-error' : ''}`}
+            autoFocus
+            onBlur={() => setEditField(null)}
+          >
+            <option value="">Select assignee</option>
+            {users.map((user) => (
+              <option key={user.id} value={user.id}>
+                {user.username}
+              </option>
+            ))}
+          </select>
+          {errors[fieldName] && <div className="error-message">{errors[fieldName]}</div>}
+        </div>
+      );
+    }
+    
+    if (fieldName === 'priority') {
+      return (
+        <div className="inline-edit-field">
+          <select
+            value={currentValue}
+            onChange={(e) => handleChange(fieldName, e.target.value)}
+            className={`inline-select ${errors[fieldName] ? 'input-error' : ''}`}
+            autoFocus
+            onBlur={() => setEditField(null)}
+          >
+            <option value="">Select priority</option>
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+          </select>
+          {errors[fieldName] && <div className="error-message">{errors[fieldName]}</div>}
+        </div>
+      );
+    }
+    
+    if (fieldName === 'description') {
+      return (
+        <div className="inline-edit-field">
+          <textarea
+            value={currentValue}
+            onChange={(e) => handleChange(fieldName, e.target.value)}
+            className={`inline-textarea ${errors[fieldName] ? 'input-error' : ''}`}
+            rows={4}
+            autoFocus
+            onBlur={() => setEditField(null)}
+          />
+          {errors[fieldName] && <div className="error-message">{errors[fieldName]}</div>}
+        </div>
+      );
+    }
+    
+    return (
+      <div className="inline-edit-field">
+        <input
+          type="text"
+          value={currentValue}
+          onChange={(e) => handleChange(fieldName, e.target.value)}
+          className={`inline-input ${errors[fieldName] ? 'input-error' : ''}`}
+          autoFocus
+          onBlur={() => setEditField(null)}
+        />
+        {errors[fieldName] && <div className="error-message">{errors[fieldName]}</div>}
+      </div>
+    );
+  };
+
+  const getAssigneeName = (uid: string) => {
+    const user = users.find((u) => u.id === uid);
+    return user ? user.username : 'Unknown';
   };
 
   const formatDate = (isoString: string) => {
@@ -93,173 +274,81 @@ const TicketPage = ({ initialTicket }: { initialTicket: Ticket }) => {
 
   return (
     <div className="ticket-container">
-      <div className="breadcrumb">
-        <Link to="/" className="breadcrumb-link">Home</Link> &gt;
-        <span className="breadcrumb-current">Edit Ticket</span>
+      <h1 className="ticket-title">
+        Ticket
+      </h1>
+      
+      <div className="ticket-details">
+        <table className="ticket-table">
+          <tbody>
+            <tr>
+              <th>Title:</th>
+              <td className="editable-cell">
+                {renderEditableField('title', ticket.title || '')}
+              </td>
+            </tr>
+            <tr>
+              <th>Description:</th>
+              <td className="editable-cell">
+                {renderEditableField('description', ticket.description || '')}
+              </td>
+            </tr>
+            <tr>
+              <th>Status:</th>
+              <td className="editable-cell">
+                {renderEditableField('status', ticket.status || '')}
+              </td>
+            </tr>
+            <tr>
+              <th>Assignee:</th>
+              <td className="editable-cell">
+                {renderEditableField('assignee', ticket.assignee || '')}
+              </td>
+            </tr>
+            <tr>
+              <th>Priority:</th>
+              <td className="editable-cell">
+                {renderEditableField('priority', ticket.priority || '')}
+              </td>
+            </tr>
+            <tr>
+              <th>Creator:</th>
+              <td>{getAssigneeName(ticket.createdBy || '')}</td>
+            </tr>
+            <tr>
+              <th>Created At:</th>
+              <td>{formatDate(ticket.createdAt || '')}</td>
+            </tr>
+            <tr>
+              <th>Last Updated:</th>
+              <td>{formatDate(ticket.updatedAt || '')}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-      <h1 className="ticket-title">Edit Ticket</h1>
-      <form onSubmit={handleSubmit} className="ticket-form">
-        <h2 className="form-section-title">Ticket Details</h2>
-        <div className="form-group">
-          <label>Title</label>
-          <input
-            type="text"
-            name="title"
-            value={ticket.title}
-            onChange={handleChange}
-            className={`form-input ${errors.title ? 'input-error' : ''}`}
-          />
-          {errors.title && <p className="error-message">{errors.title}</p>}
-        </div>
-
-        <div className="form-group">
-          <label>Description</label>
-          <textarea
-            name="description"
-            value={ticket.description}
-            onChange={handleChange}
-            className={`form-textarea ${errors.description ? 'input-error' : ''}`}
-            rows={4}
-          />
-          {errors.description && <p className="error-message">{errors.description}</p>}
-        </div>
-
-        <h2 className="form-section-title">Assignment</h2>
-        <div className="form-group">
-          <label>Status</label>
-          <select
-            name="status"
-            value={ticket.status}
-            onChange={handleChange}
-            className="form-select"
-          >
-            <option value="">Select status</option>
-            <option value="Open">Open</option>
-            <option value="In-progress">In Progress</option>
-            <option value="Review">Review</option>
-            <option value="Closed">Closed</option>
-          </select>
-          {errors.status && <p className="error-message">{errors.status}</p>}
-        </div>
-
-        <div className="form-group">
-          <label>Assignee</label>
-          <select
-            name="assignee"
-            value={ticket.assignee || ''}
-            onChange={handleChange}
-            className="form-select"
-          >
-            <option value="">Select assignee</option>
-            {users.map((user) => (
-              <option key={user.id} value={user.id}>
-                {user.name}
-              </option>
-            ))}
-          </select>
-          {errors.assignee && <p className="error-message">{errors.assignee}</p>}
-        </div>
-
-        <div className="form-group">
-          <label>Priority</label>
-          <select
-            name="priority"
-            value={ticket.priority || ''}
-            onChange={handleChange}
-
-          >
-            <option value="">Select priority</option>
-            <option value="Low">Low</option>
-            <option value="Medium">Medium</option>
-            <option value="High">High</option>
-          </select>
-          {errors.priority && <p className="error-message">{errors.priority}</p>}
-        </div>
-
-        <div className="ticket-preview">
-          <h2 className="preview-title">Ticket Preview</h2>
-          <table className="ticket-preview-table">
-            <tbody>
-              <tr>
-                <th>ID:</th>
-                <td>{ticket.id}</td>
-              </tr>
-              <tr>
-                <th>Project ID:</th>
-                <td>{ticket.projectId}</td>
-              </tr>
-              <tr>
-                <th>Creator:</th>
-                <td>{getAssigneeName(ticket.createdBy)}</td>
-              </tr>
-              <tr>
-                <th>Title:</th>
-                <td>{ticket.title}</td>
-              </tr>
-              <tr>
-                <th>Description:</th>
-                <td>{ticket.description}</td>
-              </tr>
-              <tr>
-                <th>Status:</th>
-                <td>{ticket.status}</td>
-              </tr>
-              <tr>
-                <th>Assignee:</th>
-                <td>{getAssigneeName(ticket.assignee)}</td>
-              </tr>
-              <tr>
-                <th>Priority:</th>
-                <td
-                  className={
-                    ticket.priority === 'Low'
-                      ? 'priority-low'
-                      : ticket.priority === 'Medium'
-                        ? 'priority-medium'
-                        : ticket.priority === 'High'
-                          ? 'priority-high'
-                          : ''
-                  }
-                >
-                  {ticket.priority}
-                </td>
-              </tr>
-              <tr>
-                <th>Created At:</th>
-                <td>{formatDate(ticket.createdAt)}</td>
-              </tr>
-              <tr>
-                <th>Last Updated:</th>
-                <td>{formatDate(ticket.updatedAt)}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div className="form-buttons">
-          <button type="submit" className="btn-primary">Save</button>
-          <button type="button" onClick={handleReset} className="btn-secondary">Reset Changes</button>
+      
+      {hasChanges && (
+        <div className="ticket-actions">
+          <button onClick={handleSave} className="btn-primary">Save Changes</button>
+          <button onClick={handleReset} className="btn-secondary">Reset</button>
           {successMessage && <span className="success-message">{successMessage}</span>}
         </div>
-      </form>
+      )}
     </div>
   );
 };
 
-// Sample ticket for testing
-const sampleTicket = {
-  id: '60d5ec49b3f1f8c8a4e4b0c1',
-  title: 'Fix login bug',
-  description: 'User cannot login with correct credentials',
-  status: 'Open',
-  projectId: 'project123',
-  assignee: 'user456',
-  priority: 'Medium',
-  createdBy: 'user123',
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
+export type Ticket = {
+  id: string;
+  title: string;
+  description: string;
+  status: string;
+  projectId: string;
+  assignee: string;
+  priority: string;
+  createdBy: string;
+  createdAt: string;
+  updatedAt: string;
 };
-export type Ticket = typeof sampleTicket;
-export default function App() {
-  return <TicketPage initialTicket={sampleTicket} />;
-}
+
+export default TicketPage;

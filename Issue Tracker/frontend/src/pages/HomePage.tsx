@@ -15,19 +15,6 @@ function HomePage() {
             Това приложение ви позволява да създавате, проследявате и управлявате билети (issues)
             по проекти. Създадено с Node.js, React, Typescript и MongoDB.
           </p>
-          {user && (
-            <div>
-              <Link to="/projects">
-                <button>Преглед на проектите</button>
-              </Link>
-              <Link to="/tickets">
-                <button>Преглед на билетите</button>
-              </Link>
-              <Link to="/statistics">
-                <button>Потребителска статистика</button>
-              </Link>
-            </div>
-          )}
         </div>
       </main>
     </div>

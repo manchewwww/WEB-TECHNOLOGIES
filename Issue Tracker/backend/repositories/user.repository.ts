@@ -4,6 +4,7 @@ import NotFoundError from "../exceptions/NotFoundException";
 
 
 const UserRepository = {
+
   async getAllUsers(): Promise<IUser[]> {
     const users = await UserModel.find().lean();
     return users;
@@ -55,6 +56,7 @@ const UserRepository = {
       throw new NotFoundError(`User with ID ${id} not found`);
     }
   },
+  
 };
 
 export default UserRepository;

@@ -58,7 +58,7 @@ class AuthService {
   private generateAccessToken(user: any) {
     return jwt.sign(
       { id: user._id, role: user.role },
-      process.env.ACCESS_TOKEN_SECRET as string,
+      process.env.ACCESS_TOKEN_SECRET || "default",
       { expiresIn: "15m" }
     );
   }
@@ -66,7 +66,7 @@ class AuthService {
   private generateRefreshToken(user: any) {
     return jwt.sign(
       { id: user._id, role: user.role },
-      process.env.REFRESH_TOKEN_SECRET as string,
+      process.env.REFRESH_TOKEN_SECRET || "default",
       { expiresIn: "1d" }
     );
   }

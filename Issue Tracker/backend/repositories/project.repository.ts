@@ -30,7 +30,7 @@ const ProjectRepository = {
     if (!deleted) throw new Error(`Project with ID ${id} not found`);
   },
 
-  async getProjectsByUser(userId: string): Promise<IProject[]> {
+  async getProjectsCreatedByUser(userId: string): Promise<IProject[]> {
     return ProjectModel.find({ createdBy: userId }).lean();
   }, 
 

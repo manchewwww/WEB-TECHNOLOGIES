@@ -15,7 +15,8 @@ class ProjectController {
         this.router.get("/:id", this.getProjectById.bind(this) as RequestHandler);
         this.router.get("", this.getAllProjects.bind(this) as RequestHandler);
         //TODO: FIX
-        this.router.get("/user/:userId", this.getAllProjects.bind(this) as RequestHandler);
+        this.router.get("/created-by/:userId", this.getProjectsCreatedByUser.bind(this) as RequestHandler);
+        this.router.get("/member-of/:userId", this.getProjectsMemberOfUser.bind(this) as RequestHandler);
         this.router.put("", this.editProject.bind(this) as RequestHandler);
     }
 
@@ -48,10 +49,20 @@ class ProjectController {
         }
     }
 
-    async getProjectsByUser(req: Request, res: Response): Promise<void> {
+    async getProjectsCreatedByUser(req: Request, res: Response): Promise<void> {
         try {
             const { userId } = req.params;
-            const projects = await ProjectService.getProjectsByUser(userId);
+            const projects = await ProjectService.getProjectsCreatedByUser(userId);
+            res.status(200).json(projects);
+        } catch (error) {
+            res.status(404).json({ message: "Projects not found for user" });
+        }
+    }
+
+    async getProjectsMemberOfUser(req: Request, res: Response): Promise<void> {
+        try {
+            const { userId } = req.params;
+            const projects = await ProjectService.getProjectsMemberOfUser(userId);
             res.status(200).json(projects);
         } catch (error) {
             res.status(404).json({ message: "Projects not found for user" });

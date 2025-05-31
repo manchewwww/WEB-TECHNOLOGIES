@@ -1,6 +1,7 @@
 import { Types } from "mongoose";
+import { RoleType } from "../../constants/RoleType";
 
-export interface IUser{
+export interface IUser {
   _id: Types.ObjectId;
   isActive: boolean;
   username: string;
@@ -8,5 +9,5 @@ export interface IUser{
   lastname: string;
   email: string;
   password: string;
-  role?: "admin" | "user";
+  role?: RoleType;
 }

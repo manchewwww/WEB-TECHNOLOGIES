@@ -1,8 +1,10 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+
 import PieChartBlock from "../components/PieChart";
 import "../styles/UserStatisticsPage.css";
 import axios from "axios";
+
 
 interface Ticket {
   _id: string;

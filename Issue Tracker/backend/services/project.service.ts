@@ -14,10 +14,14 @@ class ProjectService {
         return await ProjectRepository.getAllProjects();
     }
 
-    async getProjectsByUser(userId: string): Promise<IProject[]> {
-        return await ProjectRepository.getProjectsByUser(userId);
+    async getProjectsCreatedByUser(userId: string): Promise<IProject[]> {
+        return await ProjectRepository.getProjectsCreatedByUser(userId);
     }
-    
+
+    async getProjectsMemberOfUser(userId: string): Promise<IProject[]> {
+        return await ProjectRepository.getProjectsByMember(userId);
+    }
+
     async editProject(projectData: IProject): Promise<IProject> {
         return await ProjectRepository.updateProject(projectData);
     }

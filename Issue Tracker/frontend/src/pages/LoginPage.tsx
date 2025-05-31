@@ -25,12 +25,12 @@ function LoginPage() {
     try {
       const success = await login(email, password);
       if (!success) {
-        setError('Грешен имейл или парола!');
+        setError('Invalid email or password!');
         return;
       }
       navigate('/');
     } catch (error) {
-      setError('Възникна грешка при влизането.');
+      setError('An error occurred during login.');
     } finally {
       setIsLoading(false);
     }

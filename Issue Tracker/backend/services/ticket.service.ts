@@ -9,6 +9,10 @@ class TicketService {
     return await ticketRepository.getAllTickets();
   }
 
+  async getAllTicketsByProjectID(projectId: string): Promise<ITicket[]> {
+    return await ticketRepository.getAllTicketsByProjectID(projectId);
+  }
+
   async getTicketById(id: string): Promise<ITicket> {
     return await ticketRepository.getTicketById(id);
   }
@@ -35,7 +39,7 @@ class TicketService {
     this.editTicket(id, ticket);
     return ticket;
   }
-  
+
   async assignedTickectToUserID(ticketId: string, userId: string): Promise<ITicket> {
     let ticket = await ticketRepository.getTicketById(ticketId);
     ticket.assignee = new Types.ObjectId(userId);

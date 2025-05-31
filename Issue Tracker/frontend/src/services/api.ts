@@ -1,208 +1,53 @@
-import { getRefreshToken, setAuthToken } from '../utils/auth';
+import axios from 'axios';
+import { getRefreshToken, getAuthToken, setAuthToken } from '../utils/auth';
 
-const API_URL = 'http://localhost:3000/api';
+const apiClient = axios.create({
+  baseURL: '/api',
+  headers: { 'Content-Type': 'application/json' },
+});
 
-interface LoginParams {
-  email: string;
-  password: string;
-}
+apiClient.interceptors.request.use(config => {
+  const token = getAuthToken();
+  if (token) config.headers!['Authorization'] = `Bearer ${token}`;
+  return config;
+});
 
-interface RegisterParams {
-  firstname: string;
-  lastname: string;
-  username: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-}
-
-interface ApiResponse<T> {
-  message: string;
-  user: T;
-}
+apiClient.interceptors.response.use(
+  response => response,
+  async error => {
+    const originalRequest = error.config;
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      const refreshToken = getRefreshToken();
+      if (refreshToken) {
+        const { data } = await apiClient.post('/auth/refresh', { refreshToken });
+        setAuthToken(data.accessToken);
+        apiClient.defaults.headers.common['Authorization'] = `Bearer ${data.accessToken}`;
+        return apiClient(originalRequest);
+      }
+    }
+    return Promise.reject(error);
+  }
+);
 
 export const authApi = {
-  async login(params: LoginParams): Promise<ApiResponse<any>> {
-    const response = await fetch(`${API_URL}/auth/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(params),
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Failed to login');
-    }
-
-    return response.json();
+  async login(params: { email: string; password: string }) {
+    const { data } = await apiClient.post('/auth/login', params);
+    return data;
   },
-
-  async register(params: RegisterParams): Promise<ApiResponse<any>> {
-    const response = await fetch(`${API_URL}/auth/register`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(params),
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Failed to register');
-    }
-
-    return response.json();
+  async register(params: any) {
+    const { data } = await apiClient.post('/auth/register', params);
+    return data;
   },
-
-  async refreshToken(): Promise<string | null> {
-    const refreshToken = getRefreshToken();
-    if (!refreshToken) {
-      return null;
-    }
-
-    try {
-      const response = await fetch(`${API_URL}/auth/refresh`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ refreshToken }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setAuthToken(data.accessToken);
-        return data.accessToken;
-      }
-
-      return null;
-    } catch (error) {
-      console.error('Token refresh failed:', error);
-      return null;
-    }
-  }
 };
 
 export const api = {
-  async get<T>(endpoint: string): Promise<T> {
-    let response = await fetch(`${API_URL}${endpoint}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (!response.ok && response.status === 401) {
-      const newAccessToken = await authApi.refreshToken();
-      if (newAccessToken) {
-        response = await fetch(`${API_URL}${endpoint}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${newAccessToken}`,
-          },
-        });
-      }
-    }
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'API request failed');
-    }
-
-    return response.json();
-  },
-
-  async post<T>(endpoint: string, data?: any): Promise<T> {
-    let response = await fetch(`${API_URL}${endpoint}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: data ? JSON.stringify(data) : undefined,
-    });
-
-    if (!response.ok && response.status === 401) {
-      const newAccessToken = await authApi.refreshToken();
-      if (newAccessToken) {
-        response = await fetch(`${API_URL}${endpoint}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${newAccessToken}`,
-          },
-          body: data ? JSON.stringify(data) : undefined,
-        });
-      }
-    }
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'API request failed');
-    }
-
-    return response.json();
-  },
-
-  async put<T>(endpoint: string, data: any): Promise<T> {
-    let response = await fetch(`${API_URL}${endpoint}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-
-    if (!response.ok && response.status === 401) {
-      const newAccessToken = await authApi.refreshToken();
-      if (newAccessToken) {
-        response = await fetch(`${API_URL}${endpoint}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${newAccessToken}`,
-          },
-          body: JSON.stringify(data),
-        });
-      }
-    }
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'API request failed');
-    }
-
-    return response.json();
-  },
-
-  async delete<T>(endpoint: string): Promise<T> {
-    let response = await fetch(`${API_URL}${endpoint}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (!response.ok && response.status === 401) {
-      const newAccessToken = await authApi.refreshToken();
-      if (newAccessToken) {
-        response = await fetch(`${API_URL}${endpoint}`, {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${newAccessToken}`,
-          },
-        });
-      }
-    }
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'API request failed');
-    }
-
-    return response.json();
-  },
+  get: <T>(endpoint: string) =>
+    apiClient.get<T>(endpoint).then(res => res.data),
+  post: <T>(endpoint: string, payload?: any) =>
+    apiClient.post<T>(endpoint, payload).then(res => res.data),
+  put: <T>(endpoint: string, payload: any) =>
+    apiClient.put<T>(endpoint, payload).then(res => res.data),
+  delete: <T>(endpoint: string) =>
+    apiClient.delete<T>(endpoint).then(res => res.data),
 };

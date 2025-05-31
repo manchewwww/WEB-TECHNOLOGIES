@@ -10,6 +10,7 @@ interface User {
 
 interface Comment {
   id: string;
+  userId: string;
   ticketId: string;
   content: string;
   createdBy: string;
@@ -33,7 +34,6 @@ const TicketPage = () => {
   const [newComment, setNewComment] = useState('');
   const [commentError, setCommentError] = useState('');
   const [addingComment, setAddingComment] = useState(false);
-  const [showComments, setShowComments] = useState(false);
   const [showAddCommentForm, setShowAddCommentForm] = useState(false);
 
   useEffect(() => {
@@ -44,8 +44,6 @@ const TicketPage = () => {
       })
       .catch(() => setFetchError('Failed to load ticket'))
       .finally(() => setLoading(false));
-
-    //fetchComments();
   }, [id]);
 
   useEffect(() => {
@@ -55,6 +53,19 @@ const TicketPage = () => {
       })
       .catch(() => setFetchError('Failed to load users'));
   }, []);
+
+  useEffect(() => {
+    if (id) {
+      axios.get(`/api/tickets/${id}/comments`)
+        .then(({ data }) => {
+          setComments(data);
+          console.log('Comments loaded:', data);
+        })
+        .catch(() => {
+          console.error('Failed to load comments');
+        });
+    }
+  }, [id]);
 
   useEffect(() => {
     if (ticket && originalTicket) {
@@ -288,16 +299,6 @@ const TicketPage = () => {
     }).format(new Date(isoString));
   };
 
-  const fetchComments = () => {
-    axios.get(`/api/tickets/${id}/comments`)
-      .then(({ data }) => {
-        setComments(data);
-      })
-      .catch(() => {
-        console.error('Failed to load comments');
-      });
-  };
-
   const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setNewComment(e.target.value);
     if (e.target.value.trim().length < 1) {
@@ -333,13 +334,6 @@ const TicketPage = () => {
       .finally(() => {
         setAddingComment(false);
       });
-  };
-
-  const toggleComments = () => {
-    setShowComments(!showComments);
-    if (!showComments && comments.length === 0) {
-      fetchComments();
-    }
   };
 
   const toggleAddCommentForm = () => {
@@ -414,72 +408,67 @@ const TicketPage = () => {
       )}
 
       <div className="comments-section">
-        <div 
-          className="comments-header" 
-          onClick={toggleComments}
-        >
+        <div className="comments-header">
           <h2 className="comments-title">
             Comments ({comments.length})
           </h2>
         </div>
         
-        {showComments && (
-          <div className="comments-content">
-            {comments.length === 0 ? (
-              <p className="no-comments">No comments yet</p>
-            ) : (
-              <div className="comments-list">
-                {comments.map((comment) => (
-                  <div key={comment.id} className="comment">
-                    <div className="comment-header">
-                      <span className="comment-author">{getAssigneeName(comment.createdBy)}</span>
-                      <span className="comment-date">{formatDate(comment.createdAt)}</span>
-                    </div>
-                    <div className="comment-content">{comment.content}</div>
+        <div className="comments-content">
+          {comments.length === 0 ? (
+            <p className="no-comments">No comments yet</p>
+          ) : (
+            <div className="comments-list">
+              {comments.map((comment) => (
+                <div key={comment.id} className="comment">
+                  <div className="comment-header">
+                    <span className="comment-author">Posted by: {getAssigneeName(comment.createdBy)}</span>
+                    <span className="comment-date">Create date: {formatDate(comment.createdAt)}</span>
                   </div>
-                ))}
-              </div>
-            )}
-            
-            {!showAddCommentForm ? (
-              <button 
-                onClick={toggleAddCommentForm} 
-                className="btn-secondary add-comment-button"
-              >
-                Add Comment
-              </button>
-            ) : (
-              <div className="add-comment">
-                <form onSubmit={handleAddComment}>
-                  <textarea
-                    value={newComment}
-                    onChange={handleCommentChange}
-                    className={`comment-textarea ${commentError ? 'input-error' : ''}`}
-                    placeholder="Write your comment here..."
-                    rows={4}
-                  ></textarea>
-                  {commentError && <div className="error-message">{commentError}</div>}
-                  <div className="comment-form-actions">
-                    <button 
-                      type="submit" 
-                      className="btn-primary" 
-                      disabled={addingComment || !newComment.trim()}
-                    >
-                      {addingComment ? 'Adding...' : 'Submit'}
-                    </button>
-                    <button 
-                      type="button" 
-                      className="btn-secondary"
-                      onClick={toggleAddCommentForm}
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </form>
-              </div>
-            )}
-          </div>
-        )}
+                  <div className="comment-content">{comment.content}</div>
+                </div>
+              ))}
+            </div>
+          )}
+          
+          {!showAddCommentForm ? (
+            <button 
+              onClick={toggleAddCommentForm} 
+              className="btn-secondary add-comment-button"
+            >
+              Add Comment
+            </button>
+          ) : (
+            <div className="add-comment">
+              <form onSubmit={handleAddComment}>
+                <textarea
+                  value={newComment}
+                  onChange={handleCommentChange}
+                  className={`comment-textarea ${commentError ? 'input-error' : ''}`}
+                  placeholder="Write your comment here..."
+                  rows={4}
+                ></textarea>
+                {commentError && <div className="error-message">{commentError}</div>}
+                <div className="comment-form-actions">
+                  <button 
+                    type="submit" 
+                    className="btn-primary" 
+                    disabled={addingComment || !newComment.trim()}
+                  >
+                    {addingComment ? 'Adding...' : 'Submit'}
+                  </button>
+                  <button 
+                    type="button" 
+                    className="btn-secondary"
+                    onClick={toggleAddCommentForm}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

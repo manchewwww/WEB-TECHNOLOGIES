@@ -1,4 +1,4 @@
-import { Link,useNavigate } from "react-router-dom"; ////////////////// useNavigate is for testing
+import { Link, useNavigate } from "react-router-dom"; ////////////////// useNavigate is for testing
 import { useEffect, useState } from "react"; ////////////////////  for testing
 import '../styles/NavBar.css';
 import mainLogo from '../assets/mainLogo.png';
@@ -13,10 +13,17 @@ interface User {
 
 function NavBar() {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await logout();
+    navigate('/');
+  };
+
   /////////////////////////////////////////////////////////////////////// for testing
   const [users, setUsers] = useState<User[]>([]);   
-  const [selectedUserId, setSelectedUserId] = useState(''); 
-  const navigate = useNavigate(); 
+  const [selectedUserId, setSelectedUserId] = useState('');
 
     useEffect(() => {
     async function fetchUsers() {
@@ -56,6 +63,7 @@ function NavBar() {
           <div className="user-info">
             {/* <span className="username">Hello, {user?.username}</span> */}
             <Link to="/projects" className="nav-btn projects-btn">Projects</Link>
+            <Link to="/tickets" className="nav-btn tickets-btn">Tickets</Link>
             {user.role == 'admin' && (
               <Link to="/admin" className="nav-btn admin-btn">Admin Panel</Link>
             )}
@@ -71,7 +79,7 @@ function NavBar() {
                     </option>
                   ))}
                 </select> 
-            <button onClick={logout} className="nav-btn logout-btn">Logout</button>
+            <button onClick={handleLogout} className="nav-btn logout-btn">Logout</button>
           </div>
         ) : (
           <div>

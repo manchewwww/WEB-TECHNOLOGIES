@@ -2,6 +2,7 @@ import { Types } from "mongoose";
 
 export interface IUser{
   _id: Types.ObjectId;
+  isActive: boolean;
   username: string;
   firstname: string;
   lastname: string;

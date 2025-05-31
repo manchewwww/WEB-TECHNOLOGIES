@@ -159,7 +159,6 @@ function UserStatisticsPage() {
         <div className="summary-card">
           <p>Assigned Tickets by Status</p>
           <PieChartBlock
-            title="Tickets by Status"
             data={ticketsByStatus}
             allKeys={["open", "in_progress", "review", "closed"]}
             theme="status"

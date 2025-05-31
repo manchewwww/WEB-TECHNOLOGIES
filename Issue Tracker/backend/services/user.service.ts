@@ -19,7 +19,7 @@ class UserService {
             email: user.email, 
         };
     }
-
+  
     async updateUserRole(id: string, role: string) {
         if (!Object.values(RoleValues).includes(role as RoleType)) {
             throw new NotFoundError(`Invalid role: ${role}`);

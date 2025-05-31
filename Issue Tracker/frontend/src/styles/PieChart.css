@@ -1,0 +1,23 @@
+:root {
+  --status-open: #0fefc6eb;
+  --status-in-progress: #ffe479;
+  --status-review: #33a0ff;
+  --status-closed: #e75146;
+
+  --priority-low: #00fffb;
+  --priority-medium: #69C53F;
+  --priority-high: #FFA200;
+  --priority-critical: #d02c2c;
+}
+
+
+.pie-chart-block {
+  width: 100%;
+  max-width: 400px;
+  margin: 1rem auto;
+}
+
+.chart-title {
+  text-align: center;
+  margin-bottom: 0.5rem;
+}

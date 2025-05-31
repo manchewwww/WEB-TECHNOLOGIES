@@ -100,7 +100,6 @@ class TicketRepository {
     return TicketModel.countDocuments({ assignee: userId, projectId });
   }
 
-
   async getAssignedTicketsCountByStatus(userId: string): Promise<Record<string, number>> {
     const objectId = new Types.ObjectId(userId);
 

@@ -14,6 +14,11 @@ class TicketRepository {
     return projects;
   }
 
+  async getAllTicketsByUserID(userID: string): Promise<ITicket[]> {
+    const projects = await TicketModel.find({ assignee: userID }).lean();
+    return projects;
+  }
+
   async getTicketById(ticketId: string): Promise<ITicket> {
     const ticket = await TicketModel.findById(ticketId).lean();
     if (!ticket) {

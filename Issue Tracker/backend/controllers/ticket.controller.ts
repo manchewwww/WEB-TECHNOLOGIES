@@ -45,6 +45,15 @@ class TicketController {
         }
     }
 
+    private async getAllTicketsByUserID(req: Request, res: Response) {
+        try {
+            const tickets: ITicket[] = await ticketService.getAllTicketsByUserID(req.params.userId);
+            res.json(tickets);
+        } catch (err) {
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    }
+
     private async getTicketById(req: Request, res: Response) {
         try {
             const ticket: ITicket = await ticketService.getTicketById(req.params.id);
@@ -99,12 +108,12 @@ class TicketController {
             const { id } = req.params;
             const { content } = req.body;
             const userId = req.body.userId || req.user?.id; // Assuming user is available in req
-            
+
             const comment = {
                 userId,
                 text: content
             };
-            
+
             const updatedTicket: ITicket = await ticketService.addComment(id, comment);
             res.status(201).json({
                 ticketId: id,
@@ -170,7 +179,7 @@ class TicketController {
     private async getTicketComments(req: Request, res: Response) {
         try {
             const comments = await ticketService.getTicketComments(req.params.id);
-            
+
             const formattedComments = comments.map((comment: any) => ({
                 id: comment._id || Date.now().toString(),
                 ticketId: req.params.id,
@@ -178,7 +187,7 @@ class TicketController {
                 createdBy: comment.userId,
                 createdAt: comment.createdAt || new Date().toISOString()
             }));
-            
+
             res.json(formattedComments);
         } catch (err: any) {
             if (err.status === 404) {

@@ -13,17 +13,16 @@ interface User {
 
 function NavBar() {
   const { user, logout } = useAuth();
-  const navigate = useNavigate();
+  /////////////////////////////////////////////////////////////////////// for testing
+  const [users, setUsers] = useState<User[]>([]);   
+  const [selectedUserId, setSelectedUserId] = useState(''); 
+  const navigate = useNavigate(); 
 
   const handleLogout = async (e: React.FormEvent) => {
     e.preventDefault();
     await logout();
     navigate('/');
   };
-
-  /////////////////////////////////////////////////////////////////////// for testing
-  const [users, setUsers] = useState<User[]>([]);   
-  const [selectedUserId, setSelectedUserId] = useState('');
 
     useEffect(() => {
     async function fetchUsers() {

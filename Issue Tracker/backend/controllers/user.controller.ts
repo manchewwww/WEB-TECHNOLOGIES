@@ -15,6 +15,7 @@ class UserController {
         this.router.get("/:id", this.getUserById.bind(this) as RequestHandler);
         this.router.patch("/:id/role", this.updateUserRole.bind(this) as RequestHandler);
         this.router.delete("/:id", this.deleteUser.bind(this) as RequestHandler);
+        this.router.patch("/:id/status", this.toggleUserStatus.bind(this) as RequestHandler);
     }
 
     private async getAllUsers(req: Request, res: Response): Promise<void> {
@@ -62,7 +63,16 @@ class UserController {
             res.status(400).json({ message: error.message });
         }
     }
-
+  
+    private async toggleUserStatus(req: Request, res: Response): Promise<void> {
+        try {
+            const { isActive } = req.body;
+            const updated = await userService.toggleUserStatus(req.params.id, isActive);
+            res.status(200).json(updated);
+        } catch (error: any) {
+            res.status(400).json({ message: error.message });
+        }
+    }
 }
 
 export default new UserController().router;

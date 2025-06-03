@@ -7,6 +7,7 @@ import RegisterPage from './pages/RegisterPage';
 import TicketPage from './pages/TicketPage';
 import ProjectsPage from './pages/ProjectsPage';
 import AdminPage from './pages/AdminPage';
+
 import MultipleTicketsPage from './pages/MultipleTicketsPage';
 import UserStatisticsPage from './pages/UserStatisticsPage';
 import { AuthProvider } from './context/AuthContext';

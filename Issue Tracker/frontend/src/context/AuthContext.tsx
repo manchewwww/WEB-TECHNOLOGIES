@@ -20,29 +20,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const login = async (email: string, password: string) => {
-    try {
-      const success = await authLogin(email, password);
-      if (success) {
-        setUser(getCurrentUser());
-      }
-      return success;
-    } catch (error) {
-      console.error('Login error:', error);
-      return false;
+    const success = await authLogin(email, password);
+    if (success) { 
+      setUser(getCurrentUser());
     }
+
+    return success;
   };
 
   const register = async (username: string, firstname: string, lastname: string, email: string, password: string, confirmPassword: string) => {
-    try {
-      const success = await authRegister(username, firstname, lastname, email, password, confirmPassword);
-      if (success) {
-        setUser(getCurrentUser());
-      }
-      return success;
-    } catch (error) {
-      console.error('Registration error:', error);
-      return false;
+    const success = await authRegister(username, firstname, lastname, email, password, confirmPassword);
+    if (success) {
+      setUser(getCurrentUser());
     }
+    
+    return success;
   };
 
   const logout = () => {

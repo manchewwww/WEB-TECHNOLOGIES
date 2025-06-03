@@ -59,3 +59,13 @@
     background-color: #f44336;
     color: white;
   }
+
+  .admin-page button.activate-btn {
+    background-color: #4caf50;
+    color: white;
+  }
+
+  .admin-page button.deactivate-btn {
+    background-color: #f44336;
+    color: white;
+  }

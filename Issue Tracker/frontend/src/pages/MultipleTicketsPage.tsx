@@ -192,10 +192,6 @@ function MultipleTicketsPage() {
     navigate(`/tickets/${ticketId}`);
   };
 
-  const handleTicketClick = (ticketId: string) => {
-    navigate(`/tickets/${ticketId}`);
-  };
-
   if (loading) {
     return <div className="loading">Loading tickets...</div>;
   }

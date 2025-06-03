@@ -16,6 +16,7 @@ class TicketController {
         this.router.get('/', this.getAllTickets.bind(this) as RequestHandler);
         this.router.get('/project/tickets', this.getTicketsByProject.bind(this) as RequestHandler);
         this.router.get('/:projectId/tickets', this.getAllTicketsByProjectID.bind(this) as RequestHandler);
+        //this.router.get('/:userId', this.getAllTicketsByUserID.bind(this) as RequestHandler); //TODO: Georgi fix me
         this.router.get('/user/:userId/created-tickets', this.getTicketsCreatedByUser.bind(this) as RequestHandler);
         this.router.get('/user/:userId/assigned-tickets', this.getTicketsAssignedToUserID.bind(this) as RequestHandler);
         this.router.get('/:id', this.getTicketById.bind(this) as RequestHandler);

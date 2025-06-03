@@ -6,10 +6,11 @@ interface Comment { id: string; userId: string; ticketId: string; content: strin
 
 interface CommentsProps {
   ticketId: string;
-  users: User[]; // Maybe not need this, just to get the usernames by the userId
+  users: User[];
+  currentUserId: string;
 }
 
-const Comments: React.FC<CommentsProps> = ({ ticketId, users }) => {
+const Comments: React.FC<CommentsProps> = ({ ticketId, users, currentUserId }) => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState('');
   const [commentError, setCommentError] = useState('');
@@ -36,7 +37,8 @@ const Comments: React.FC<CommentsProps> = ({ ticketId, users }) => {
     setAddingComment(true);
     axios.post(`/api/tickets/${ticketId}/comments`, {
       content: newComment,
-      ticketId
+      ticketId,
+      userId: currentUserId
     })
       .then(({ data }) => {
         setComments(prev => [...prev, data]);

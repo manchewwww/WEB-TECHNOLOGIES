@@ -8,6 +8,7 @@ class TicketController {
     constructor() {
         this.router = express.Router();
         this.initializeRoutes();
+        
     }
 
     private initializeRoutes() {

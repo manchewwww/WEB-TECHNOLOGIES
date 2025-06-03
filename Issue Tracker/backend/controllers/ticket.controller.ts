@@ -70,8 +70,6 @@ class TicketController {
     private async createTicket(req: Request, res: Response) {
         try {
             const newTicket: ITicket = await ticketService.createTicket(req.body);
-            console.log(req.body);
-
             res.status(201).json(newTicket);
         } catch (err) {
             console.error("Create ticket error:", err);

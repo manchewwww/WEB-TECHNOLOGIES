@@ -58,6 +58,10 @@ class TicketService {
   async getTicketsAssignedToUserID(userId: string): Promise<ITicket[]> {
     return await ticketRepository.getTicketsAssignedToUserID(userId);
   }
+
+  async getTicketComments(ticketId: string): Promise<any[]> {
+    return await ticketRepository.getTicketComments(ticketId);
+  }
 };
 
 export default new TicketService();

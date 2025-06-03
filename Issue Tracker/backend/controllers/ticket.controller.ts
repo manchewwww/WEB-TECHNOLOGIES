@@ -14,9 +14,9 @@ class TicketController {
         this.router.post('/', this.createTicket.bind(this) as RequestHandler);
         this.router.post('/:id/comments', this.addComment.bind(this) as RequestHandler);
         this.router.get('/', this.getAllTickets.bind(this) as RequestHandler);
+        this.router.get('/assingnee/:userId', this.getAllTicketsByUserID.bind(this) as RequestHandler);
         this.router.get('/project/tickets', this.getTicketsByProject.bind(this) as RequestHandler);
         this.router.get('/:projectId/tickets', this.getAllTicketsByProjectID.bind(this) as RequestHandler);
-        this.router.get('/:userId', this.getAllTicketsByUserID.bind(this) as RequestHandler);
         this.router.get('/user/:userId/created-tickets', this.getTicketsCreatedByUser.bind(this) as RequestHandler);
         this.router.get('/user/:userId/assigned-tickets', this.getTicketsAssignedToUserID.bind(this) as RequestHandler);
         this.router.get('/:id', this.getTicketById.bind(this) as RequestHandler);

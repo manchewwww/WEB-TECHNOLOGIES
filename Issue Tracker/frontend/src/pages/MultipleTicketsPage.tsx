@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import "../styles/MultipleTicketsPage.css";
 import axios from "axios";
@@ -49,6 +49,7 @@ async function getUsers(): Promise<Record<string, string>> {
 function MultipleTicketsPage() {
   const { projectID } = useParams();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [tickets, setTickets] = useState<ITicket[]>([]);
   const [userMaps, setUserMaps] = useState<Record<string, string>>({});
   const [project, setProject] = useState<IProject>();
@@ -163,6 +164,10 @@ function MultipleTicketsPage() {
     }
   };
 
+  const handleTicketClick = (ticketId: string) => {
+    navigate(`/tickets/${ticketId}`);
+  };
+
   if (loading) {
     return <div className="loading">Loading tickets...</div>;
   }
@@ -241,7 +246,12 @@ function MultipleTicketsPage() {
       ) : (
         <div className="ticket-list">
           {sortedTickets.map((ticket) => (
-            <div className="ticket-card" key={ticket._id}>
+            <div 
+              className="ticket-card" 
+              key={String(ticket._id)}
+              onClick={() => handleTicketClick(ticket._id)}
+              style={{ cursor: 'pointer' }}
+            >
               <h3 className="name">{ticket.title}</h3>
               <p className="description">{ticket.description}</p>
               <p><strong>Status:</strong> {ticket.status}</p>

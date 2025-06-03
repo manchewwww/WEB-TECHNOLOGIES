@@ -4,6 +4,7 @@ import NavBar from './components/NavBar';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import TicketPage from './pages/TicketPage';
 import ProjectsPage from './pages/ProjectsPage';
 import AdminPage from './pages/AdminPage';
 
@@ -20,6 +21,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/tickets/:id" element={<TicketPage />} />
           <Route path="/projects" element={<ProjectsPage />} />
           <Route path="/:projectID/tickets" element={<MultipleTicketsPage />} />
           <Route path="/admin" element={<AdminPage />} />

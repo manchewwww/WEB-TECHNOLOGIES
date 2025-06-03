@@ -157,6 +157,14 @@ class TicketRepository {
     }, {} as Record<string, number>);
   }
 
+  async getTicketComments(ticketId: string): Promise<any[]> {
+    const ticket = await TicketModel.findById(ticketId).lean();
+    if (!ticket) {
+      throw new NotFoundError(`Ticket with ID ${ticketId} not found`);
+    }
+    return ticket.comments || [];
+  }
+
 };
 
 export default new TicketRepository();

@@ -11,14 +11,15 @@ class TicketController {
     }
 
     private initializeRoutes() {
-        this.router.post('', this.createTicket.bind(this) as RequestHandler);
-        this.router.post('/add-comment', this.addComment.bind(this) as RequestHandler);
-        this.router.get('', this.getAllTickets.bind(this) as RequestHandler);
+        this.router.post('/', this.createTicket.bind(this) as RequestHandler);
+        this.router.post('/:id/comments', this.addComment.bind(this) as RequestHandler);
+        this.router.get('/', this.getAllTickets.bind(this) as RequestHandler);
         this.router.get('/project/tickets', this.getTicketsByProject.bind(this) as RequestHandler);
         this.router.get('/:projectId/tickets', this.getAllTicketsByProjectID.bind(this) as RequestHandler);
         this.router.get('/user/:userId/created-tickets', this.getTicketsCreatedByUser.bind(this) as RequestHandler);
         this.router.get('/user/:userId/assigned-tickets', this.getTicketsAssignedToUserID.bind(this) as RequestHandler);
         this.router.get('/:id', this.getTicketById.bind(this) as RequestHandler);
+        this.router.get('/:id/comments', this.getTicketComments.bind(this) as RequestHandler);
         this.router.put('/update-status', this.updateStatus.bind(this) as RequestHandler);
         this.router.put('/assigned/:ticketId/user/:userId', this.assignedTickectToUserID.bind(this) as RequestHandler);
         this.router.put('/:id', this.editTicket.bind(this) as RequestHandler);
@@ -94,9 +95,26 @@ class TicketController {
 
     private async addComment(req: Request, res: Response) {
         try {
-            const updatedTicket: ITicket = await ticketService.addComment(req.params.id, req.body.comment);
-            res.json(updatedTicket);
-        } catch (err) {
+            const { id } = req.params;
+            const { content } = req.body;
+            const userId = req.body.userId || req.user?.id; // Assuming user is available in req
+            
+            const comment = {
+                userId,
+                text: content
+            };
+            
+            const updatedTicket: ITicket = await ticketService.addComment(id, comment);
+            res.status(201).json({
+                ticketId: id,
+                content,
+                createdBy: userId,
+                createdAt: new Date().toISOString()
+            });
+        } catch (err: any) {
+            if (err.status === 404) {
+                return res.status(404).json({ error: err.message });
+            }
             res.status(500).json({ error: 'Failed to add comment' });
         }
     }
@@ -145,6 +163,27 @@ class TicketController {
             res.status(200).json(tickets);
         } catch (error) {
             res.status(404).json({ message: "Tickets not found for user" });
+        }
+    }
+
+    private async getTicketComments(req: Request, res: Response) {
+        try {
+            const comments = await ticketService.getTicketComments(req.params.id);
+            
+            const formattedComments = comments.map((comment: any) => ({
+                id: comment._id || Date.now().toString(),
+                ticketId: req.params.id,
+                content: comment.text,
+                createdBy: comment.userId,
+                createdAt: comment.createdAt || new Date().toISOString()
+            }));
+            
+            res.json(formattedComments);
+        } catch (err: any) {
+            if (err.status === 404) {
+                return res.status(404).json({ error: err.message });
+            }
+            res.status(500).json({ error: 'Failed to get comments' });
         }
     }
 }

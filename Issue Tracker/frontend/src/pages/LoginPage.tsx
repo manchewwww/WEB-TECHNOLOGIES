@@ -23,14 +23,12 @@ function LoginPage() {
     setIsLoading(true);
     
     try {
-      const success = await login(email, password);
-      if (!success) {
-        setError('Invalid email or password!');
-        return;
-      }
+      await login(email, password);
+      console.log('Login successful');
       navigate('/');
-    } catch (error) {
-      setError('An error occurred during login.');
+    } catch (err: any) {
+      console.error('Login error:', err);
+      setError(err.response?.data?.message || 'Login failed. Please try again.');
     } finally {
       setIsLoading(false);
     }

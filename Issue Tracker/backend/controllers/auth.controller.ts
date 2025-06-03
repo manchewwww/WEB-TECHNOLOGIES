@@ -20,13 +20,13 @@ class AuthController {
     try {
       const { username, firstname, lastname, email, password, confirmPassword } = req.body;
       if (password !== confirmPassword) {
-        res.status(400).json({ message: "Паролите не съвпадат." });
+        res.status(400).json({ message: "Passwords do not match." });
         return;
       }
       const user = await authService.register(username, firstname, lastname, email, password);
-      res.status(201).json({ message: "Успешна регистрация.", user });
+      res.status(201).json({ message: "Registration successful.", user });
     } catch (error: any) {
-      res.status(400).json({ message: error.message });
+      res.status(error.status || 400).json({ message: error.message });
     }
   }
 
@@ -34,16 +34,17 @@ class AuthController {
     try {
       const { email, password } = req.body;
       const user = await authService.login(email, password);
-      res.status(200).json({ message: "Успешен вход.", user });
+      res.status(200).json({ message: "Login successful.", user });
     } catch (error: any) {
-      res.status(400).json({ message: error.message });
+      console.error("Login error:", error);
+      res.status(error.status || 400).json({ message: error.message });
     }
   }
 
   async refresh(req: Request, res: Response): Promise<void> {
     const { refreshToken } = req.body;
     if (!refreshToken) {
-      res.status(401).json({ message: "Refresh Token липсва" });
+      res.status(401).json({ message: "Refresh token is missing." });
       return;
     }
 
@@ -55,8 +56,8 @@ class AuthController {
         { expiresIn: "15m" }
       );
       res.json({ accessToken });
-    } catch (error) {
-      res.status(401).json({ message: "Невалиден refresh токен" });
+    } catch {
+      res.status(401).json({ message: "Invalid refresh token." });
     }
   }
 

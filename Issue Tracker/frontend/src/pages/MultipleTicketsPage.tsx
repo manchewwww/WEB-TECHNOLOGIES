@@ -1,9 +1,13 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-
 import "../styles/MultipleTicketsPage.css";
 import axios from "axios";
+
+interface IUser {
+  id: string;
+  username: string;
+}
 
 interface ITicket {
   _id: string;
@@ -33,18 +37,16 @@ async function getTicketsByProject(projectID: string): Promise<ITicket[]> {
 }
 
 async function getUsersByIds(userIds: string[]): Promise<Record<string, string>> {
-  const requests = userIds.map((id) =>
-    axios.get(`/api/users/${id}`).then((res) => ({ id, username: res.data.username }))
-  );
-  const results = await Promise.all(requests);
+  const users = await axios.get(`/api/users`);
 
   const userMap: Record<string, string> = {};
-  for (const { id, username } of results) {
-    userMap[id] = username;
+  for (const user of users.data as IUser[]) {
+    if (userIds.includes(user.id)) {
+      userMap[user.id] = user.username;
+    }
   }
   return userMap;
 }
-
 
 function MultipleTicketsPage() {
   const { projectID } = useParams();
@@ -64,6 +66,9 @@ function MultipleTicketsPage() {
     assignee: "",
   });
 
+  const [filterField, setFilterField] = useState("assignee");
+  const [filterValue, setFilterValue] = useState("");
+
   useEffect(() => {
     async function fetchData() {
       if (!projectID) return;
@@ -77,8 +82,8 @@ function MultipleTicketsPage() {
 
         const uniqueUserIds = new Set<string>();
         ticketData.forEach((ticket) => {
-          if (ticket.assignee) uniqueUserIds.add(ticket.assignee);
-          uniqueUserIds.add(ticket.createdBy);
+          if (ticket.assignee) uniqueUserIds.add(ticket.assignee.toString());
+          uniqueUserIds.add(ticket.createdBy.toString());
         });
 
         const userMap = await getUsersByIds(Array.from(uniqueUserIds));
@@ -87,11 +92,15 @@ function MultipleTicketsPage() {
         const creatorMap: Record<string, string> = {};
 
         ticketData.forEach((ticket) => {
-          if (ticket.assignee && userMap[ticket.assignee]) {
-            assigneeMap[ticket.assignee] = userMap[ticket.assignee];
+          const assigneeId = ticket.assignee?.toString();
+          const creatorId = ticket.createdBy.toString();
+
+          if (assigneeId && userMap[assigneeId]) {
+            assigneeMap[assigneeId] = userMap[assigneeId];
           }
-          if (userMap[ticket.createdBy]) {
-            creatorMap[ticket.createdBy] = userMap[ticket.createdBy];
+
+          if (userMap[creatorId]) {
+            creatorMap[creatorId] = userMap[creatorId];
           }
         });
 
@@ -107,7 +116,26 @@ function MultipleTicketsPage() {
     fetchData();
   }, [projectID]);
 
-  const sortedTickets = [...tickets].sort((a, b) => {
+  const filteredTickets = tickets.filter(ticket => {
+    if (!filterValue.trim()) return true;
+
+    const lowerValue = filterValue.toLowerCase();
+
+    switch (filterField) {
+      case "assignee":
+        return assigneeNames[ticket.assignee || ""]?.toLowerCase().includes(lowerValue);
+      case "status":
+        return ticket.status.toLowerCase().includes(lowerValue);
+      case "createdBy":
+        return creatorNames[ticket.createdBy.toString()]?.toLowerCase().includes(lowerValue);
+      case "priority":
+        return ticket.priority.toLowerCase().includes(lowerValue);
+      default:
+        return true;
+    }
+  });
+
+  const sortedTickets = [...filteredTickets].sort((a, b) => {
     const getString = (value: any) => value?.toString() || "";
 
     switch (sortBy) {
@@ -123,24 +151,39 @@ function MultipleTicketsPage() {
   });
 
   const handleCreate = async () => {
-    const payload = {
+    if (!projectID || !user?.id) {
+      alert("Missing project or user info.");
+      return;
+    }
+
+    const payload: any = {
       title: form.title,
       description: form.description,
-      status: form.status,
-      priority: form.priority,
-      assignee: "",
-      createdBy: user?.id,
+      status: form.status.toLowerCase(),
+      priority: form.priority.toLowerCase(),
+      createdBy: user.id,
       projectId: projectID,
     };
 
+    if (form.assignee && form.assignee.trim() !== "") {
+      payload.assignee = form.assignee;
+    }
+
     try {
       await axios.post("/api/tickets", payload);
-      const res = await axios.get(`/api/projects`);
-      setTickets(res.data);
+      const updatedTickets = await getTicketsByProject(projectID);
+      setTickets(updatedTickets);
       setShowModal(false);
-      setForm({ title: "", description: "", status: "", priority: "", assignee: "" });
-    } catch (err) {
-      alert("Failed to create project.");
+      setForm({
+        title: "",
+        description: "",
+        status: "open",
+        priority: "low",
+        assignee: "",
+      });
+    } catch (error) {
+      console.error("Create ticket error:", error);
+      alert("Failed to create ticket.");
     }
   };
 
@@ -169,10 +212,27 @@ function MultipleTicketsPage() {
         </button>
       </div>
 
+      <div className="filter-bar">
+        <label htmlFor="filter">Filter by: </label>
+        <select value={filterField} onChange={(e) => setFilterField(e.target.value)}>
+          <option value="assignee">Assignee</option>
+          <option value="status">Status</option>
+          <option value="createdBy">Created By</option>
+          <option value="priority">Priority</option>
+        </select>
+
+        <input
+          type="text"
+          placeholder={`Enter ${filterField}`}
+          value={filterValue}
+          onChange={(e) => setFilterValue(e.target.value)}
+        />
+      </div>
+
       {showModal && (
         <div className="modal-overlay">
           <div className="modal-container">
-            <h2 className="modal-title">Create Project</h2>
+            <h2 className="modal-title">Create Ticket</h2>
             <input
               type="text"
               placeholder="Title"
@@ -187,17 +247,6 @@ function MultipleTicketsPage() {
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
             />
-            {/* <Select
-              isMulti
-              options={userOptions} 
-              value={form.members}
-              onChange={(selected) =>
-                setForm({ ...form, members: Array.from(selected ?? []) })
-              }
-              className="basic-multi-select"
-              classNamePrefix="select"
-              placeholder="Choose users"
-            /> */}
 
             <div className="form-buttons">
               <button className="btn-secondary" onClick={() => setShowModal(false)}>
@@ -216,14 +265,14 @@ function MultipleTicketsPage() {
       ) : (
         <div className="ticket-list">
           {sortedTickets.map((ticket) => (
-            <div className="ticket-card" key={String(ticket._id)}>
+            <div className="ticket-card" key={ticket._id}>
               <h3 className="name">{ticket.title}</h3>
-              <p className="description"><strong>Description:</strong> {ticket.description}</p>
+              <p className="description">{ticket.description}</p>
               <p><strong>Status:</strong> {ticket.status}</p>
               <p><strong>Priority:</strong> {ticket.priority}</p>
               <p><strong>Assigned to:</strong> {ticket.assignee ? assigneeNames[ticket.assignee.toString()] || "No one" : "No one"}</p>
               <p><strong>Created at:</strong> {new Date(ticket.createdAt).toLocaleDateString()}</p>
-              <p className="created-by">Created by: {creatorNames[ticket.createdBy]}</p>
+              <p className="created-by"><strong>Created by:</strong> {creatorNames[ticket.createdBy.toString()] || "Unknown"}</p>
             </div>
           ))}
         </div>

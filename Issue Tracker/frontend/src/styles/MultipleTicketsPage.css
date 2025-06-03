@@ -6,16 +6,22 @@
 .page-title {
     font-size: 2rem;
     font-weight: bold;
-    margin-bottom: 2rem;
 }
 
+.filter-bar,
 .sorting-controls {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
 }
 
+.filter-bar label,
+.sorting-controls label {
+  font-weight: bold;
+}
+
+.filter-bar select,
 .sorting-controls select {
     padding: 0.5rem;
     border-radius: 8px;
@@ -35,14 +41,14 @@
 .ticket-card {
     background-color: white;
     padding: 1.5rem;
-    width: 300px;
+    width: 250px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     display: flex;
     flex-direction: column;
     text-align: left;
     cursor: default;
-    border-radius: 12px;
+    /* border-radius: 12px; */
 }
 
 .ticket-card:hover {
@@ -68,4 +74,33 @@
     color: #666;
     padding: 2rem;
 }
-  
+
+.filter-bar input{
+  padding: 0.5rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 0.95rem;
+  min-width: 160px;
+}
+
+.btn-primary {
+    margin-left: auto;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.btn-primary:hover {
+    background-color: #218838;
+    transform: translateY(-1px);
+}
+
+.btn-primary:active {
+    background-color: #1e7e34;
+    transform: translateY(0);
+}

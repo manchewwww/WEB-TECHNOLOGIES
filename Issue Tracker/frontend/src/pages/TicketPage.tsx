@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import '../styles/TicketPage.css';
 import Comments from '../components/Comments';
 
@@ -12,6 +13,14 @@ interface User {
 type ErrorType = { [key: string]: string };
 
 const TicketPage = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (!user) {
+      navigate('/');
+    }
+  }, [user, navigate]);
+
   const { id } = useParams<{ id: string }>();
   const [users, setUsers] = useState<User[]>([]);
   const [ticket, setTicket] = useState<Ticket | null>(null);
@@ -264,13 +273,17 @@ const TicketPage = () => {
   };
 
   const formatDate = (isoString: string) => {
+    // return empty string if no value or invalid date
+    if (!isoString) return '';
+    const date = new Date(isoString);
+    if (isNaN(date.getTime())) return '';
     return new Intl.DateTimeFormat('en-GB', {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
-    }).format(new Date(isoString));
+    }).format(date);
   };
 
   return (
@@ -336,7 +349,7 @@ const TicketPage = () => {
         </div>
       )}
 
-      <Comments ticketId={id!} users={users} />
+      <Comments ticketId={id!} users={users} currentUserId={user?.id || ''}/>
     </div>
   );
 };

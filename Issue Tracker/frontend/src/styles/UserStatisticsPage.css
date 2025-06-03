@@ -1,18 +1,18 @@
-.stats-container {                                                       /*///////////////////////// Space from the begining /////////////////////*/
+.stats-container {                                                      
   padding-top: 4rem;
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
 }
 
-.page-title {                                                             /*///////////////////////// Username /////////////////////*/
+.page-title {                                                             
   font-size: 3rem;
   font-weight: bold;
   margin-bottom: 2rem;
   text-align: center;
 }
 
-.summary-row {                                                         /*///////////////////////// Cards with stats /////////////////////*/      
+.summary-row {                                                          
   display: flex;
   flex-wrap: wrap;
   gap: 1.5rem;
@@ -41,7 +41,7 @@
   margin: 0.5rem 0;
 }
 
-.chart-container {                                                         /*///////////////////////// Cards with pie /////////////////////*/      
+.chart-container {                                                       
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -50,7 +50,7 @@
   margin-bottom: 2rem;
 }
 
-.stat-section {                                                        /*///////////////////////// Cards with charts /////////////////////*/  
+.stat-section {                                                       
   background-color: white;
   padding: 1.5rem;
   border-radius: 12px;
@@ -67,13 +67,13 @@
 
 .project-stats {
   display: flex;
-  flex-direction: column; /* Вертикална подредба */
+  flex-direction: column; 
   gap: 2rem;
 }
 
 .project-item {
   display: flex;
-  flex-direction: column; /* Вертикална структура: заглавие отгоре, съдържание отдолу */
+  flex-direction: column;
   background-color: white;
   padding: 1.5rem;
   border-radius: 12px;
@@ -88,10 +88,10 @@
   margin-bottom: 1rem;
 }
 
-/* Съдържанието под заглавието */
+
 .project-content {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr; /* Три равни колони */
+  grid-template-columns: 1fr 1fr 1fr; 
   gap: 1.5rem;
   align-items: center;
 }

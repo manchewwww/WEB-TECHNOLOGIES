@@ -103,7 +103,14 @@ function AdminPage() {
         <tbody>
           {users.map(u => (
             <tr key={u.id}>
-              <td>{u.username}</td>
+              <td>
+                <span
+                    className="link-username"
+                    onClick={() => navigate(`/statistics/${u.id}`)}
+                    style={{ color: 'blue', cursor: 'pointer', textDecoration: 'underline' }}>
+                    {u.username}
+                </span>
+              </td>
               <td>{u.email}</td>
               <td>
                 <select

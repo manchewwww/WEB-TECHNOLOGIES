@@ -1,22 +1,11 @@
-import { Link, useNavigate } from "react-router-dom"; ////////////////// useNavigate is for testing
-import { useEffect, useState } from "react"; ////////////////////  for testing
+import { Link, useNavigate } from "react-router-dom";
 import '../styles/NavBar.css';
 import mainLogo from '../assets/mainLogo.png';
 import { useAuth } from "../context/AuthContext";
 
-/////// for testing
-interface User {
-  id: string;
-  username: string;
-}
-/////////////
-
 function NavBar() {
   const { user, logout } = useAuth();
-  /////////////////////////////////////////////////////////////////////// for testing
-  const [users, setUsers] = useState<User[]>([]);   
-  const [selectedUserId, setSelectedUserId] = useState(''); 
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   const handleLogout = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,30 +13,11 @@ function NavBar() {
     navigate('/');
   };
 
-    useEffect(() => {
-    async function fetchUsers() {
-      try {
-        const res = await fetch('http://localhost:3000/api/users');
-        const data = await res.json();
-        setUsers(data);
-      } catch (err) {
-        console.error('Error fetching users:', err);
-      }
-    }
-
-    if (user?.role === 'admin') {
-      fetchUsers();
-    }
-  }, [user]);
-
-  const handleUserChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const userId = e.target.value;
-    setSelectedUserId(userId);
-    if (userId) {
-      navigate(`/statistics/${userId}`);
+    const handleMyStatsClick = () => {
+    if (user) {
+      navigate(`/statistics/${user.id}`);
     }
   };
-  ///////////////////////////////////////////////////////////////////////////////////
 
   return (
     <nav className="navbar">
@@ -60,24 +30,16 @@ function NavBar() {
       <div className="nav-right">
         {user ? (
           <div className="user-info">
-            {/* <span className="username">Hello, {user?.username}</span> */}
             <Link to="/projects" className="nav-btn projects-btn">Projects</Link>
             <Link to="/tickets" className="nav-btn tickets-btn">Tickets</Link>
-            {user.role == 'admin' && (
+
+            {user.role === 'admin' ? (
               <Link to="/admin" className="nav-btn admin-btn">Admin Panel</Link>
+            ) : (
+              <button onClick={handleMyStatsClick} className="nav-btn stats-btn">My Statistics</button>
             )}
-            <select /////////////////////////////////////////////////////////////////////////// testing
-                  value={selectedUserId}
-                  onChange={handleUserChange}
-                  className="nav-user-select"
-                >
-                  <option value="">User Stats</option>
-                  {users.map(u => (
-                    <option key={u.id} value={u.id}>
-                      {u.username}
-                    </option>
-                  ))}
-                </select> 
+
+
             <button onClick={handleLogout} className="nav-btn logout-btn">Logout</button>
           </div>
         ) : (

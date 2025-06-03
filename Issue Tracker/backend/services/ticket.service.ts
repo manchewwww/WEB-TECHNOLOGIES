@@ -13,6 +13,11 @@ class TicketService {
     return await ticketRepository.getAllTicketsByProjectID(projectId);
   }
 
+  async getAllTicketsByUserID(userID: string): Promise<ITicket[]> {
+    return await ticketRepository.getAllTicketsByUserID(userID);
+
+  }
+
   async getTicketById(id: string): Promise<ITicket> {
     return await ticketRepository.getTicketById(id);
   }

@@ -32,8 +32,13 @@ apiClient.interceptors.response.use(
 
 export const authApi = {
   async login(params: { email: string; password: string }) {
+    try {
     const { data } = await apiClient.post('/auth/login', params);
     return data;
+    } catch (error) {
+      console.error("Login failed: (Api.ts)", error);
+      throw error;
+    }
   },
   async register(params: any) {
     const { data } = await apiClient.post('/auth/register', params);

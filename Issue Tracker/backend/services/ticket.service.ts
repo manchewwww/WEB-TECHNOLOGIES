@@ -13,6 +13,11 @@ class TicketService {
     return await ticketRepository.getAllTicketsByProjectID(projectId);
   }
 
+  async getAllTicketsByUserID(userID: string): Promise<ITicket[]> {
+    return await ticketRepository.getAllTicketsByUserID(userID);
+
+  }
+
   async getTicketById(id: string): Promise<ITicket> {
     return await ticketRepository.getTicketById(id);
   }
@@ -57,6 +62,10 @@ class TicketService {
 
   async getTicketsAssignedToUserID(userId: string): Promise<ITicket[]> {
     return await ticketRepository.getTicketsAssignedToUserID(userId);
+  }
+
+  async getTicketComments(ticketId: string): Promise<any[]> {
+    return await ticketRepository.getTicketComments(ticketId);
   }
 };
 

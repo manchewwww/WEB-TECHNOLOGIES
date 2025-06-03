@@ -14,6 +14,11 @@ class TicketRepository {
     return projects;
   }
 
+  async getAllTicketsByUserID(userID: string): Promise<ITicket[]> {
+    const projects = await TicketModel.find({ assignee: userID }).lean();
+    return projects;
+  }
+
   async getTicketById(ticketId: string): Promise<ITicket> {
     const ticket = await TicketModel.findById(ticketId).lean();
     if (!ticket) {
@@ -155,6 +160,14 @@ class TicketRepository {
       acc[curr._id] = curr.count;
       return acc;
     }, {} as Record<string, number>);
+  }
+
+  async getTicketComments(ticketId: string): Promise<any[]> {
+    const ticket = await TicketModel.findById(ticketId).lean();
+    if (!ticket) {
+      throw new NotFoundError(`Ticket with ID ${ticketId} not found`);
+    }
+    return ticket.comments || [];
   }
 
 };

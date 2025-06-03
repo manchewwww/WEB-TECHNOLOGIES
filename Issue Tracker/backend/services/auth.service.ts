@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import UserRepository from "../repositories/user.repository";
 import bcrypt from "bcryptjs";
+import UnauthorizedException from "../exceptions/UnauthorizedException";
 
 const SALT_ROUNDS = 10;
 
@@ -9,7 +10,7 @@ class AuthService {
   async register(username: string, firstname: string, lastname: string, email: string, password: string) {
     const existingUser = await UserRepository.findUserByEmail(email);
     if (existingUser) {
-      throw new Error("Този имейл вече е зает.");
+      throw new UnauthorizedException("Email already in use");
     }
 
     const hashedPassword = await this.hashPassword(password);
@@ -21,6 +22,7 @@ class AuthService {
       email,
       password: hashedPassword,
       role: "user",
+      isActive: true,
     });
 
     return {
@@ -34,12 +36,16 @@ class AuthService {
   async login(email: string, password: string) {
     const user = await UserRepository.findUserByEmail(email);
     if (!user) {
-      throw new Error("Грешен имейл или парола.");
+      throw new UnauthorizedException("Invalid email or password");
+    }
+
+    if (!user.isActive) {
+      throw new UnauthorizedException("User is not active");
     }
 
     const isPasswordValid = await this.validatePassword(password, user.password);
     if (!isPasswordValid) {
-      throw new Error("Грешен имейл или парола.");
+      throw new UnauthorizedException("Invalid email or password");
     }
 
     const accessToken = this.generateAccessToken(user);
@@ -58,7 +64,7 @@ class AuthService {
   private generateAccessToken(user: any) {
     return jwt.sign(
       { id: user._id, role: user.role },
-      process.env.ACCESS_TOKEN_SECRET as string,
+      process.env.ACCESS_TOKEN_SECRET || "default",
       { expiresIn: "15m" }
     );
   }
@@ -66,7 +72,7 @@ class AuthService {
   private generateRefreshToken(user: any) {
     return jwt.sign(
       { id: user._id, role: user.role },
-      process.env.REFRESH_TOKEN_SECRET as string,
+      process.env.REFRESH_TOKEN_SECRET || "default",
       { expiresIn: "1d" }
     );
   }

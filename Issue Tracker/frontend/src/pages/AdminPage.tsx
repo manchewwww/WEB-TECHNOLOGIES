@@ -70,17 +70,21 @@ function AdminPage() {
     }
   };
 
-  const deleteUser = async (userId) => {
-    const confirmed = window.confirm("Are you sure you want to delete this user?");
+  const toggleActive = async (userId, currentStatus) => {
+    const confirmed = window.confirm(
+      `Are you sure you want to ${currentStatus ? "deactivate" : "activate"} this user?`
+    );
     if (!confirmed) return;
-
     try {
-      await axios.delete(`/api/users/${userId}`);
-      setUsers(prevUsers => prevUsers.filter(user => user.id !== userId));
-      alert("User has been successfully deleted!");
+      const newStatus = !currentStatus;
+      await axios.patch(`/api/users/${userId}/status`, { isActive: newStatus });
+      setUsers(prev =>
+        prev.map(u => (u.id === userId ? { ...u, isActive: newStatus } : u))
+      );
+      alert(`User has been ${newStatus ? "activated" : "deactivated"}!`);
     } catch (err) {
       console.error(err);
-      alert("Failed to delete user");
+      alert("Failed to update status");
     }
   };
 
@@ -115,7 +119,12 @@ function AdminPage() {
                 {editedRoles[u.id] && editedRoles[u.id] !== u.role && (
                   <button onClick={() => saveRoleChange(u.id)}>Save</button>
                 )}
-                <button onClick={() => deleteUser(u.id)}>Delete</button>
+                <button
+                  className={u.isActive ? 'deactivate-btn' : 'activate-btn'}
+                  onClick={() => toggleActive(u.id, u.isActive)}
+                >
+                  {u.isActive ? "Deactivate" : "Activate"}
+                </button>
               </td>
             </tr>
           ))}

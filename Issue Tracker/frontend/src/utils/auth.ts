@@ -10,22 +10,15 @@ export type User = {
 export async function login(email: string, password: string): Promise<boolean> {
   try {
     const response = await authApi.login({ email, password });
-    
     setAuthToken(response.user.accessToken);
     localStorage.setItem('refreshToken', response.user.refreshToken);
-
-    localStorage.setItem('user', JSON.stringify({
-      id: response.user.id,
-      username: response.user.username,
-      email: response.user.email,
-      role: response.user.role,
-    }));
-    
-    return true;
+    localStorage.setItem('user', JSON.stringify(response.user));
   } catch (error) {
-    console.error('Login failed:', error);
-    return false;
+    console.error("Login failed:", error);
+    throw error;
   }
+
+  return true;
 }
 
 export async function register(
@@ -36,13 +29,8 @@ export async function register(
   password: string,
   confirmPassword: string
 ): Promise<boolean> {
-  try {
-    await authApi.register({ username, firstname, lastname, email, password, confirmPassword });
-    return true;
-  } catch (error) {
-    console.error('Registration failed:', error);
-    return false;
-  }
+  await authApi.register({ username, firstname, lastname, email, password, confirmPassword });
+  return true;
 }
 
 export function logout(): void {

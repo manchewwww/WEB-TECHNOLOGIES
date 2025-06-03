@@ -7,7 +7,7 @@ class UserService {
     async getAllUsers() {
         const users = await UserRepository.getAllUsers();
         return users.map(user => {
-            return { id: user._id, username: user.username, email: user.email, role: user.role }
+            return { id: user._id, username: user.username, email: user.email, role: user.role, isActive: user.isActive }
         })
     }
 
@@ -41,6 +41,17 @@ class UserService {
 
     async getRoles(): Promise<RoleType[]> {
         return Object.values(RoleValues);
+    }
+
+    async toggleUserStatus(id: string, isActive: boolean) {
+        const updated = await UserRepository.updateUser(id, { isActive });
+        return {
+            id: updated._id,
+            username: updated.username,
+            email: updated.email,
+            role: updated.role,
+            isActive: updated.isActive
+        };
     }
 
 }

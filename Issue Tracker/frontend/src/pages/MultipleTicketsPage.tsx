@@ -36,25 +36,22 @@ async function getTicketsByProject(projectID: string): Promise<ITicket[]> {
   return res.data;
 }
 
-async function getUsersByIds(userIds: string[]): Promise<Record<string, string>> {
-  const users = await axios.get(`/api/users`);
+async function getUsers(): Promise<Record<string, string>> {
+  const res = await axios.get(`/api/users`);
 
-  const userMap: Record<string, string> = {};
-  for (const user of users.data as IUser[]) {
-    if (userIds.includes(user.id)) {
-      userMap[user.id] = user.username;
-    }
-  }
-  return userMap;
+  const usersMap: Record<string, string> = Object.fromEntries(
+    res.data.map((user: IUser) => [user.id, user.username])
+  );
+  return usersMap;
 }
+
 
 function MultipleTicketsPage() {
   const { projectID } = useParams();
   const { user } = useAuth();
   const [tickets, setTickets] = useState<ITicket[]>([]);
+  const [userMaps, setUserMaps] = useState<Record<string, string>>({});
   const [project, setProject] = useState<IProject>();
-  const [assigneeNames, setAssigneeNames] = useState<Record<string, string>>({});
-  const [creatorNames, setCreatorNames] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState("status");
   const [showModal, setShowModal] = useState(false);
@@ -80,32 +77,11 @@ function MultipleTicketsPage() {
         const ticketData = await getTicketsByProject(projectID);
         setTickets(ticketData);
 
-        const uniqueUserIds = new Set<string>();
-        ticketData.forEach((ticket) => {
-          if (ticket.assignee) uniqueUserIds.add(ticket.assignee.toString());
-          uniqueUserIds.add(ticket.createdBy.toString());
-        });
+        
+        
 
-        const userMap = await getUsersByIds(Array.from(uniqueUserIds));
-
-        const assigneeMap: Record<string, string> = {};
-        const creatorMap: Record<string, string> = {};
-
-        ticketData.forEach((ticket) => {
-          const assigneeId = ticket.assignee?.toString();
-          const creatorId = ticket.createdBy.toString();
-
-          if (assigneeId && userMap[assigneeId]) {
-            assigneeMap[assigneeId] = userMap[assigneeId];
-          }
-
-          if (userMap[creatorId]) {
-            creatorMap[creatorId] = userMap[creatorId];
-          }
-        });
-
-        setAssigneeNames(assigneeMap);
-        setCreatorNames(creatorMap);
+        const userMap = await getUsers();
+        setUserMaps(userMap);
       } catch (error) {
         console.error("Failed to load tickets or users: ", error);
       } finally {
@@ -123,11 +99,11 @@ function MultipleTicketsPage() {
 
     switch (filterField) {
       case "assignee":
-        return assigneeNames[ticket.assignee || ""]?.toLowerCase().includes(lowerValue);
+        return userMaps[ticket.assignee || ""]?.toLowerCase().includes(lowerValue);
       case "status":
         return ticket.status.toLowerCase().includes(lowerValue);
       case "createdBy":
-        return creatorNames[ticket.createdBy.toString()]?.toLowerCase().includes(lowerValue);
+        return userMaps[ticket.createdBy.toString()]?.toLowerCase().includes(lowerValue);
       case "priority":
         return ticket.priority.toLowerCase().includes(lowerValue);
       default:
@@ -270,9 +246,9 @@ function MultipleTicketsPage() {
               <p className="description">{ticket.description}</p>
               <p><strong>Status:</strong> {ticket.status}</p>
               <p><strong>Priority:</strong> {ticket.priority}</p>
-              <p><strong>Assigned to:</strong> {ticket.assignee ? assigneeNames[ticket.assignee.toString()] || "No one" : "No one"}</p>
+              <p><strong>Assigned to:</strong> {ticket.assignee ? userMaps[ticket.assignee.toString()] || "No one" : "No one"}</p>
               <p><strong>Created at:</strong> {new Date(ticket.createdAt).toLocaleDateString()}</p>
-              <p className="created-by"><strong>Created by:</strong> {creatorNames[ticket.createdBy.toString()] || "Unknown"}</p>
+              <p className="created-by"><strong>Created by:</strong> {userMaps[ticket.createdBy.toString()] || "Unknown"}</p>
             </div>
           ))}
         </div>

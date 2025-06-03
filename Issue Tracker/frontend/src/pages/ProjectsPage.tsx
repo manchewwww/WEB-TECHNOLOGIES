@@ -41,7 +41,19 @@ function ProjectsPage() {
   const [showMembersModal, setShowMembersModal] = useState(false);
 
   useEffect(() => {
-    axios.get(`/api/projects/member-of/${user?.id}`).then(res => setProjects(res.data));
+    const fetchProjects = async () => {
+      try {
+        const res = await axios.get(
+          user?.role === "admin"
+            ? `/api/projects`
+            : `/api/projects/member-of/${user?.id}`
+        );
+        setProjects(res.data);
+      } catch (error) {
+        console.error('Error fetching projects:', error);
+      }
+    };
+    fetchProjects();
   }, [user]);
 
   useEffect(() => {
@@ -76,7 +88,13 @@ function ProjectsPage() {
 
     try {
       await axios.post("/api/projects", payload);
-      const res = await axios.get(`/api/projects`);
+
+      var res;
+      if (user?.role == "admin") {
+        res = await axios.get(`/api/projects`);
+      } else {
+        res = await axios.get(`/api/projects/member-of/${user?.id}`);
+      }
       setProjects(res.data);
       setShowModal(false);
       setForm({ _id: "", name: "", description: "", members: [] });
@@ -100,7 +118,12 @@ function ProjectsPage() {
 
     try {
       await axios.put(`/api/projects`, payload);
-      const res = await axios.get(`/api/projects`);
+      var res;
+      if (user?.role == "admin") {
+        res = await axios.get(`/api/projects`);
+      } else {
+        res = await axios.get(`/api/projects/member-of/${user?.id}`);
+      }
       setProjects(res.data);
       setShowEditModal(false);
       setForm({ _id: "", name: "", description: "", members: [] });
@@ -113,9 +136,11 @@ function ProjectsPage() {
     <div className="projects-container">
       <div className="header">
         <h1 className="page-title">Projects</h1>
-        <button onClick={() => setShowModal(true)} className="btn-primary">
-          Create Project
-        </button>
+        {user?.role === "manager" || user?.role === "admin" && (
+          <button onClick={() => setShowModal(true)} className="btn-primary">
+            Create Project
+          </button>
+        )}
       </div>
 
       <ul className="project-list">

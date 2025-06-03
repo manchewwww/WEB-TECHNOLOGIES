@@ -22,6 +22,7 @@ class AuthService {
       email,
       password: hashedPassword,
       role: "user",
+      isActive: true,
     });
 
     return {

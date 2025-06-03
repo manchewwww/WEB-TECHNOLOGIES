@@ -273,13 +273,17 @@ const TicketPage = () => {
   };
 
   const formatDate = (isoString: string) => {
+    // return empty string if no value or invalid date
+    if (!isoString) return '';
+    const date = new Date(isoString);
+    if (isNaN(date.getTime())) return '';
     return new Intl.DateTimeFormat('en-GB', {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
-    }).format(new Date(isoString));
+    }).format(date);
   };
 
   return (
@@ -345,7 +349,7 @@ const TicketPage = () => {
         </div>
       )}
 
-      <Comments ticketId={id!} users={users}/>
+      <Comments ticketId={id!} users={users} currentUserId={user?.id || ''}/>
     </div>
   );
 };

@@ -24,6 +24,17 @@ interface ITicket {
 interface IProject {
   name: string;
   createdBy: string;
+  members: string[];
+}
+
+async function getTicketsByAssignee(userID : string): Promise<ITicket[]> {
+  const res = await axios.get(`/api/tickets/assingnee/${userID}`);
+  return res.data;
+}
+
+async function getTickets(): Promise<ITicket[]> {
+  const res = await axios.get(`/api/tickets`);
+  return res.data;
 }
 
 async function getProjectById(projectID: string): Promise<IProject> {
@@ -44,7 +55,6 @@ async function getUsers(): Promise<Record<string, string>> {
   );
   return usersMap;
 }
-
 
 function MultipleTicketsPage() {
   const { projectID } = useParams();
@@ -69,17 +79,20 @@ function MultipleTicketsPage() {
 
   useEffect(() => {
     async function fetchData() {
-      if (!projectID) return;
-
       try {
-        const projectData = await getProjectById(projectID);
-        setProject(projectData);
+        var ticketData;
+        if (!projectID && user?.role == "admin") {
+          ticketData = await getTickets();
+        } else if (!projectID) {
+          ticketData = await getTicketsByAssignee(user!.id);
+        } else {
+          const projectData = await getProjectById(projectID);
+          setProject(projectData);
 
-        const ticketData = await getTicketsByProject(projectID);
+          ticketData = await getTicketsByProject(projectID);
+        }
+
         setTickets(ticketData);
-
-        
-        
 
         const userMap = await getUsers();
         setUserMaps(userMap);
@@ -228,6 +241,32 @@ function MultipleTicketsPage() {
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
             />
+
+            <label className="form-label">Priority</label>
+            <select
+              className="form-input"
+              value={form.priority}
+              onChange={(e) => setForm({ ...form, priority: e.target.value })}
+            >
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+              <option value="critical">Critical</option>
+            </select>
+
+            <label className="form-label">Assignee</label>
+            <select
+              className="form-input"
+              value={form.assignee}
+              onChange={(e) => setForm({ ...form, assignee: e.target.value })}
+            >
+              <option value="">Unassigned</option>
+              {project?.members.map((memberId) => (
+                <option key={memberId} value={memberId}>
+                  {userMaps[memberId] || memberId}
+                </option>
+              ))}
+            </select>
 
             <div className="form-buttons">
               <button className="btn-secondary" onClick={() => setShowModal(false)}>

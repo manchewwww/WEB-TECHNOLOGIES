@@ -3,6 +3,8 @@ import { isAuthenticated, login as authLogin, logout as authLogout, getCurrentUs
 
 type AuthContextType = {
   user: User | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
   login: (email: string, password: string) => Promise<boolean>;
   register: (username: string, firstname: string, lastname: string, email: string, password: string, confirmPassword: string) => Promise<boolean>;
   logout: () => void;
@@ -12,11 +14,14 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (isAuthenticated()) {
       setUser(getCurrentUser());
     }
+
+    setIsLoading(false);
   }, []);
 
   const login = async (email: string, password: string) => {
@@ -42,8 +47,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
   };
 
+  const isAuth = !!user;
+
   return (
-    <AuthContext.Provider value={{ user, login, register, logout }}>
+    <AuthContext.Provider value={{ user, isAuthenticated: isAuth, isLoading, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );

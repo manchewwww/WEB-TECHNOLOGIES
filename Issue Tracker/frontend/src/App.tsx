@@ -11,6 +11,8 @@ import AdminPage from './pages/AdminPage';
 import MultipleTicketsPage from './pages/MultipleTicketsPage';
 import UserStatisticsPage from './pages/UserStatisticsPage';
 import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+import PublicRoute from './components/PublicRoute';
 
 function App() {
   return (
@@ -19,14 +21,77 @@ function App() {
         <NavBar />
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/tickets/:id" element={<TicketPage />} />
-          <Route path="/projects" element={<ProjectsPage />} />
-          <Route path="/:projectID/tickets" element={<MultipleTicketsPage />} />
-          <Route path="/admin" element={<AdminPage />} />
-          <Route path="/tickets" element={<MultipleTicketsPage />} />
-          <Route path="/statistics/:userId" element={<UserStatisticsPage />} />
+          <Route
+            path="/login"
+            element={
+              <PublicRoute>
+                <LoginPage />
+              </PublicRoute>
+            }
+          />
+
+          <Route
+            path="/register"
+            element={
+              <PublicRoute>
+                <RegisterPage />
+              </PublicRoute>
+            }
+          />
+
+          <Route
+            path="/tickets/:id"
+            element={
+              <ProtectedRoute>
+                <TicketPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/projects"
+            element={
+              <ProtectedRoute>
+                <ProjectsPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/:projectID/tickets"
+            element={
+              <ProtectedRoute>
+                <MultipleTicketsPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/tickets"
+            element={
+              <ProtectedRoute>
+                <MultipleTicketsPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/statistics/:userId"
+            element={
+              <ProtectedRoute>
+                <UserStatisticsPage />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </Router>
     </AuthProvider>

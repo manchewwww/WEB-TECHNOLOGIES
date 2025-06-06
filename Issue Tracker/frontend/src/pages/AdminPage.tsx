@@ -12,12 +12,8 @@ function AdminPage() {
   const [roles, setRoles] = useState<string[]>([]);
 
   useEffect(() => {
-    if (!user || user.role !== 'admin') {
-      navigate('/');
-    } else {
-      fetchUsers();
-      fetchRoles();
-    }
+    fetchUsers();
+    fetchRoles();
   }, [user, navigate]);
 
   const fetchUsers = async () => {

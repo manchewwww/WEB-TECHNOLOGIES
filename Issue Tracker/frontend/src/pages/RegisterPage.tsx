@@ -1,17 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/RegisterPage.css";
 import { useAuth } from "../context/AuthContext";
 
 function RegisterPage() {
   const navigate = useNavigate();
-  const {user} = useAuth();
-
-  useEffect(() => {
-      if (user) {
-        navigate('/');
-      }
-    }, [user, navigate]);
 
   const { register } = useAuth();
   const [formData, setFormData] = useState({

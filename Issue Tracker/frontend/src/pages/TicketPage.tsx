@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import '../styles/TicketPage.css';
 import Comments from '../components/Comments';
@@ -14,12 +14,6 @@ type ErrorType = { [key: string]: string };
 
 const TicketPage = () => {
   const { user } = useAuth();
-  const navigate = useNavigate();
-  useEffect(() => {
-    if (!user) {
-      navigate('/');
-    }
-  }, [user, navigate]);
 
   const { id } = useParams<{ id: string }>();
   const [users, setUsers] = useState<User[]>([]);

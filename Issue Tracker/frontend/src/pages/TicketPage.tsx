@@ -13,7 +13,8 @@ interface User {
 type ErrorType = { [key: string]: string };
 
 const TicketPage = () => {
-  const { user } = useAuth();
+const { user } = useAuth();
+
 
   const { id } = useParams<{ id: string }>();
   const [users, setUsers] = useState<User[]>([]);

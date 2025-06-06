@@ -17,6 +17,7 @@ const TicketPage = () => {
 
   const { id } = useParams<{ id: string }>();
   const [users, setUsers] = useState<User[]>([]);
+  const [projectMembers, setProjectMembers] = useState<string[]>([]);
   const [ticket, setTicket] = useState<Ticket | null>(null);
   const [originalTicket, setOriginalTicket] = useState<Ticket | null>(null);
   const [editField, setEditField] = useState<string | null>(null);
@@ -43,6 +44,16 @@ const TicketPage = () => {
       })
       .catch(() => setFetchError('Failed to load users'));
   }, []);
+
+  useEffect(() => {
+    if (ticket?.projectId) {
+      axios.get(`/api/projects/${ticket.projectId}`)
+        .then(({ data }) => {
+          setProjectMembers(data.members);
+        })
+        .catch(() => setFetchError('Failed to load project members'));
+    }
+  }, [ticket?.projectId]);
 
   useEffect(() => {
     if (ticket && originalTicket) {
@@ -140,7 +151,7 @@ const TicketPage = () => {
           </span>
         );
       }
-      
+
       if (fieldName === 'assignee') {
         return (
           <span onClick={() => handleFieldClick(fieldName)}>
@@ -149,7 +160,7 @@ const TicketPage = () => {
           </span>
         );
       }
-      
+
       if (fieldName === 'description') {
         return (
           <div onClick={() => handleFieldClick(fieldName)} className="description-field">
@@ -158,7 +169,7 @@ const TicketPage = () => {
           </div>
         );
       }
-      
+
       return (
         <span onClick={() => handleFieldClick(fieldName)}>
           {currentValue}
@@ -166,7 +177,7 @@ const TicketPage = () => {
         </span>
       );
     }
-    
+
     if (fieldName === 'status') {
       return (
         <div className="inline-edit-field">
@@ -187,8 +198,9 @@ const TicketPage = () => {
         </div>
       );
     }
-    
+
     if (fieldName === 'assignee') {
+      const projectUsers = users.filter(user => projectMembers.includes(user.id));
       return (
         <div className="inline-edit-field">
           <select
@@ -199,7 +211,7 @@ const TicketPage = () => {
             onBlur={() => setEditField(null)}
           >
             <option value="">Select assignee</option>
-            {users.map((user) => (
+            {projectUsers.map((user) => (
               <option key={user.id} value={user.id}>
                 {user.username}
               </option>
@@ -209,7 +221,7 @@ const TicketPage = () => {
         </div>
       );
     }
-    
+
     if (fieldName === 'priority') {
       return (
         <div className="inline-edit-field">
@@ -229,7 +241,7 @@ const TicketPage = () => {
         </div>
       );
     }
-    
+
     if (fieldName === 'description') {
       return (
         <div className="inline-edit-field">
@@ -245,7 +257,7 @@ const TicketPage = () => {
         </div>
       );
     }
-    
+
     return (
       <div className="inline-edit-field">
         <input
@@ -267,7 +279,6 @@ const TicketPage = () => {
   };
 
   const formatDate = (isoString: string) => {
-    // return empty string if no value or invalid date
     if (!isoString) return '';
     const date = new Date(isoString);
     if (isNaN(date.getTime())) return '';
@@ -282,59 +293,21 @@ const TicketPage = () => {
 
   return (
     <div className="ticket-container">
-      <h1 className="ticket-title">
-        Ticket
-      </h1>
-      
+      <h1 className="ticket-title">Ticket</h1>
       <div className="ticket-details">
         <table className="ticket-table">
           <tbody>
-            <tr>
-              <th>Title:</th>
-              <td className="editable-cell">
-                {renderEditableField('title', ticket.title || '')}
-              </td>
-            </tr>
-            <tr>
-              <th>Description:</th>
-              <td className="editable-cell">
-                {renderEditableField('description', ticket.description || '')}
-              </td>
-            </tr>
-            <tr>
-              <th>Status:</th>
-              <td className="editable-cell">
-                {renderEditableField('status', ticket.status || '')}
-              </td>
-            </tr>
-            <tr>
-              <th>Assignee:</th>
-              <td className="editable-cell">
-                {renderEditableField('assignee', ticket.assignee || '')}
-              </td>
-            </tr>
-            <tr>
-              <th>Priority:</th>
-              <td className="editable-cell">
-                {renderEditableField('priority', ticket.priority || '')}
-              </td>
-            </tr>
-            <tr>
-              <th>Creator:</th>
-              <td>{getAssigneeName(ticket.createdBy || '')}</td>
-            </tr>
-            <tr>
-              <th>Created At:</th>
-              <td>{formatDate(ticket.createdAt || '')}</td>
-            </tr>
-            <tr>
-              <th>Last Updated:</th>
-              <td>{formatDate(ticket.updatedAt || '')}</td>
-            </tr>
+            <tr><th>Title:</th><td className="editable-cell">{renderEditableField('title', ticket.title || '')}</td></tr>
+            <tr><th>Description:</th><td className="editable-cell">{renderEditableField('description', ticket.description || '')}</td></tr>
+            <tr><th>Status:</th><td className="editable-cell">{renderEditableField('status', ticket.status || '')}</td></tr>
+            <tr><th>Assignee:</th><td className="editable-cell">{renderEditableField('assignee', ticket.assignee || '')}</td></tr>
+            <tr><th>Priority:</th><td className="editable-cell">{renderEditableField('priority', ticket.priority || '')}</td></tr>
+            <tr><th>Creator:</th><td>{getAssigneeName(ticket.createdBy || '')}</td></tr>
+            <tr><th>Created At:</th><td>{formatDate(ticket.createdAt || '')}</td></tr>
+            <tr><th>Last Updated:</th><td>{formatDate(ticket.updatedAt || '')}</td></tr>
           </tbody>
         </table>
       </div>
-      
       {hasChanges && (
         <div className="ticket-actions">
           <button onClick={handleSave} className="btn-primary">Save Changes</button>
@@ -342,8 +315,7 @@ const TicketPage = () => {
           {successMessage && <span className="success-message">{successMessage}</span>}
         </div>
       )}
-
-      <Comments ticketId={id!} users={users} currentUserId={user?.id || ''}/>
+      <Comments ticketId={id!} users={users} currentUserId={user?.id || ''} />
     </div>
   );
 };

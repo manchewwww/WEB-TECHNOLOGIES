@@ -15,17 +15,16 @@ const ProjectCard: FC<Props> = ({ project, userIdToName, currentUserId, onViewMe
     <button className="project-card" onClick={onNavigate}>
         <h2 className="name">{project.name}</h2>
         <p className="description">{project.description}</p>
-
-        <button className="btn-secondary" onClick={(e) => { e.stopPropagation(); onViewMembers(); }}>
-            View Members
-        </button>
-
-        {project.createdBy === currentUserId && (
-            <button className="btn-secondary" onClick={(e) => { e.stopPropagation(); onEdit(); }}>
-                Edit project
+        <div className="card-actions">
+            <button className="btn-secondary" onClick={(e) => { e.stopPropagation(); onViewMembers(); }}>
+                View Members
             </button>
-        )}
-
+            {project.createdBy === currentUserId && (
+                <button className="btn-secondary" onClick={(e) => { e.stopPropagation(); onEdit(); }}>
+                    Edit project
+                </button>
+            )}
+        </div>
         <p className="created-by mt-2">Created by: {userIdToName[project.createdBy]}</p>
     </button>
 );

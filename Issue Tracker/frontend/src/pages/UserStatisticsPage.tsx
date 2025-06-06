@@ -50,6 +50,8 @@ function UserStatisticsPage() {
   const [ticketsByPriority, setTicketsByPriority] = useState<Record<string, number>>({});
 
   const [projectStats, setProjectStats] = useState<ProjectStats[]>([]);
+  // Track which project descriptions are expanded
+  const [expandedDescriptions, setExpandedDescriptions] = useState<{ [id: string]: boolean }>({});
 
   useEffect(() => {
     async function fetchStats() {
@@ -135,30 +137,35 @@ function UserStatisticsPage() {
 
   }, [userId]);
 
+  // Toggle description expand/collapse
+  const handleDescriptionToggle = (id: string) => {
+    setExpandedDescriptions((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
   if (loading) return <p>Loading statistics...</p>;
   if (!stats) return <p>No statistics found for this user.</p>;
 
   return (
     <div className="stats-container">
-      <h2 className="page-title">{stats.username}'s Statistics</h2>
+      <h2 className="page-title gradient-text">{stats.username}'s Statistics</h2>
 
       <div className="summary-row">
-        <div className="summary-card">
+        <div className="summary-card gradient-border">
           <p>Total Projects</p>
           <h3>{projectCount}</h3>
         </div>
-        <div className="summary-card">
+        <div className="summary-card gradient-border">
           <p>Created Tickets</p>
           <h3>{createdTicketsCount}</h3>
         </div>
-        <div className="summary-card">
+        <div className="summary-card gradient-border">
           <p>Assigned Tickets</p>
           <h3>{assignedTicketsCount}</h3>
         </div>
       </div>
 
       <div className="chart-container">
-        <div className="summary-card">
+        <div className="summary-card gradient-border">
           <p>Assigned Tickets by Status</p>
           <PieChartBlock
             data={ticketsByStatus}
@@ -167,7 +174,7 @@ function UserStatisticsPage() {
           />
         </div>
 
-        <div className="summary-card">
+        <div className="summary-card gradient-border">
           <p>Assigned Tickets by Priority</p>
           <PieChartBlock
             data={ticketsByPriority}
@@ -182,8 +189,8 @@ function UserStatisticsPage() {
         <div className="project-stats">
           {projectStats.length > 0 ? (
             projectStats.map((project) => (
-              <div key={project._id} className="project-item">
-                <h4 className="project-title">{project.name}</h4>
+              <div key={project._id} className="project-item gradient-border">
+                <h4 className="project-title gradient-text">{project.name}</h4>
                 <div className="project-content">
                   <div>
                     <PieChartBlock
@@ -195,11 +202,26 @@ function UserStatisticsPage() {
                   </div>
 
                   <div className="project-description">
-                    <p>{project.description}</p>
+                    <p
+                      className={expandedDescriptions[project._id] ? "expanded" : ""}
+                      title={expandedDescriptions[project._id] ? undefined : project.description}
+                      onClick={() => handleDescriptionToggle(project._id)}
+                    >
+                      {project.description}
+                    </p>
                     <div className="ticket-counts">
                       <span>Created: {project.createdTickets}</span>
                       <span>Assigned: {project.assignedTickets}</span>
                     </div>
+                    {project.description.length > 120 && (
+                      <button
+                        className="desc-toggle-btn"
+                        onClick={() => handleDescriptionToggle(project._id)}
+                        tabIndex={-1}
+                      >
+                        {expandedDescriptions[project._id] ? "Show less" : "Show more"}
+                      </button>
+                    )}
                   </div>
 
                   <div>

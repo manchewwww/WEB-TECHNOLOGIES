@@ -29,9 +29,19 @@ const PieChartBlock = ({ title, data, theme, allKeys }: PieChartBlockProps) => {
     colorMap[key] = getColorFromCSS(varName);
   });
 
-  const chartData = keys.map((key) => ({
-    name: key,
+  // Only include keys with value > 0
+  const filteredKeys = keys.filter((key) => (data[key] ?? 0) > 0);
+  const chartData = filteredKeys.map((key) => ({
+    name:
+      theme === 'status'
+        ? key === 'in_progress'
+          ? 'In Progress'
+          : key.charAt(0).toUpperCase() + key.slice(1).replace('_', ' ')
+        : theme === 'priority'
+        ? key.charAt(0).toUpperCase() + key.slice(1)
+        : key,
     value: data[key] ?? 0,
+    rawKey: key,
   }));
 
   return (
@@ -41,7 +51,7 @@ const PieChartBlock = ({ title, data, theme, allKeys }: PieChartBlockProps) => {
         <PieChart>
           <Pie data={chartData} dataKey="value" nameKey="name" outerRadius={80} label>
             {chartData.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={colorMap[entry.name]}/>
+              <Cell key={`cell-${index}`} fill={colorMap[entry.rawKey]}/>
             ))}
           </Pie>
           <Tooltip />

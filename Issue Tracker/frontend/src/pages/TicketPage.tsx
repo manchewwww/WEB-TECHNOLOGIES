@@ -146,7 +146,7 @@ const TicketPage = () => {
             className={`priority-${currentValue?.toLowerCase()}`}
             onClick={() => handleFieldClick(fieldName)}
           >
-            {currentValue}
+            {currentValue.charAt(0).toUpperCase() + currentValue.slice(1)}
             <span className="edit-indicator">✏️</span>
           </span>
         );
@@ -179,6 +179,19 @@ const TicketPage = () => {
     }
 
     if (fieldName === 'status') {
+      const allowedStatuses = getAllowedStatusTransitions(ticket?.status || '');
+      // Only show select if there is more than one valid transition and the ticket is not closed
+      if (
+        allowedStatuses.length === 1 &&
+        (allowedStatuses[0] === 'closed' || allowedStatuses[0] === ticket?.status)
+      ) {
+        // Show plain text if only current status is valid (e.g., closed)
+        return (
+          <span className={`status-${currentValue?.toLowerCase().replace(/_/g, '-')}`}>{
+            currentValue === 'in_progress' ? 'In Progress' : currentValue.charAt(0).toUpperCase() + currentValue.slice(1).replace('_', ' ')
+          }</span>
+        );
+      }
       return (
         <div className="inline-edit-field">
           <select
@@ -189,10 +202,11 @@ const TicketPage = () => {
             onBlur={() => setEditField(null)}
           >
             <option value="">Select status</option>
-            <option value="Open">Open</option>
-            <option value="In-progress">In Progress</option>
-            <option value="Review">Review</option>
-            <option value="Closed">Closed</option>
+            {allowedStatuses.map((status) => (
+              <option key={status} value={status}>
+                {status === 'in_progress' ? 'In Progress' : status.charAt(0).toUpperCase() + status.slice(1).replace('_', ' ')}
+              </option>
+            ))}
           </select>
           {errors[fieldName] && <div className="error-message">{errors[fieldName]}</div>}
         </div>
@@ -236,6 +250,7 @@ const TicketPage = () => {
             <option value="Low">Low</option>
             <option value="Medium">Medium</option>
             <option value="High">High</option>
+            <option value="Critical">Critical</option>
           </select>
           {errors[fieldName] && <div className="error-message">{errors[fieldName]}</div>}
         </div>
@@ -291,6 +306,21 @@ const TicketPage = () => {
     }).format(date);
   };
 
+  const getAllowedStatusTransitions = (currentStatus: string) => {
+    switch (currentStatus) {
+      case 'open':
+        return ['open', 'in_progress'];
+      case 'in_progress':
+        return ['open', 'in_progress', 'review'];
+      case 'review':
+        return ['in_progress', 'review', 'closed'];
+      case 'closed':
+        return ['closed'];
+      default:
+        return ['Ticket can`t be reopened'];
+    }
+  };
+  
   return (
     <div className="ticket-container">
       <h1 className="ticket-title">Ticket</h1>

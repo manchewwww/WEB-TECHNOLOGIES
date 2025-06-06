@@ -115,11 +115,18 @@ function MultipleTicketsPage() {
       case "assignee":
         return userMaps[ticket.assignee || ""]?.toLowerCase().includes(lowerValue);
       case "status":
-        return ticket.status.toLowerCase().includes(lowerValue);
+        return ticket.status
+          ? (ticket.status === 'in_progress'
+              ? 'In Progress'
+              : ticket.status.charAt(0).toUpperCase() + ticket.status.slice(1).replace('_', ' ')
+            ).toLowerCase().includes(lowerValue)
+          : false;
       case "createdBy":
         return userMaps[ticket.createdBy.toString()]?.toLowerCase().includes(lowerValue);
       case "priority":
-        return ticket.priority.toLowerCase().includes(lowerValue);
+        return ticket.priority
+          ? ticket.priority.charAt(0).toUpperCase() + ticket.priority.slice(1).toLowerCase().includes(lowerValue)
+          : false;
       default:
         return true;
     }
@@ -189,38 +196,41 @@ function MultipleTicketsPage() {
     <div className="tickets-page">
       <h1 className="page-title">{project?.name}</h1>
 
-      <div className="sorting-controls">
-        <label htmlFor="sort">Sort by: </label>
-        <select
-          id="sort"
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value)}
-        >
-          <option value="project">Project</option>
-          <option value="assignee">Assigned to</option>
-          <option value="status">Status</option>
-        </select>
-
-        <button onClick={() => setShowModal(true)} className="btn-primary">
-          Create Ticket
-        </button>
-      </div>
-
-      <div className="filter-bar">
-        <label htmlFor="filter">Filter by: </label>
-        <select value={filterField} onChange={(e) => setFilterField(e.target.value)}>
-          <option value="assignee">Assignee</option>
-          <option value="status">Status</option>
-          <option value="createdBy">Created By</option>
-          <option value="priority">Priority</option>
-        </select>
-
-        <input
-          type="text"
-          placeholder={`Enter ${filterField}`}
-          value={filterValue}
-          onChange={(e) => setFilterValue(e.target.value)}
-        />
+      <div className="controls-wrapper">
+        <div className="controls-left">
+          <div className="sorting-controls">
+            <label htmlFor="sort">Sort by: </label>
+            <select
+              id="sort"
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+            >
+              <option value="project">Project</option>
+              <option value="assignee">Assigned to</option>
+              <option value="status">Status</option>
+            </select>
+          </div>
+          <div className="filter-bar">
+            <label htmlFor="filter">Filter by: </label>
+            <select value={filterField} onChange={(e) => setFilterField(e.target.value)}>
+              <option value="assignee">Assignee</option>
+              <option value="status">Status</option>
+              <option value="createdBy">Created By</option>
+              <option value="priority">Priority</option>
+            </select>
+            <input
+              type="text"
+              placeholder={`Enter ${filterField}`}
+              value={filterValue}
+              onChange={(e) => setFilterValue(e.target.value)}
+            />
+          </div>
+        </div>
+        <div className="controls-right">
+          <button onClick={() => setShowModal(true)} className="btn-primary">
+            Create Ticket
+          </button>
+        </div>
       </div>
 
       {showModal && (
@@ -281,7 +291,9 @@ function MultipleTicketsPage() {
       )}
 
       {sortedTickets.length === 0 ? (
-        <p>Empty tickets</p>
+        <div className="ticket-list">
+          <div className="empty-tickets-message">No tickets found</div>
+        </div>
       ) : (
         <div className="ticket-list">
           {sortedTickets.map((ticket) => (
@@ -293,8 +305,14 @@ function MultipleTicketsPage() {
             >
               <h3 className="name">{ticket.title}</h3>
               <p className="description">{ticket.description}</p>
-              <p><strong>Status:</strong> {ticket.status}</p>
-              <p><strong>Priority:</strong> {ticket.priority}</p>
+              <p><strong>Status:</strong> <span className={`status-${ticket.status.toLowerCase().replace(/_/g, '-')}`}>{
+                ticket.status === 'in_progress'
+                  ? 'In Progress'
+                  : ticket.status.charAt(0).toUpperCase() + ticket.status.slice(1).replace('_', ' ')
+              }</span></p>
+              <p><strong>Priority:</strong> <span className={`priority-${ticket.priority.toLowerCase()}`}>{
+                ticket.priority.charAt(0).toUpperCase() + ticket.priority.slice(1)
+              }</span></p>
               <p><strong>Assigned to:</strong> {ticket.assignee ? userMaps[ticket.assignee.toString()] || "No one" : "No one"}</p>
               <p><strong>Created at:</strong> {new Date(ticket.createdAt).toLocaleDateString()}</p>
               <p className="created-by"><strong>Created by:</strong> {userMaps[ticket.createdBy.toString()] || "Unknown"}</p>

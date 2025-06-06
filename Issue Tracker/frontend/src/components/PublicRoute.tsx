@@ -6,9 +6,9 @@ type PublicRouteProps = {
 };
 
 const PublicRoute = ({ children }: PublicRouteProps) => {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoadingUser } = useAuth();
 
-  if (isLoading) {
+  if (isLoadingUser) {
     return <div>Loading...</div>;
   }
 

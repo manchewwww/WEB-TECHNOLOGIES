@@ -164,25 +164,33 @@ function UserStatisticsPage() {
         </div>
       </div>
 
-      <div className="chart-container">
-        <div className="summary-card gradient-border">
-          <p>Assigned Tickets by Status</p>
-          <PieChartBlock
-            data={ticketsByStatus}
-            allKeys={["open", "in_progress", "review", "closed"]}
-            theme="status"
-          />
-        </div>
+        <div className="chart-container">
+          <div className="summary-card">
+            <p>Assigned Tickets by Status</p>
+            {Object.values(ticketsByStatus).every(val => val === 0) ? (
+              <p style={{ color: 'red' }}>This user has no related tickets.</p>
+            ) : (
+              <PieChartBlock
+                data={ticketsByStatus}
+                allKeys={["open", "in_progress", "review", "closed"]}
+                theme="status"
+              />
+            )}
+          </div>
 
-        <div className="summary-card gradient-border">
-          <p>Assigned Tickets by Priority</p>
-          <PieChartBlock
-            data={ticketsByPriority}
-            allKeys={["low", "medium", "high", "critical"]}
-            theme="priority"
-          />
+          <div className="summary-card">
+            <p>Assigned Tickets by Priority</p>
+            {Object.values(ticketsByPriority).every(val => val === 0) ? (
+              <p style={{ color: 'red' }}>This user has no related tickets.</p>
+            ) : (
+              <PieChartBlock
+                data={ticketsByPriority}
+                allKeys={["low", "medium", "high", "critical"]}
+                theme="priority"
+              />
+            )}
+          </div>
         </div>
-      </div>
 
       <div className="stat-section">
         <h3>Project Statistics</h3>

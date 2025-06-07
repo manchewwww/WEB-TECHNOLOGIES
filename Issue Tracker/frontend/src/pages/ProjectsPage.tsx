@@ -71,6 +71,11 @@ function ProjectsPage() {
     }
   };
 
+  const handleProjectClick = (id: string) => {
+    navigate(`/${id}/tickets`);
+  };
+
+
   return (
     <div className="projects-container">
       <ProjectsHeader
@@ -97,7 +102,7 @@ function ProjectsPage() {
           });
           setShowEditModal(true);
         }}
-        onNavigate={(id) => navigate(`/${id}/tickets`)}
+        onNavigate={handleProjectClick}
       />
 
       <ProjectsModals

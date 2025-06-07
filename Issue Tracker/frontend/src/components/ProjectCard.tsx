@@ -13,7 +13,7 @@ interface Props {
 }
 
 const ProjectCard: FC<Props> = ({ project, userIdToName, currentUserId, role, onViewMembers, onEdit, onNavigate }) => (
-    <button className="project-card" onClick={onNavigate}>
+    <div className="project-card" onClick={onNavigate}>
         <h2 className="name">{project.name}</h2>
         <p className="description">{project.description}</p>
         <div className="card-actions">
@@ -27,7 +27,7 @@ const ProjectCard: FC<Props> = ({ project, userIdToName, currentUserId, role, on
             )}
         </div>
         <p className="created-by mt-2">Created by: {userIdToName[project.createdBy]}</p>
-    </button>
+    </div>
 );
 
 export default ProjectCard;

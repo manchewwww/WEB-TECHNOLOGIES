@@ -14,7 +14,6 @@ export async function login(email: string, password: string): Promise<boolean> {
     localStorage.setItem('refreshToken', response.user.refreshToken);
     localStorage.setItem('user', JSON.stringify(response.user));
   } catch (error) {
-    console.error("Login failed:", error);
     throw error;
   }
 

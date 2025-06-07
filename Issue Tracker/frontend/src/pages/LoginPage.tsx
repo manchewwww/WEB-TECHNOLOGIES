@@ -18,10 +18,8 @@ function LoginPage() {
     
     try {
       await login(email, password);
-      console.log('Login successful');
       navigate('/');
     } catch (err: any) {
-      console.error('Login error:', err);
       setError(err.response?.data?.message || 'Login failed. Please try again.');
     } finally {
       setIsLoading(false);

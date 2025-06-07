@@ -36,7 +36,6 @@ export const authApi = {
     const { data } = await apiClient.post('/auth/login', params);
     return data;
     } catch (error) {
-      console.error("Login failed: (Api.ts)", error);
       throw error;
     }
   },

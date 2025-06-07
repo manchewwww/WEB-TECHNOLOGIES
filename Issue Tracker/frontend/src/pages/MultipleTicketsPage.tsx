@@ -64,6 +64,8 @@ async function getUserProjects(userID: string): Promise<IProject[]> {
   );
 }
 
+type ErrorType = { [key: string]: string };
+
 function MultipleTicketsPage() {
   const { projectID } = useParams();
   const { user } = useAuth();
@@ -86,6 +88,7 @@ function MultipleTicketsPage() {
 
   const [filterField, setFilterField] = useState("assignee");
   const [filterValue, setFilterValue] = useState("");
+  const [errors, setErrors] = useState<ErrorType>({});          
 
   useEffect(() => {
     async function fetchData() {
@@ -163,21 +166,23 @@ function MultipleTicketsPage() {
   });
 
   const handleCreate = async () => {
-    if (!form.title.trim() || (!projectID && !form.project)) {
-      alert("Please fill in both the Title and Project fields before creating.");
+    const validationErrors: ErrorType = {};
+    if (!form.project) validationErrors.project = "Project is required.";
+    if (!form.title.trim()) validationErrors.title = "Title is required.";
+    else if (form.title.length < 5) validationErrors.title = "Title must be at least 5 characters.";
+    if (form.description.length > 0 && form.description.length < 10) validationErrors.description = "Description must be at least 10 characters.";
+    if (Object.keys(validationErrors).length) {
+      setErrors(validationErrors);
       return;
     }
-    if (!user?.id) {
-      alert("You must be logged in to create a ticket.");
-      return;
-    }
+    setErrors({});
 
     const payload: any = {
       title: form.title,
       description: form.description || "",
       status: form.status.toLowerCase(),
       priority: form.priority.toLowerCase(),
-      createdBy: user.id,
+      createdBy: user?.id,
       projectId: projectID || form.project                       
     };
 
@@ -277,20 +282,24 @@ function MultipleTicketsPage() {
                 disabled
               />
             ) : (
-              <select
-                className="form-input"
-                value={form.project}
-                onChange={(e) => setForm({ ...form, project: e.target.value })}
-              >
-                <option value="">Select project</option>
-                {projects.map((p) => (
-                  <option key={p._id} value={p._id}>
-                    {p.name}
-                  </option>
-                ))}
-              </select>
+              <>
+                <select
+                  className="form-input"
+                  value={form.project}
+                  onChange={(e) => setForm({ ...form, project: e.target.value })}
+                >
+                  <option value="">Select project</option>
+                  {projects.map((p) => (
+                    <option key={p._id} value={p._id}>
+                      {p.name}
+                    </option>
+                  ))}
+                </select>
+                {errors.project && <div className="error-message">{errors.project}</div>}
+              </>
             )}
 
+            <label className="form-label">Title</label>                      
             <input
               type="text"
               placeholder="Title"
@@ -298,6 +307,9 @@ function MultipleTicketsPage() {
               value={form.title}
               onChange={(e) => setForm({ ...form, title: e.target.value })}
             />
+            {errors.title && <div className="error-message">{errors.title}</div>}
+
+            <label className="form-label">Description</label>                      
             <input
               type="text"
               placeholder="Description"
@@ -305,6 +317,7 @@ function MultipleTicketsPage() {
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
             />
+            {errors.description && <div className="error-message">{errors.description}</div>}
 
             <label className="form-label">Priority</label>
             <select
@@ -317,6 +330,7 @@ function MultipleTicketsPage() {
               <option value="high">High</option>
               <option value="critical">Critical</option>
             </select>
+            {errors.priority && <div className="error-message">{errors.priority}</div>}
 
             {(projectID || form.project) && (
               <>
@@ -333,6 +347,7 @@ function MultipleTicketsPage() {
                     </option>
                   ))}
                 </select>
+                {errors.assignee && <div className="error-message">{errors.assignee}</div>}
               </>
             )}
 

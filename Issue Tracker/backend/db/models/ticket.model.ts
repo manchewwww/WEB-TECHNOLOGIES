@@ -10,7 +10,7 @@ const CommentSchema: Schema = new Schema({
 const TicketSchema: Schema = new Schema(
     {
         title: { type: String, required: true },
-        description: { type: String, required: true },
+        description: { type: String },
         status: {
             type: String,
             enum: ["open", "in_progress", "review", "closed"],

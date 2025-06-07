@@ -4,11 +4,19 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 
+interface User {
+  id: string;
+  username: string;
+  email: string;
+  role: string;
+  isActive: boolean;
+}
+
 function AdminPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [users, setUsers] = useState([]);
-  const [editedRoles, setEditedRoles] = useState({});
+  const [users, setUsers] = useState<User[]>([]);
+  const [editedRoles, setEditedRoles] = useState<Record<string, string>>({});
   const [roles, setRoles] = useState<string[]>([]);
 
   useEffect(() => {
@@ -36,11 +44,11 @@ function AdminPage() {
     }
   };
 
-  const handleRoleChange = (userId, newRole) => {
+  const handleRoleChange = (userId: string, newRole: string) => {
     setEditedRoles(prev => ({ ...prev, [userId]: newRole }));
   };
 
-  const saveRoleChange = async (userId) => {
+  const saveRoleChange = async (userId: string) => {
     const confirmed = window.confirm("Are you sure you want to save the changes?");
     if (!confirmed) return;
 
@@ -66,7 +74,7 @@ function AdminPage() {
     }
   };
 
-  const toggleActive = async (userId, currentStatus) => {
+  const toggleActive = async (userId: string, currentStatus: boolean) => {
     const confirmed = window.confirm(
       `Are you sure you want to ${currentStatus ? "deactivate" : "activate"} this user?`
     );

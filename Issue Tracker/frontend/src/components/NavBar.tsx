@@ -13,12 +13,6 @@ function NavBar() {
     navigate('/');
   };
 
-    const handleMyStatsClick = () => {
-    if (user) {
-      navigate(`/statistics/${user.id}`);
-    }
-  };
-
   return (
     <nav className="navbar">
       <div className="nav-left">
@@ -36,9 +30,8 @@ function NavBar() {
             {user.role === 'admin' ? (
               <Link to="/admin" className="nav-btn admin-btn">Admin Panel</Link>
             ) : (
-              <button onClick={handleMyStatsClick} className="nav-btn stats-btn">My Statistics</button>
+              <Link to={`/statistics/${user.id}`} className="nav-btn stats-btn">My Statistics</Link>
             )}
-
 
             <button onClick={handleLogout} className="nav-btn logout-btn">Logout</button>
           </div>

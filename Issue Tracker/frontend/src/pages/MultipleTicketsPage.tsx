@@ -22,6 +22,7 @@ interface ITicket {
 }
 
 interface IProject {
+  _id: string;           
   name: string;
   createdBy: string;
   members: string[];
@@ -56,6 +57,13 @@ async function getUsers(): Promise<Record<string, string>> {
   return usersMap;
 }
 
+async function getUserProjects(userID: string): Promise<IProject[]> {
+  const res = await axios.get('/api/projects');
+  return res.data.filter((proj: IProject) =>
+    proj.members.includes(userID) || proj.createdBy === userID
+  );
+}
+
 function MultipleTicketsPage() {
   const { projectID } = useParams();
   const { user } = useAuth();
@@ -66,12 +74,14 @@ function MultipleTicketsPage() {
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState("status");
   const [showModal, setShowModal] = useState(false);
+  const [projects, setProjects] = useState<IProject[]>([]);              
   const [form, setForm] = useState({
     title: "",
     description: "",
     status: "Open",
     priority: "Low",
     assignee: "",
+    project: projectID || ""                                            
   });
 
   const [filterField, setFilterField] = useState("assignee");
@@ -96,6 +106,11 @@ function MultipleTicketsPage() {
 
         const userMap = await getUsers();
         setUserMaps(userMap);
+
+        if (!projectID && user?.id) {                                  
+          const userProjects = await getUserProjects(user.id);
+          setProjects(userProjects);
+        }
       } catch (error) {
         console.error("Failed to load tickets or users: ", error);
       } finally {
@@ -148,28 +163,32 @@ function MultipleTicketsPage() {
   });
 
   const handleCreate = async () => {
-    if (!projectID || !user?.id) {
-      alert("Missing project or user info.");
+    if (!form.title.trim() || (!projectID && !form.project)) {
+      alert("Please fill in both the Title and Project fields before creating.");
+      return;
+    }
+    if (!user?.id) {
+      alert("You must be logged in to create a ticket.");
       return;
     }
 
     const payload: any = {
       title: form.title,
-      description: form.description,
+      description: form.description || "",
       status: form.status.toLowerCase(),
       priority: form.priority.toLowerCase(),
       createdBy: user.id,
-      projectId: projectID,
+      projectId: projectID || form.project                       
     };
 
-    if (form.assignee && form.assignee.trim() !== "") {
-      payload.assignee = form.assignee;
-    }
+    if (form.assignee) payload.assignee = form.assignee;
 
     try {
       await axios.post("/api/tickets", payload);
-      const updatedTickets = await getTicketsByProject(projectID);
-      setTickets(updatedTickets);
+      const updated = projectID
+        ? await getTicketsByProject(projectID)
+        : await getTicketsByAssignee(user.id);
+      setTickets(updated);
       setShowModal(false);
       setForm({
         title: "",
@@ -177,6 +196,7 @@ function MultipleTicketsPage() {
         status: "open",
         priority: "low",
         assignee: "",
+        project: projectID || ""                               
       });
     } catch (error) {
       console.error("Create ticket error:", error);
@@ -188,13 +208,23 @@ function MultipleTicketsPage() {
     navigate(`/tickets/${ticketId}`);
   };
 
+  const currentMembers = projectID
+    ? project?.members || []
+    : projects.find(p => p._id === form.project)?.members || [];
+
   if (loading) {
     return <div className="loading">Loading tickets...</div>;
   }
 
   return (
     <div className="tickets-page">
-      <h1 className="page-title">{project?.name}</h1>
+      <h1 className="page-title">
+        {projectID
+          ? project?.name
+          : user?.role === "admin"
+          ? "All Tickets"
+          : "My Tickets"}
+      </h1>
 
       <div className="controls-wrapper">
         <div className="controls-left">
@@ -237,6 +267,30 @@ function MultipleTicketsPage() {
         <div className="modal-overlay">
           <div className="modal-container">
             <h2 className="modal-title">Create Ticket</h2>
+
+            <label className="form-label">Project</label>                      
+            {projectID ? (
+              <input
+                type="text"
+                className="form-input"
+                value={project?.name || ""}
+                disabled
+              />
+            ) : (
+              <select
+                className="form-input"
+                value={form.project}
+                onChange={(e) => setForm({ ...form, project: e.target.value })}
+              >
+                <option value="">Select project</option>
+                {projects.map((p) => (
+                  <option key={p._id} value={p._id}>
+                    {p.name}
+                  </option>
+                ))}
+              </select>
+            )}
+
             <input
               type="text"
               placeholder="Title"
@@ -264,25 +318,35 @@ function MultipleTicketsPage() {
               <option value="critical">Critical</option>
             </select>
 
-            <label className="form-label">Assignee</label>
-            <select
-              className="form-input"
-              value={form.assignee}
-              onChange={(e) => setForm({ ...form, assignee: e.target.value })}
-            >
-              <option value="">Unassigned</option>
-              {project?.members.map((memberId) => (
-                <option key={memberId} value={memberId}>
-                  {userMaps[memberId] || memberId}
-                </option>
-              ))}
-            </select>
+            {(projectID || form.project) && (
+              <>
+                <label className="form-label">Assignee</label>
+                <select
+                  className="form-input"
+                  value={form.assignee}
+                  onChange={(e) => setForm({ ...form, assignee: e.target.value })}
+                >
+                  <option value="">Unassigned</option>
+                  {currentMembers.map((memberId) => (
+                    <option key={memberId} value={memberId}>
+                      {userMaps[memberId] || memberId}
+                    </option>
+                  ))}
+                </select>
+              </>
+            )}
 
             <div className="form-buttons">
-              <button className="btn-secondary" onClick={() => setShowModal(false)}>
+              <button
+                className="btn-secondary"
+                onClick={() => setShowModal(false)}
+              >
                 Cancel
               </button>
-              <button className="btn-primary" onClick={handleCreate}>
+              <button
+                className="btn-primary"
+                onClick={handleCreate}
+              >
                 Create
               </button>
             </div>

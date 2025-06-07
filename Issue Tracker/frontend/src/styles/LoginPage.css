@@ -1,6 +1,7 @@
 
 .login-page {
   display: flex;
+  margin: 60px auto 40px auto;
   justify-content: center;
   align-items: center;
 }

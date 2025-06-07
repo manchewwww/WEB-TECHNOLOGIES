@@ -20,5 +20,5 @@ export function useProjects(userId: string | undefined, role: string | undefined
         if (userId) fetchProjects();
     }, [userId]);
 
-    return { projects, setProjects, fetchProjects };
+    return { projects, setProjects };
 }

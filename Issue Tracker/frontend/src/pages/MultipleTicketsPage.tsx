@@ -7,6 +7,7 @@ import axios from "axios";
 interface IUser {
   id: string;
   username: string;
+  role: string;
 }
 
 interface ITicket {
@@ -28,7 +29,11 @@ interface IProject {
   members: string[];
 }
 
-async function getTicketsByAssignee(userID : string): Promise<ITicket[]> {
+async function getTicketsByAssignee(userID : string | undefined, role: string | undefined): Promise<ITicket[]> {
+  if (role === "admin") {
+    return getTickets();
+  }
+
   const res = await axios.get(`/api/tickets/assingnee/${userID}`);
   return res.data;
 }
@@ -97,7 +102,7 @@ function MultipleTicketsPage() {
         if (!projectID && user?.role == "admin") {
           ticketData = await getTickets();
         } else if (!projectID) {
-          ticketData = await getTicketsByAssignee(user!.id);
+          ticketData = await getTicketsByAssignee(user!.id, user?.role);
         } else {
           const projectData = await getProjectById(projectID);
           setProject(projectData);
@@ -190,9 +195,10 @@ function MultipleTicketsPage() {
 
     try {
       await axios.post("/api/tickets", payload);
+      
       const updated = projectID
         ? await getTicketsByProject(projectID)
-        : await getTicketsByAssignee(user.id);
+        : await getTicketsByAssignee(user?.id, user?.role);
       setTickets(updated);
       setShowModal(false);
       setForm({

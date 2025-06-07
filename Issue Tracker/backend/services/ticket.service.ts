@@ -15,7 +15,6 @@ class TicketService {
 
   async getAllTicketsByUserID(userID: string): Promise<ITicket[]> {
     return await ticketRepository.getAllTicketsByUserID(userID);
-
   }
 
   async getTicketById(id: string): Promise<ITicket> {

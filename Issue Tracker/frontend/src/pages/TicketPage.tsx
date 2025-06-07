@@ -180,12 +180,10 @@ const TicketPage = () => {
 
     if (fieldName === 'status') {
       const allowedStatuses = getAllowedStatusTransitions(ticket?.status || '');
-      // Only show select if there is more than one valid transition and the ticket is not closed
       if (
         allowedStatuses.length === 1 &&
         (allowedStatuses[0] === 'closed' || allowedStatuses[0] === ticket?.status)
       ) {
-        // Show plain text if only current status is valid (e.g., closed)
         return (
           <span className={`status-${currentValue?.toLowerCase().replace(/_/g, '-')}`}>{
             currentValue === 'in_progress' ? 'In Progress' : currentValue.charAt(0).toUpperCase() + currentValue.slice(1).replace('_', ' ')

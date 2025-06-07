@@ -137,7 +137,6 @@ function UserStatisticsPage() {
 
   }, [userId]);
 
-  // Toggle description expand/collapse
   const handleDescriptionToggle = (id: string) => {
     setExpandedDescriptions((prev) => ({ ...prev, [id]: !prev[id] }));
   };

@@ -82,6 +82,7 @@ function ProjectsPage() {
         projects={projects}
         userIdToName={userIdToName}
         currentUserId={user?.id ?? ""}
+        role={user?.role ?? ""}
         userOptions={userOptions}
         onViewMembers={(project) => {
           setSelectedProject(project);

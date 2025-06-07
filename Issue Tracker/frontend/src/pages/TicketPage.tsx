@@ -327,11 +327,51 @@ const TicketPage = () => {
       <div className="ticket-details">
         <table className="ticket-table">
           <tbody>
-            <tr><th>Title:</th><td className="editable-cell">{renderEditableField('title', ticket.title || '')}</td></tr>
-            <tr><th>Description:</th><td className="editable-cell">{renderEditableField('description', ticket.description || '')}</td></tr>
-            <tr><th>Status:</th><td className="editable-cell">{renderEditableField('status', ticket.status || '')}</td></tr>
-            <tr><th>Assignee:</th><td className="editable-cell">{renderEditableField('assignee', ticket.assignee || '')}</td></tr>
-            <tr><th>Priority:</th><td className="editable-cell">{renderEditableField('priority', ticket.priority || '')}</td></tr>
+            <tr>
+              <th>Title:</th>
+              <td
+                className="editable-cell"
+                onClick={() => handleFieldClick('title')}
+              >
+                {renderEditableField('title', ticket.title || '')}
+              </td>
+            </tr>
+            <tr>
+              <th>Description:</th>
+              <td
+                className="editable-cell"
+                onClick={() => handleFieldClick('description')}
+              >
+                {renderEditableField('description', ticket.description || '')}
+              </td>
+            </tr>
+            <tr>
+              <th>Status:</th>
+              <td
+                className="editable-cell"
+                onClick={() => handleFieldClick('status')}
+              >
+                {renderEditableField('status', ticket.status || '')}
+              </td>
+            </tr>
+            <tr>
+              <th>Assignee:</th>
+              <td
+                className="editable-cell"
+                onClick={() => handleFieldClick('assignee')}
+              >
+                {renderEditableField('assignee', ticket.assignee || '')}
+              </td>
+            </tr>
+            <tr>
+              <th>Priority:</th>
+              <td
+                className="editable-cell"
+                onClick={() => handleFieldClick('priority')}
+              >
+                {renderEditableField('priority', ticket.priority || '')}
+              </td>
+            </tr>
             <tr><th>Creator:</th><td>{getAssigneeName(ticket.createdBy || '')}</td></tr>
             <tr><th>Created At:</th><td>{formatDate(ticket.createdAt || '')}</td></tr>
             <tr><th>Last Updated:</th><td>{formatDate(ticket.updatedAt || '')}</td></tr>

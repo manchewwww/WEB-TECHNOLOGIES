@@ -220,15 +220,6 @@ function UserStatisticsPage() {
                       <span>Created: {project.createdTickets}</span>
                       <span>Assigned: {project.assignedTickets}</span>
                     </div>
-                    {project.description.length > 120 && (
-                      <button
-                        className="desc-toggle-btn"
-                        onClick={() => handleDescriptionToggle(project._id)}
-                        tabIndex={-1}
-                      >
-                        {expandedDescriptions[project._id] ? "Show less" : "Show more"}
-                      </button>
-                    )}
                   </div>
 
                   <div>

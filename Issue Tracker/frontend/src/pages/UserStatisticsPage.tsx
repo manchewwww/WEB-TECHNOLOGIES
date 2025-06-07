@@ -50,7 +50,6 @@ function UserStatisticsPage() {
   const [ticketsByPriority, setTicketsByPriority] = useState<Record<string, number>>({});
 
   const [projectStats, setProjectStats] = useState<ProjectStats[]>([]);
-  // Track which project descriptions are expanded
   const [expandedDescriptions, setExpandedDescriptions] = useState<{ [id: string]: boolean }>({});
 
   useEffect(() => {

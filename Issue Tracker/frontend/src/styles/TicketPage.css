@@ -263,7 +263,6 @@ input:focus, select:focus, textarea:focus, .form-input:focus {
   border-left: 4px solid var(--accent-red);
 }
 
-/* Comments section styling - modernized and compact */
 .comments-section {
   margin-top: 25px;
   border: none;

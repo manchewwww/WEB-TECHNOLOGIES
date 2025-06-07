@@ -349,7 +349,7 @@ const TicketPage = () => {
                 className="editable-cell"
                 onClick={() => handleFieldClick('status')}
               >
-                {renderEditableField('status', ticket.status || '')}
+                {renderEditableField('status', ticket.status && ticket.status === 'in_progress' ? 'In Progress' : ticket.status || '')}
               </td>
             </tr>
             <tr>

@@ -33,17 +33,20 @@ class TicketRepository {
     return saved.toObject();
   }
 
-  async editTicket(ticketId: string, ticketWithNewData: Partial<ITicket>): Promise<ITicket> {
-    const updatedTicket = await TicketModel.findByIdAndUpdate(
-      ticketId,
-      ticketWithNewData,
-      { new: true, lean: true }
-    );
-    if (!updatedTicket) {
-      throw new NotFoundError(`Ticket with ID ${ticketId} not found`);
-    }
-    return updatedTicket;
+async editTicket(ticketId: string, ticketWithNewData: Partial<ITicket>): Promise<ITicket> {
+  ticketWithNewData.priority = ticketWithNewData.priority?.toLowerCase() as ITicket['priority'];
+  const updatedTicket = await TicketModel.findByIdAndUpdate(
+    ticketId,
+    ticketWithNewData,
+    { new: true, lean: true }
+  );
+
+  if (!updatedTicket) {
+    throw new NotFoundError(`Ticket with ID ${ticketId} not found`);
   }
+
+  return updatedTicket;
+}
 
   async deleteTicket(ticketId: string): Promise<boolean> {
     const deleted = await TicketModel.findByIdAndDelete(ticketId);

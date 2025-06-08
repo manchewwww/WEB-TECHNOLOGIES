@@ -14,7 +14,7 @@
    npm run dev
    ```
    - Backend (swagger) 👉 http://localhost:3000/api-docs  
-   - Frontend 👉 http://localhost:3003
+   - Frontend 👉 http://localhost:5173
 
 4. Build for production  
    ```bash
